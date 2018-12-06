@@ -78,7 +78,7 @@ public class CouponSystem implements Serializable{
 	public void setServer(String driverName, String databaseUrl, String userName, String password) {
 		try {
 			pool.setServer(driverName, databaseUrl, userName, password);
-			Class.forName("coupon.system.util.IdGenerator");
+			Class.forName("core.util.IdGenerator");
 			task = DailyCouponExpirationTask.getInstance();
 		} catch (CouponSystemException e) {
 			// TODO Manager handling
