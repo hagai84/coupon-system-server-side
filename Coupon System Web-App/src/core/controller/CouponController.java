@@ -170,6 +170,69 @@ public class CouponController implements IController {
 	 * @throws DAOException when DB error occurred
 	 */
 
+	////////////////////////////////////////////////////////////////////
+	
+	/*
+	 * public void createCoupon(Coupon coupon) throws CompanyFacadeException { //
+	 * generate new unique coupon id try {
+	 * coupon.setId(IdGenerator.generatCouponId()); } catch (IdGeneratorException e)
+	 * { CompanyFacadeException exception = new
+	 * CompanyFacadeException("cant create new coupon", e); throw exception; }
+	 * 
+	 * try { // check if coupon id is unique in db
+	 * couponDAO.getCoupon(coupon.getId()); CompanyFacadeException CompanyException
+	 * = new CompanyFacadeException(
+	 * "cant create new coupon, the genereted id is olrady in db"); throw
+	 * CompanyException;
+	 * 
+	 * } catch (DAOException e) { CompanyFacadeException exception = new
+	 * CompanyFacadeException("cant create new coupon", e); throw exception; } catch
+	 * (CouponException e) { //No coupon was found can proceed }
+	 * 
+	 * try { // check if coupon title is unique in db
+	 * couponDAO.getCouponByTitle(coupon.getTitle()); CompanyFacadeException
+	 * CompanyException = new CompanyFacadeException(
+	 * "cant create new coupon, the title is olrady in db"); throw CompanyException;
+	 * 
+	 * } catch (DAOException e) { CompanyFacadeException exception = new
+	 * CompanyFacadeException("cant create new coupon", e); throw exception; } catch
+	 * (CouponException e) { //No coupon was found can proceed }
+	 * 
+	 * try { // check if coupon bean is legal data CouponUtil.checkCoupon(coupon);
+	 * couponDAO.createCoupon(coupon); couponDAO.addCouponToCompany(coupon,
+	 * company.getId()); } catch (DAOException | CouponException e) {
+	 * CompanyFacadeException exception = new
+	 * CompanyFacadeException("cant create new coupon : \n" + e.getMessage(), e);
+	 * throw exception; }
+	 * 
+	 * }
+	 */
+	
+	/**
+	 * Removes a {@link CouponBean} to the DB in the following order:
+	 * <ul>
+	 * <li>From Table <code>cust_coupon</code></li>
+	 * <li>From Table <code>comp_coupon</code></li>
+	 * <li>From Table <code>coupon</code></li>
+	 * </ul>
+	 *
+	 * @param couponId The coupon to be removed.
+	 * @throws CompanyFacadeException if operation was unsuccessful
+	 */
+	public void removeCoupon(long couponId) throws CouponSystemException {
+		// TODO Start transaction
+		ConnectionPool.getInstance().startTransaction();
+		try {
+			couponDAO.removeCouponFromCustomers(couponId);
+			couponDAO.removeCoupon(couponId);
+		} catch (CouponSystemException e) {
+			ConnectionPool.getInstance().rollback();
+			throw e;
+		} finally {
+		}
+		ConnectionPool.getInstance().endTransaction();
+	}
+
 	/*
 	 * private boolean companyNameExists(Company company) throws DAOException { //
 	 * TODO Auto-generated method stub try {
@@ -350,29 +413,4 @@ public class CouponController implements IController {
 	 * 
 	 * }
 	 */
-
-	/**
-	 * Removes a {@link CouponBean} to the DB in the following order:
-	 * <ul>
-	 * <li>From Table <code>cust_coupon</code></li>
-	 * <li>From Table <code>comp_coupon</code></li>
-	 * <li>From Table <code>coupon</code></li>
-	 * </ul>
-	 *
-	 * @param couponId The coupon to be removed.
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	public void removeCoupon(long couponId) throws CouponSystemException {
-		// TODO Start transaction
-		ConnectionPool.getInstance().startTransaction();
-		try {
-			couponDAO.removeCouponFromCustomers(couponId);
-			couponDAO.removeCoupon(couponId);
-		} catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();
-			throw e;
-		} finally {
-		}
-		ConnectionPool.getInstance().endTransaction();
-	}
 }

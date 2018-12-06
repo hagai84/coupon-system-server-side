@@ -77,6 +77,6 @@ public interface ICustomerDAO extends Serializable {
 	boolean customerNameAlreadyExists(String name);
 	boolean customerIdAlreadyExists(long customerId);
 	
-	long login(String customerName, String password) throws CouponSystemException;
+	long customerLogin(String customerName, String password) throws CouponSystemException;
 	
 }

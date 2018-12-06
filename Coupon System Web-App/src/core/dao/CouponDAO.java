@@ -110,6 +110,177 @@ public class CouponDAO implements ICouponDAO {
 		}
 	}
 
+	/*@Override
+	public void addCouponToCompany(Coupon coupon, long compId) throws CouponSystemException {
+		Connection con = pool.getConnection();
+		
+		String sql = "INSERT INTO company_coupon VALUES(?,?)";	
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, compId);
+			stmt.setLong(2, coupon.getCouponId());
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("add coupon to company failed, ID  : " + coupon.getCouponId());
+			}			
+		} catch (SQLException e) {
+			throw new CouponSystemException("add coupon to company failed : ", e);
+		}finally {			
+			pool.returnConnection(con);	
+		}
+	}*/
+	
+	/*@Override
+	public void removeCouponFromCompanies(long couponId) throws CouponSystemException {
+		Connection con = pool.getConnection();
+		
+		String sql = "DELETE FROM company_coupon WHERE coupon_ID = ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, couponId);
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("remove coupon from companies failed, ID  : " + couponId);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from companies failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}
+	}*/
+	
+	/*@Override
+	public void removeCouponFromCustomers(long couponId) throws CouponSystemException {
+		Connection con = pool.getConnection();
+	
+		String sql = "DELETE FROM customer_coupon WHERE cust_ coupon_ID = ? ";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(2, couponId);
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("remove coupon from customer failed, ID  : " + couponId.getCouponId());
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from customer failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}
+	}*/
+	
+	@Override
+	public void removeCoupon(long couponId) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE FROM coupon WHERE ID = ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, couponId);
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("remove coupon from coupon failed, ID  : " + couponId);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}		
+	}
+
+	@Override
+	public void removeCustomerCoupons(long customerId) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE FROM customer_coupon WHERE cust_ID = ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, customerId);
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("remove customer coupon failed, ID  : " + customerId);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}	
+	}
+
+	@Override
+	public void removeCompanyCoupons(long companyId) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE FROM coupon WHERE comp_ID = ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, companyId);
+			int dml = stmt.executeUpdate();
+			//TODO add check to see how many rows were updated
+			if(dml==0) {
+				throw new CouponSystemException("remove company coupon from coupon failed, ID  : " + companyId);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}	
+	}
+
+	@Override
+	public void removeCouponFromCustomers(long couponId) throws CouponSystemException {
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE FROM customer_coupon WHERE coupon_ID = ? ";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, couponId );
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove coupon from customers failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}
+	}
+
+	@Override
+	public void removeCompanyCouponsFromCustomers(long companyId) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE customer_coupon FROM customer_coupon"
+				+ " INNER JOIN coupon ON customer_coupon.coupon_id = coupon.id"
+				+ " WHERE coupon.comp_id = ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, companyId);
+			int dml = stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove Expired Coupons failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}	
+		
+	}
+
+	@Override
+	public void removeExpiredCoupons() throws CouponSystemException {
+		// TODO Auto-generated method stub
+		Connection con = pool.getConnection();		
+		
+		String sql = "DELETE coupon, customer_coupon FROM coupon"
+				+ " INNER JOIN customer_coupon ON customer_coupon.coupon_id = coupon.id"
+				+ " WHERE coupon.end_date <= ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setDate(1, new Date(System.currentTimeMillis()));
+			int dml = stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new CouponSystemException("remove Expired Coupons failed : ", e);
+		}finally {			
+			pool.returnConnection(con);
+		}	
+		
+	}
+
 	@Override
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
 		int amount = getCoupon(couponId).getAmount();
@@ -406,118 +577,6 @@ public class CouponDAO implements ICouponDAO {
 			pool.returnConnection(con);
 		}
 	}*/
-
-	@Override
-	public void removeCoupon(long couponId) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE FROM coupon WHERE ID = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove coupon from coupon failed, ID  : " + couponId);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}		
-	}
-
-	@Override
-	public void removeCustomerCoupons(long customerId) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE FROM customer_coupon WHERE cust_ID = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, customerId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove customer coupon failed, ID  : " + customerId);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}	
-	}
-
-	@Override
-	public void removeCompanyCoupons(long companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE FROM coupon WHERE comp_ID = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, companyId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove company coupon from coupon failed, ID  : " + companyId);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}	
-	}
-	@Override
-	public void removeCouponFromCustomers(long couponId) throws CouponSystemException {
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE FROM customer_coupon WHERE coupon_ID = ? ";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, couponId );
-			stmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from customers failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}
-	}
-
-	@Override
-	public void removeCompanyCouponsFromCustomers(long companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE customer_coupon FROM customer_coupon"
-				+ " INNER JOIN coupon ON customer_coupon.coupon_id = coupon.id"
-				+ " WHERE coupon.comp_id = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, companyId);
-			int dml = stmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove Expired Coupons failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}	
-		
-	}
-
-	@Override
-	public void removeExpiredCoupons() throws CouponSystemException {
-		// TODO Auto-generated method stub
-		Connection con = pool.getConnection();		
-		
-		String sql = "DELETE coupon, customer_coupon FROM coupon"
-				+ " INNER JOIN customer_coupon ON customer_coupon.coupon_id = coupon.id"
-				+ " WHERE coupon.end_date <= ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setDate(1, new Date(System.currentTimeMillis()));
-			int dml = stmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove Expired Coupons failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}	
-		
-	}
 
 	@Override
 	public boolean couponIdAlreadyExists(long couponId) {

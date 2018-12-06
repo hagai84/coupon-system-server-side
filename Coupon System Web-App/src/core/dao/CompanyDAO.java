@@ -63,26 +63,6 @@ public class CompanyDAO implements ICompanyDAO{
 	}
 
 	/* (non-Javadoc)
-	 * @see coupon.system.dao.CompanyDAO#removeCompany(coupon.system.beans.Company)
-	 */
-	@Override
-	public void removeCompany(long companyId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "DELETE FROM company WHERE id = " + companyId;
-			if (stmt.executeUpdate(sql) == 0) {
-				CouponSystemException exception = new CouponSystemException("0 rows were remove");
-				throw exception;
-			}
-		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("remove company failed", e);
-			throw exception;
-		} finally {
-			pool.returnConnection(con);
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see coupon.system.dao.CompanyDAO#updateCompany(coupon.system.beans.Company)
 	 */
 	@Override
@@ -99,6 +79,26 @@ public class CompanyDAO implements ICompanyDAO{
 
 		} catch (SQLException e) {
 			CouponSystemException exception = new CouponSystemException("update company failed", e);
+			throw exception;
+		} finally {
+			pool.returnConnection(con);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see coupon.system.dao.CompanyDAO#removeCompany(coupon.system.beans.Company)
+	 */
+	@Override
+	public void removeCompany(long companyId) throws CouponSystemException {
+		Connection con = pool.getConnection();
+		try (Statement stmt = con.createStatement();) {
+			String sql = "DELETE FROM company WHERE id = " + companyId;
+			if (stmt.executeUpdate(sql) == 0) {
+				CouponSystemException exception = new CouponSystemException("0 rows were remove");
+				throw exception;
+			}
+		} catch (SQLException e) {
+			CouponSystemException exception = new CouponSystemException("remove company failed", e);
 			throw exception;
 		} finally {
 			pool.returnConnection(con);

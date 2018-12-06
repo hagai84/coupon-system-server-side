@@ -37,20 +37,6 @@ public class CustomerController implements IController {
 	}
 
 	/**
-	 * Logs in to the coupon system as a specific company.
-	 * @param custName Customer username
-	 * @param password Customer password
-	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerController}
-	 * @throws CustomerFacadeException if username or password are incorrect
-	 */
-	//@Override
-	public long customerLogin(String customerName, String password) throws  CouponSystemException {
-		return customerDAO.login(customerName, password);
-	}
-
-	
-	
-	/**
 	 * Attempts to create a given customer in the DB
 	 *
 	 * @param customer The customer to create
@@ -72,6 +58,21 @@ public class CustomerController implements IController {
 		}
 		customerDAO.createCustomer(customer);
 		
+	}
+
+	/**
+	 * Updates all of a customer's fields (except ID) in the DB according to the given customer bean.
+	 *
+	 * @param customer The customer to be updated
+	 * @throws CouponSystemException
+	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
+	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
+	 */
+	public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
+		CustomerBeanValidator.checkCustomer(customer);
+		CustomerBean tmpCustomer = getCustomer(customer.getId());
+		tmpCustomer.setPassword(customer.getPassword());
+		customerDAO.updateCustomer(tmpCustomer);
 	}
 
 	/**
@@ -99,21 +100,6 @@ public class CustomerController implements IController {
 	}
 
 	/**
-	 * Updates all of a customer's fields (except ID) in the DB according to the given customer bean.
-	 *
-	 * @param customer The customer to be updated
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
-	 */
-	public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
-		CustomerBeanValidator.checkCustomer(customer);
-		CustomerBean tmpCustomer = getCustomer(customer.getId());
-		tmpCustomer.setPassword(customer.getPassword());
-		customerDAO.updateCustomer(tmpCustomer);
-	}
-
-	/**
 	 * Searches the DB for a customer with the given ID and
 	 * returns a Customer bean with it's data from the DB.
 	 *
@@ -135,5 +121,17 @@ public class CustomerController implements IController {
 	 */
 	public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
 		return customerDAO.getAllCustomers();
+	}
+
+	/**
+	 * Logs in to the coupon system as a specific company.
+	 * @param custName Customer username
+	 * @param password Customer password
+	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerController}
+	 * @throws CustomerFacadeException if username or password are incorrect
+	 */
+	//@Override
+	public long customerLogin(String customerName, String password) throws  CouponSystemException {
+		return customerDAO.customerLogin(customerName, password);
 	}
 }
