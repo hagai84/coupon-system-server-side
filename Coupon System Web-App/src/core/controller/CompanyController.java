@@ -27,17 +27,7 @@ public class CompanyController implements IController {
 	private static final ICompanyDAO companyDAO = CompanyDAO.getInstance();
 //	private final Company company;
 
-	/**
-	 * Checks if the company is authorized to access a given coupon.
-	 * @param coupon The desired coupon to access
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	/*private void checkIfCompanyAuthorize(Coupon coupon) throws CompanyFacadeException {
-		if (!this.getAllCoupons().contains(coupon)) {
-			CompanyFacadeException CompanyException = new CompanyFacadeException("Compay is not authorize to access given coupon");
-			throw CompanyException;
-		}
-	}*/
+
 	
 	/**
 	 * Public constructor initializes given company's access
@@ -88,18 +78,6 @@ public class CompanyController implements IController {
 		companyDAO.updateCompany(tmpCompany);
 	}
 
-
-	/**
-	 * Checks if the company is authorized to access a given coupon.
-	 * @param coupon The desired coupon to access
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	/*private void checkIfCompanyAuthorize(Coupon coupon) throws CompanyFacadeException {
-		if (!this.getAllCoupons().contains(coupon)) {
-			CompanyFacadeException CompanyException = new CompanyFacadeException("Compay is not authorize to access given coupon");
-			throw CompanyException;
-		}
-	}*/
 	
 	/**
 	 * Deletes a company in the database
@@ -126,17 +104,6 @@ public class CompanyController implements IController {
 	}
 
 
-	/**
-	 * Checks if the company is authorized to access a given coupon.
-	 * @param coupon The desired coupon to access
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	/*private void checkIfCompanyAuthorize(Coupon coupon) throws CompanyFacadeException {
-		if (!this.getAllCoupons().contains(coupon)) {
-			CompanyFacadeException CompanyException = new CompanyFacadeException("Compay is not authorize to access given coupon");
-			throw CompanyException;
-		}
-	}*/
 	
 	/**
 	 * Gets a company's details from the database
@@ -152,17 +119,6 @@ public class CompanyController implements IController {
 	}
 
 
-	/**
-	 * Checks if the company is authorized to access a given coupon.
-	 * @param coupon The desired coupon to access
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	/*private void checkIfCompanyAuthorize(Coupon coupon) throws CompanyFacadeException {
-		if (!this.getAllCoupons().contains(coupon)) {
-			CompanyFacadeException CompanyException = new CompanyFacadeException("Compay is not authorize to access given coupon");
-			throw CompanyException;
-		}
-	}*/
 	
 	/**
 	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
@@ -184,28 +140,6 @@ public class CompanyController implements IController {
 	 */
 	public long companyLogin(String name, String password) throws CouponSystemException {
 		return companyDAO.companyLogin(name, password);
-		/*try {
-			if (CompanyDBDAO.companyLogin(name, password)!=-1) {
-				return new CompanyFacade(companyDAO.getCompanyByName(name));
-			}
-		} catch (DAOException | CompanyException e) {
-			CompanyFacadeException exception = new CompanyFacadeException("cant login :\n" + e.getMessage(), e);
-			throw exception;
-		}
-		CompanyFacadeException e = new CompanyFacadeException("user name or password are incorrect");
-		throw e;*/
 	}
-
-	/**
-	 * Checks if the company is authorized to access a given coupon.
-	 * @param coupon The desired coupon to access
-	 * @throws CompanyFacadeException if operation was unsuccessful
-	 */
-	/*private void checkIfCompanyAuthorize(Coupon coupon) throws CompanyFacadeException {
-		if (!this.getAllCoupons().contains(coupon)) {
-			CompanyFacadeException CompanyException = new CompanyFacadeException("Compay is not authorize to access given coupon");
-			throw CompanyException;
-		}
-	}*/
 
 }

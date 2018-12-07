@@ -130,11 +130,11 @@ public class CouponController implements IController {
 		try {
 			CouponBean updatedCoupon = getCoupon(coupon.getCouponId());
 			// TODO add code when tables change
-			/*
-			 * if(updatedCoupon.getCompanyId()==companyId) { throw new
-			 * CompanyException("Coupon " + coupon.getId() + " doesn't belong to company " +
-			 * companyId); }
-			 */
+
+			if (updatedCoupon.getCompanyId() == companyId) {
+				throw new CouponSystemException("Coupon " + coupon.getCouponId() + " doesn't belong to company " + companyId);
+			}
+
 			// alter the coupon data to the new ALLOWED ones
 			updatedCoupon.setEndDate(coupon.getEndDate());
 			updatedCoupon.setAmount(coupon.getAmount());
@@ -171,7 +171,7 @@ public class CouponController implements IController {
 	 */
 
 	////////////////////////////////////////////////////////////////////
-	
+
 	/*
 	 * public void createCoupon(Coupon coupon) throws CompanyFacadeException { //
 	 * generate new unique coupon id try {
@@ -207,7 +207,7 @@ public class CouponController implements IController {
 	 * 
 	 * }
 	 */
-	
+
 	/**
 	 * Removes a {@link CouponBean} to the DB in the following order:
 	 * <ul>
