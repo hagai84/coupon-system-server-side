@@ -198,9 +198,9 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, customerId);
 			int dml = stmt.executeUpdate();
 			//TODO add check to see how many rows were updated
-			if(dml==0) {
+			/*if(dml==0) {
 				throw new CouponSystemException("remove customer coupon failed, ID  : " + customerId);
-			}
+			}*/
 		} catch (SQLException e) {
 			throw new CouponSystemException("remove coupon from coupon failed : ", e);
 		}finally {			
