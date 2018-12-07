@@ -3,12 +3,15 @@ package core.beans;
 import java.io.Serializable;
 import java.sql.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import core.enums.CouponType;
 /**
  * JBean representing a Coupon.
  * Coupons have an <b>ID</b>, <b>title</b>, <b>start date</b>, <b>end date</b>, <b>amount</b>, <b>coupon type</b>, <b>message</b>, <b>price</b>, and <b>a path to a coupon-related image</b>.
  * @author Ron
  */
+@XmlRootElement
 public class CouponBean implements Serializable{
 
 	private static final long serialVersionUID = -927238060353756890L;

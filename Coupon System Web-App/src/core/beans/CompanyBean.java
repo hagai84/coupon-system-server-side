@@ -3,11 +3,14 @@ package core.beans;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * JBean representing a Company.
  * Companies have an <b>ID</b>, <b>company name</b>, <b>password</b>, <b>e-mail</b> and a <b>Collection of Coupons they sell</b>.
  * @author Hagai
  */
+@XmlRootElement 
 public class CompanyBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;

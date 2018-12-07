@@ -1,4 +1,4 @@
-package API;
+package api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -6,7 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.sun.media.jfxmedia.Media;
+import core.beans.CompanyBean;
+import core.exception.CouponSystemException;
 
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,8 +25,10 @@ public class CompanyAPI {
 	 *  If company creation fails
 	 */
 	@POST
-	public void createCompany(CompanyBean company) throws CouponSystemException {
-	
+	public String createCompany(CompanyBean company) throws CouponSystemException {
+		System.out.println(company.getCompName()); 
+		System.out.println(company);
+		return new String ("hello");
 	}
 
 
