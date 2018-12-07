@@ -8,11 +8,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
-import core.beans.CustomerBean;
 import core.controller.CompanyController;
 import core.exception.CouponSystemException;
 
@@ -77,8 +77,9 @@ public class CompanyAPI {
 	 *  If the given company's ID can't be found in the DB (0 rows were returned).
 	 */
 	@GET
-	public CompanyBean getCompany(long companyID) throws CouponSystemException {	
-		return companyController.getCompany(companyID);
+	@Path("{companyId}")
+	public CompanyBean getCompany(@PathParam("companyId")long companyId) throws CouponSystemException {	
+		return companyController.getCompany(companyId);
 	}
 
 	
