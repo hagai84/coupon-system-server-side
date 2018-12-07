@@ -2,11 +2,13 @@ package api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
+import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
 
 @Path("/company")
@@ -26,7 +28,11 @@ public class CompanyAPI {
 	 */
 	@POST
 	public String createCompany(CompanyBean company) throws CouponSystemException {
-		System.out.println(company.getCompName()); 
+		System.out.println(company);
+		return new String ("hello");
+	}
+	@PUT
+	public String createCompany(CustomerBean company) throws CouponSystemException {
 		System.out.println(company);
 		return new String ("hello");
 	}
