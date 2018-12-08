@@ -1,5 +1,6 @@
 package api;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
@@ -20,14 +21,14 @@ import core.exception.CouponSystemException;
 @Path("/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CustomerAPI {
+public class CustomerAPI implements Serializable{
 
 	
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private static final CustomerController customerController = new CustomerController();
+		private static final CustomerController customerController = CustomerController.getInstance();
 
 		/**
 		 * Attempts to create a given customer in the DB
@@ -100,7 +101,6 @@ public class CustomerAPI {
 		 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 		 */
 		@GET
-//		@Path("/list")
 		public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
 			System.out.println("OK");
 			return customerController.getAllCustomers();
@@ -113,7 +113,6 @@ public class CustomerAPI {
 		 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerController}
 		 * @throws CustomerFacadeException if username or password are incorrect
 		 */
-		//@Override
 		@POST
 		@Path("/login")
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)

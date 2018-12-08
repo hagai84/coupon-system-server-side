@@ -21,8 +21,8 @@ import core.util.ConnectionPool;
 public class CompanyDAO implements ICompanyDAO{
 	
 	private static final long serialVersionUID = 1L;
-	private static ConnectionPool pool = ConnectionPool.getInstance();
-	private static CompanyDAO instance = new CompanyDAO();
+	private static ICompanyDAO companyDAOInstance = new CompanyDAO();
+	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 
 	/**
 	 * Private constructor.
@@ -35,15 +35,15 @@ public class CompanyDAO implements ICompanyDAO{
 	 * Returns a static instance of CompanyDBDAO
 	 * @return A static instance of CompanyDBDAO
 	 */
-	public static CompanyDAO getInstance() {
-		return instance;
+	public static ICompanyDAO getInstance() {
+		return companyDAOInstance;
 	}
 
 	/* (non-Javadoc)
 	 * @see coupon.system.dao.CompanyDAO#createCompany(coupon.system.beans.Company)
 	 */
 	public void createCompany(CompanyBean company) throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		String sqlInsert = "INSERT INTO company VALUES(?,?,?,?)";
 		try (PreparedStatement pstmt = con.prepareStatement(sqlInsert);) {
 			pstmt.setLong(1, company.getId());
@@ -58,7 +58,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("create company failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class CompanyDAO implements ICompanyDAO{
 	@Override
 	public void updateCompany(CompanyBean company) throws CouponSystemException {
 
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		String sql = "UPDATE company SET password =? , email=?, comp_name =? WHERE id=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1, company.getPassword());
@@ -85,7 +85,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("update company failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	@Override
 	public void removeCompany(long companyId) throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		String sql = "DELETE FROM company WHERE id = ?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setLong(1,companyId);
@@ -106,7 +106,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("remove company failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	@Override
 	public CompanyBean getCompany(long companyId) throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 
 		String sql = "SELECT * FROM company WHERE id = ?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
@@ -136,7 +136,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("get company by id failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	@Override
 	public CompanyBean getCompanyByName(String companyName) throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		String sql = "SELECT * FROM company WHERE comp_name = ?'" ;
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1,companyName);
@@ -165,7 +165,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("get company by name failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -174,7 +174,7 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	@Override
 	public Collection<CompanyBean> getAllCompanies() throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		List<CompanyBean> allCompanies = new ArrayList<>();
 		try (Statement stmt = con.createStatement();) {
 			String sql = "SELECT * FROM company";
@@ -191,7 +191,7 @@ public class CompanyDAO implements ICompanyDAO{
 			CouponSystemException exception = new CouponSystemException("get all companies failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
+			connectionPool.returnConnection(con);
 		}
 		return allCompanies;
 	}
@@ -242,24 +242,26 @@ public class CompanyDAO implements ICompanyDAO{
 	 * 
 	 */
 	public long companyLogin(String companyName, String password) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		String sql = "SELECT password, id FROM company where comp_name =?";
+		Connection con = connectionPool.getConnection();
+//		String sql = "SELECT password, id FROM company where comp_name =?";
+		String sql = "SELECT id FROM Coupon_Db.company WHERE NAME=? AND PASSWORD=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1,companyName);
+			prepardStatement.setString(2,password);
 			ResultSet set = prepardStatement.executeQuery();
 			if (set.next()) {
-				if (set.getString("password").equals(password)) {
-					return set.getLong("ID");
-				}
-			}
-			//TODO throw exception 
+				long id = set.getLong("id");
+				set.close();
+				return id;
+			}else {
+				throw new CouponSystemException("Incorrect Name Or Password");
+			}			
 		} catch (SQLException e) {
 			CouponSystemException exception = new CouponSystemException("login failed", e);
 			throw exception;
 		} finally {
-			pool.returnConnection(con);
-		}
-		return -1;
+			connectionPool.returnConnection(con);
+		}		
 	}
 
 	@Override

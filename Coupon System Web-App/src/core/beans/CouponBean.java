@@ -2,9 +2,6 @@ package core.beans;
 
 import java.io.Serializable;
 import java.sql.Date;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import core.enums.CouponType;
 /**
  * JBean representing a Coupon.

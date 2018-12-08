@@ -1,5 +1,6 @@
 package api;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
@@ -15,8 +16,6 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CouponBean;
 import core.controller.CouponController;
-import core.dao.CouponDAO;
-import core.dao.ICouponDAO;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
 
@@ -25,9 +24,13 @@ import core.exception.CouponSystemException;
 @Path("/coupons")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CouponAPI {
+public class CouponAPI implements Serializable {
 	
-	private final CouponController couponController = new CouponController();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CouponController couponController = CouponController.getInstance();
 
 	/**
 	 * Adds a new {@link CouponBean} to the DB in the following order:

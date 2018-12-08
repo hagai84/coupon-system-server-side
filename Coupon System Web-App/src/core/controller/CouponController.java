@@ -3,6 +3,7 @@
  */
 package core.controller;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import core.beans.CouponBean;
@@ -22,17 +23,23 @@ import core.validation.CouponBeanValidator;
  * @author Ron
  *
  */
-public class CouponController implements IController {
+public class CouponController implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final ICouponDAO couponDAO = CouponDAO.getInstance();
+	private static CouponController couponControllerInstance = new CouponController();
+	private ConnectionPool connectionPool = ConnectionPool.getInstance();
+	private ICouponDAO couponDAO = CouponDAO.getInstance();
 
 	/**
 	 * Private constructor
 	 */
-	public CouponController() {
+	private CouponController() {
+	}
+
+	public static CouponController getInstance() {
+		return couponControllerInstance;
 	}
 
 //	private final int RETRIES = 3;
@@ -126,7 +133,7 @@ public class CouponController implements IController {
 		CouponBeanValidator.checkCoupon(coupon);
 		// gets original coupon data
 		// TODO Transaction, rollback for safety
-		ConnectionPool.getInstance().startTransaction();
+		connectionPool.startTransaction();
 		try {
 			CouponBean updatedCoupon = getCoupon(coupon.getCouponId());
 			// TODO add code when tables change
@@ -142,11 +149,11 @@ public class CouponController implements IController {
 			// updates the coupon
 			couponDAO.updateCoupon(updatedCoupon);
 		} catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();
+			connectionPool.rollback();
 			throw e;
 		} finally {
 		}
-		ConnectionPool.getInstance().endTransaction();
+		connectionPool.endTransaction();
 	}
 
 	/**
@@ -221,16 +228,16 @@ public class CouponController implements IController {
 	 */
 	public void removeCoupon(long couponId) throws CouponSystemException {
 		// TODO Start transaction
-		ConnectionPool.getInstance().startTransaction();
+		connectionPool.startTransaction();
 		try {
 			couponDAO.removeCouponFromCustomers(couponId);
 			couponDAO.removeCoupon(couponId);
 		} catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();
+			connectionPool.rollback();
 			throw e;
 		} finally {
 		}
-		ConnectionPool.getInstance().endTransaction();
+		connectionPool.endTransaction();
 	}
 
 	/*
@@ -254,7 +261,7 @@ public class CouponController implements IController {
 		if (couponDAO.getCustomerCoupons(customerId).contains(coupon1))
 			throw new CouponSystemException("You already own this coupon");
 		// TODO transaction
-		ConnectionPool.getInstance().startTransaction();
+		connectionPool.startTransaction();
 		try {
 
 			CouponBean coupon = couponDAO.getCoupon(couponId);
@@ -264,11 +271,11 @@ public class CouponController implements IController {
 			}
 			couponDAO.purchaseCoupon(couponId, customerId);
 		} catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();
+			connectionPool.rollback();
 			throw e;
 		} finally {
 		}
-		ConnectionPool.getInstance().endTransaction();
+		connectionPool.endTransaction();
 	}
 
 	/*

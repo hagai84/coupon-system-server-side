@@ -16,9 +16,9 @@ public class CouponSystem implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static CouponSystem coupSys = new CouponSystem();
-	private static ConnectionPool pool = ConnectionPool.getInstance();
-	private static DailyCouponExpirationTask task = DailyCouponExpirationTask.getInstance();
+	private static CouponSystem couponSystemInstance = new CouponSystem();
+	private static ConnectionPool connectionPool = ConnectionPool.getInstance();
+	private static DailyCouponExpirationTask dailyTask = DailyCouponExpirationTask.getInstance();
 	
 	private CouponSystem() { 
 	}
@@ -28,7 +28,7 @@ public class CouponSystem implements Serializable{
 	 * @return An instance of {@link CouponSystem}
 	 */
 	public static CouponSystem getInstance(){	
-		return coupSys;	
+		return couponSystemInstance;	
 	}
 
 	/**
@@ -56,15 +56,15 @@ public class CouponSystem implements Serializable{
 	 * Stops all tasks and shuts down the module
 	 */
 	public void shutdown(){
-		task.stopTask();
+		dailyTask.stopTask();
 		try {
-			task.getT().join();
+			dailyTask.getT().join();
 		} catch (InterruptedException e) {
 			// TODO Manager handling
 			// e.printStackTrace();
 			System.err.println("CS shutdown join interrupted : " + e);
 		}
-		pool.closeAllConnections();
+		connectionPool.closeAllConnections();
 		System.out.println("LOG : shut down completed");
 	}
 
@@ -77,9 +77,9 @@ public class CouponSystem implements Serializable{
 	 */
 	public void setServer(String driverName, String databaseUrl, String userName, String password) {
 		try {
-			pool.setServer(driverName, databaseUrl, userName, password);
+			connectionPool.setServer(driverName, databaseUrl, userName, password);
 			Class.forName("core.util.IdGenerator");
-			task = DailyCouponExpirationTask.getInstance();
+			dailyTask = DailyCouponExpirationTask.getInstance();
 		} catch (CouponSystemException e) {
 			// TODO Manager handling
 			// e.printStackTrace();

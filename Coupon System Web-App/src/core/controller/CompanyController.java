@@ -1,5 +1,6 @@
 package core.controller;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import core.beans.CompanyBean;
@@ -18,13 +19,15 @@ import core.validation.CompanyBeanValidator;
  * @author Hagai
  *
  */
-public class CompanyController implements IController {
+public class CompanyController implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final ICouponDAO couponDAO = CouponDAO.getInstance();
-	private static final ICompanyDAO companyDAO = CompanyDAO.getInstance();
+	private static CompanyController companyControllerInstance = new CompanyController();
+	private ConnectionPool connectionPool = ConnectionPool.getInstance();
+	private ICouponDAO couponDAO = CouponDAO.getInstance();
+	private ICompanyDAO companyDAO = CompanyDAO.getInstance();
 //	private final Company company;
 
 
@@ -33,9 +36,13 @@ public class CompanyController implements IController {
 	 * Public constructor initializes given company's access
 	 * @param company Company to access in the system
 	 */
-	public CompanyController() {
+	private CompanyController() {
 		
 	}
+	
+	public static CompanyController getInstance() {
+	return companyControllerInstance;
+}
 
 
 	/**
@@ -89,17 +96,17 @@ public class CompanyController implements IController {
 	 */
 	public void removeCompany(long companyId) throws CouponSystemException {
 		Collection<CouponBean> compCoupons;
-		ConnectionPool.getInstance().startTransaction();
+		connectionPool.startTransaction();
 		try {	
 			couponDAO.removeCompanyCouponsFromCustomers(companyId);
 			couponDAO.removeCompanyCoupons(companyId);
 			companyDAO.removeCompany(companyId);
 		}catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();
+			connectionPool.rollback();
 			throw e;
 		} finally {
 		}
-		ConnectionPool.getInstance().endTransaction();
+		connectionPool.endTransaction();
 	
 	}
 

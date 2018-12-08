@@ -1,5 +1,6 @@
 package core.controller;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import core.beans.CustomerBean;
@@ -17,13 +18,15 @@ import core.validation.CustomerBeanValidator;
  * @author Yair
  *
  */
-public class CustomerController implements IController {
+public class CustomerController implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final ICustomerDAO customerDAO = CustomerDAO.getInstance();
-	private static final ICouponDAO couponDAO = CouponDAO.getInstance();
+	private static CustomerController customerControllerInstance = new CustomerController();
+	private ConnectionPool connectionPool = ConnectionPool.getInstance();
+	private ICustomerDAO customerDAO = CustomerDAO.getInstance();
+	private ICouponDAO couponDAO = CouponDAO.getInstance();
 //	private final Customer customer;
 
 	/**
@@ -32,8 +35,12 @@ public class CustomerController implements IController {
 	 * 
 	 * @return CustomerFacadeException
 	 */
-	public CustomerController() {
+	private CustomerController() {
 		
+	}
+	
+	public static CustomerController getInstance() {
+		return customerControllerInstance;
 	}
 
 	/**
@@ -86,16 +93,16 @@ public class CustomerController implements IController {
 	 *
 	 */
 	public void removeCustomer(long customerId) throws CouponSystemException {
-		ConnectionPool.getInstance().startTransaction();
+		connectionPool.startTransaction();
 		try {
 			couponDAO.removeCustomerCoupons(customerId);
 			customerDAO.removeCustomer(customerId);	
 		}catch (CouponSystemException e) {
-			ConnectionPool.getInstance().rollback();	
+			connectionPool.rollback();	
 			throw e;
 		}finally {
 		}
-		ConnectionPool.getInstance().endTransaction();			
+		connectionPool.endTransaction();			
 		
 	}
 

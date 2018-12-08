@@ -3,8 +3,6 @@ package core.beans;
 import java.io.Serializable;
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * JBean representing a Customer.
  * Customers have an <b>ID</b>, <b>customer name</b>, <b>password</b>, and a <b>Collection of Coupons they bought</b>.

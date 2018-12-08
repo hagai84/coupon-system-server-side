@@ -1,5 +1,6 @@
 package api;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
@@ -19,11 +20,14 @@ import core.exception.CouponSystemException;
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CompanyAPI {
-	private CompanyController companyController = new CompanyController();
+public class CompanyAPI implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CompanyController companyController = CompanyController.getInstance();
 
-	
-	
 	/**
 	 * Creates a new company in the database
 	 * @param company Company to add to the DB

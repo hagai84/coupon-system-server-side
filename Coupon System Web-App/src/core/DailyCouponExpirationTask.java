@@ -1,11 +1,6 @@
 package core;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.util.Collection;
-
-import core.beans.CouponBean;
-import core.controller.CouponController;
 import core.dao.CouponDAO;
 import core.dao.ICouponDAO;
 import core.exception.CouponSystemException;
@@ -21,13 +16,13 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final static DailyCouponExpirationTask task = new DailyCouponExpirationTask();
-	private final Thread t; 	
+	private static DailyCouponExpirationTask dailyExpirationTaskInstance = new DailyCouponExpirationTask();
+	private Thread dailyTaskThread; 	
 	
 	
 	
 	public Thread getT() {
-		return t;
+		return dailyTaskThread;
 	}
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
@@ -40,8 +35,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	 * 
 	 */
 	private DailyCouponExpirationTask(){
-		this.t = new Thread(this);
-		this.t.start();
+		this.dailyTaskThread = new Thread(this);
+		this.dailyTaskThread.start();
 	}
 
 	/* (non-Javadoc)
@@ -60,19 +55,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 				System.err.println("Daily task sleep interrupted : " + e);	
 				continue;
 			}
-			
-//			long time = System.currentTimeMillis();
-			
+						
 			try {
-				/*Collection<CouponBean> coupons = couponController.getAllCoupons();
-				for (CouponBean coupon : coupons) {
-					if (coupon.getEndDate().before(new Date(time))) {
-//						couponDAO.removeCouponFromCustomers(coupon.getCouponId());
-//						couponDAO.removeCoupon(coupon.getCouponId());
-						//use controller removeCoupon()
-						couponController.removeCoupon(coupon.getCouponId());
-					}
-				} */
 				couponDAO.removeExpiredCoupons();
 			} catch (CouponSystemException e) {
 				// TODO Manager handling
@@ -89,7 +73,7 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	public void stopTask() {
 		System.out.println("LOG : Daily Task stopped");
 		quit = true;
-		t.interrupt();
+		dailyTaskThread.interrupt();
 	}
 
 	/**
@@ -97,6 +81,6 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	 * @return An instance of the task
 	 */
 	public static DailyCouponExpirationTask getInstance() {
-		return task;
+		return dailyExpirationTaskInstance;
 	}
 }

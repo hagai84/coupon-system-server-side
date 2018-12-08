@@ -26,20 +26,18 @@ public class ConnectionPool implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static ConnectionPool pool = new ConnectionPool();
+	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 2;
+	private final int POOL_SIZE = 3;
 
-	
 	private String driverName = null;
 	private String databaseUrl;
 	private String userName;
-	private String password;
-	
+	private String password;	
 
-	private ArrayList<Connection> connectionsIn;
+	private ArrayList<Connection> availableConnections;
 //	private ArrayList<Connection> connectionsOut;
-	private HashMap<Thread, Connection> connectionsOut;
+	private HashMap<Thread, Connection> usedConnections;
 	private boolean closing = false;
 	private boolean initialized = false;
 
@@ -54,7 +52,7 @@ public class ConnectionPool implements Serializable{
 	 * @return A static instance of the ConnectionPool
 	 */
 	public static ConnectionPool getInstance() {
-		return pool;
+		return connectionPoolInstance;
 	}
 
 	/**
@@ -67,8 +65,8 @@ public class ConnectionPool implements Serializable{
 	 * @throws CouponSystemException If connection is unsuccessful (timeout/server down)
 	 */
 	public Connection getConnection() throws CouponSystemException {
-		if(connectionsOut.containsKey(Thread.currentThread())) {
-			return connectionsOut.get(Thread.currentThread());
+		if(usedConnections.containsKey(Thread.currentThread())) {
+			return usedConnections.get(Thread.currentThread());
 		}
 
 		synchronized (this) {
@@ -82,7 +80,7 @@ public class ConnectionPool implements Serializable{
 			}
 			// Check if there is a connection available. There are times when all the
 			// connections in the pool may be used up
-			while (connectionsIn.size() < 1) {
+			while (availableConnections.size() < 1) {
 				try {
 					if (closing) {
 						throw new CouponSystemException("Connection pool is shutting down");
@@ -94,7 +92,7 @@ public class ConnectionPool implements Serializable{
 					System.err.println("get connection wait interrupted : " + e);
 				}
 			}
-			con = connectionsIn.remove(0);
+			con = availableConnections.remove(0);
 			
 			try {
 				//checks if connection isValid if not attempts to open a new one
@@ -107,13 +105,13 @@ public class ConnectionPool implements Serializable{
 				throw new CouponSystemException("Server busy. Try again later", e);
 			} catch (SQLException e) {
 				//DB error initiates pool shutdown
-				connectionsIn.add(con);
+				availableConnections.add(con);
 				closeAllConnections();//is there a need ?
 				initialized = false;
 				throw new CouponSystemException("database access error occurred", e);
 			}
 			// Giving away the connection from the connection pool
-			connectionsOut.put(Thread.currentThread(), con);
+			usedConnections.put(Thread.currentThread(), con);
 			return con;
 		}
 	}
@@ -131,9 +129,9 @@ public class ConnectionPool implements Serializable{
 				synchronized (this) {
 					if (initialized) {
 						//attempts to remove from Out collection
-						if (connectionsOut.remove(Thread.currentThread(), con)) {
+						if (usedConnections.remove(Thread.currentThread(), con)) {
 							// Adding the connection from the client back to the connection pool
-							connectionsIn.add(con);
+							availableConnections.add(con);
 							notifyAll();
 						}
 						
@@ -155,7 +153,7 @@ public class ConnectionPool implements Serializable{
 	public synchronized void closeAllConnections() {
 		closing = true;
 		//if there are connections out wait for a set amount of millisecond
-		if (connectionsIn.size() < POOL_SIZE) {
+		if (availableConnections.size() < POOL_SIZE) {
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
@@ -163,14 +161,14 @@ public class ConnectionPool implements Serializable{
 			}
 		}
 		initialized = false;
-		while (connectionsIn.size() > 0) {
+		while (availableConnections.size() > 0) {
 			try {
-				connectionsIn.remove(0).close();
+				availableConnections.remove(0).close();
 			} catch (SQLException e) {
 				System.err.println(e);
 			}
 		}
-		for (Connection connection : connectionsOut.values()) {
+		for (Connection connection : usedConnections.values()) {
 			try {
 				connection.close();;
 				//TODO itereate over collection to close all connections
@@ -196,18 +194,18 @@ public class ConnectionPool implements Serializable{
 		if (driverName == null) {
 			throw new CouponSystemException("Server details are not set");
 		}
-		connectionsIn = new ArrayList<Connection>();
+		availableConnections = new ArrayList<Connection>();
 //		connectionsOut = new ArrayList<Connection>();
-		connectionsOut = new HashMap<Thread, Connection>((int) (POOL_SIZE*1.33));
+		usedConnections = new HashMap<Thread, Connection>((int) (POOL_SIZE*1.33));
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
 			System.err.println(e);
 			throw new CouponSystemException("Connection Driver Class not found : ", e);
 		}
-		while (connectionsIn.size() < POOL_SIZE) {
+		while (availableConnections.size() < POOL_SIZE) {
 			try {
-				connectionsIn.add(newConnection());
+				availableConnections.add(newConnection());
 			} catch (SQLTimeoutException e) {
 				System.err.println("new Connection can't be established time out exception " + e);
 			} catch (SQLException e) {

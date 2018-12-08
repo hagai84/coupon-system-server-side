@@ -23,8 +23,8 @@ public class CustomerDAO implements ICustomerDAO{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static ConnectionPool pool = ConnectionPool.getInstance();
-	private static ICustomerDAO custDAO = new CustomerDAO();
+	private static ICustomerDAO customerDAOInstance = new CustomerDAO();
+	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 
 	/**
 	 * Private singleton constructor.
@@ -37,7 +37,7 @@ public class CustomerDAO implements ICustomerDAO{
 	 * @return A static instance of CustomerDBDAO
 	 */
 	public static ICustomerDAO getInstance() {
-		return custDAO;
+		return customerDAOInstance;
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +45,7 @@ public class CustomerDAO implements ICustomerDAO{
 	 */
 	@Override
 	public void createCustomer(CustomerBean customer) throws CouponSystemException {
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		
 		String sql = "INSERT INTO customer VALUES(?,?,?)";
 		try(PreparedStatement stmt = con.prepareStatement(sql)){
@@ -61,7 +61,7 @@ public class CustomerDAO implements ICustomerDAO{
 			// TODO Auto-generated catch block
 			throw new CouponSystemException("create customer failed : ", e);
 		} finally {
-			pool.returnConnection(con);			
+			connectionPool.returnConnection(con);			
 		}
 	}
 
@@ -70,7 +70,7 @@ public class CustomerDAO implements ICustomerDAO{
 		 */
 		@Override
 		public void updateCustomer(CustomerBean customer) throws CouponSystemException {
-			Connection con = pool.getConnection();		
+			Connection con = connectionPool.getConnection();		
 			
 	//		String sql = "UPDATE customer SET PASSWORD=? WHERE ID=?";
 			String sql = "UPDATE customer SET ID=?, CUST_NAME=?, PASSWORD=? WHERE ID=?";
@@ -89,7 +89,7 @@ public class CustomerDAO implements ICustomerDAO{
 			} catch (SQLException e) {
 				throw new CouponSystemException("update customer failed : ", e);
 			} finally {
-				pool.returnConnection(con);			
+				connectionPool.returnConnection(con);			
 			}
 	
 		}
@@ -99,7 +99,7 @@ public class CustomerDAO implements ICustomerDAO{
 		 */
 		@Override
 		public void removeCustomer(long customerId) throws CouponSystemException {	
-			Connection con = pool.getConnection();
+			Connection con = connectionPool.getConnection();
 				
 			String sql = "DELETE FROM customer WHERE id = ?";
 			try(PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -112,7 +112,7 @@ public class CustomerDAO implements ICustomerDAO{
 			} catch (SQLException e) {
 				throw new CouponSystemException("remove customer failed : ", e);
 			} finally {
-				pool.returnConnection(con);			
+				connectionPool.returnConnection(con);			
 			}
 			
 		}
@@ -122,7 +122,7 @@ public class CustomerDAO implements ICustomerDAO{
 		 */
 		@Override
 		public CustomerBean getCustomer(long custId) throws CouponSystemException {
-			Connection con = pool.getConnection();
+			Connection con = connectionPool.getConnection();
 			CustomerBean customer = null;
 			
 			String sql = "SELECT * FROM customer WHERE ID=?";
@@ -140,7 +140,7 @@ public class CustomerDAO implements ICustomerDAO{
 			} catch (SQLException e) {
 				throw new CouponSystemException("get customer failed : ", e);
 			} finally {
-				pool.returnConnection(con);			
+				connectionPool.returnConnection(con);			
 			}
 		}
 
@@ -148,7 +148,7 @@ public class CustomerDAO implements ICustomerDAO{
 		 * @see coupon.system.dao.CustomerDAO#getCustomerByName(String)
 		 */
 		public CustomerBean getCustomerByName(String custName) throws CouponSystemException {
-			Connection con = pool.getConnection();
+			Connection con = connectionPool.getConnection();
 			CustomerBean customer=null;
 			
 			String sql = "SELECT * FROM customer WHERE CUST_NAME=?";
@@ -166,7 +166,7 @@ public class CustomerDAO implements ICustomerDAO{
 			} catch (SQLException e) {
 				throw new CouponSystemException("get customer by name failed : ", e);
 			} finally {
-				pool.returnConnection(con);			
+				connectionPool.returnConnection(con);			
 			}
 		}
 
@@ -206,7 +206,7 @@ public class CustomerDAO implements ICustomerDAO{
 	@Override
 	public Collection<CustomerBean> getAllCustomers() throws CouponSystemException {
 		Collection<CustomerBean> customers = new ArrayList<CustomerBean>();
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		CustomerBean customer = null;	
 		
 		String sql = "SELECT * FROM customer";
@@ -220,7 +220,7 @@ public class CustomerDAO implements ICustomerDAO{
 		} catch (SQLException e) {
 			throw new CouponSystemException("get all customers failed : ", e);
 		} finally {
-			pool.returnConnection(con);			
+			connectionPool.returnConnection(con);			
 		}		
 		return customers;
 		
@@ -230,32 +230,33 @@ public class CustomerDAO implements ICustomerDAO{
 	 * Returns true if the given customer user name is in the DB and if the given
 	 * password is equal to the password in the DB (same row as the customer name)
 	 *
-	 * @param custName The customer's user name
+	 * @param customerName The customer's user name
 	 * @param password The customer's password
 	 * @return <code>true</code> if user name and password match; otherwise <code>false</code>
 	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 	 *
 	 */
-	public long customerLogin(String custName, String password) throws CouponSystemException {
+	public long customerLogin(String customerName, String password) throws CouponSystemException {
 		
-		Connection con = pool.getConnection();
+		Connection con = connectionPool.getConnection();
 		
 		String sql = "SELECT id FROM customer WHERE CUST_NAME=? AND PASSWORD=?";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
-			stmt.setString(1, custName);
+			stmt.setString(1, customerName);
 			stmt.setString(2, password);
 			ResultSet rs = stmt.executeQuery();
 			
 			if(rs.next()) {
+				rs.close();
 				return rs.getLong("ID");
-			}
-			rs.close();
+			}else {
+				throw new CouponSystemException("Incorrect Name Or Password");
+			}	
 		} catch (SQLException e) {
 			throw new CouponSystemException("customer login failed : ", e);
 		} finally {
-			pool.returnConnection(con);			
+			connectionPool.returnConnection(con);			
 		}	
-		return -1;
 	}
 
 	/**

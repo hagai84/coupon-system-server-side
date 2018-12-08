@@ -40,53 +40,53 @@ public class IdGenerator implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final ICompanyDAO compDAO = CompanyDAO.getInstance();
-	private static final ICustomerDAO custDAO = CustomerDAO.getInstance();
-	private static final ICouponDAO coupDAO = CouponDAO.getInstance();
-	private static final File companyFile = new File("company_id.bin");
-	private static final File customerFile = new File("customer_id.bin");
-	private static final File couponFile = new File("coupon_id.bin");
-	private static final long START_COMPANY_ID = 1000000;
-	private static final long START_CUSTOMER_ID = 2000000;
-	private static final long START_COUPON_ID = 3000000;
+	private static ICompanyDAO companyDAO = CompanyDAO.getInstance();
+	private static ICustomerDAO customerDAO = CustomerDAO.getInstance();
+	private static ICouponDAO couponDAO = CouponDAO.getInstance();
+	private static File companyIdFile = new File("company_id.bin");
+	private static File customerIdFile = new File("customer_id.bin");
+	private static File couponIdFile = new File("coupon_id.bin");
+	private static long DEFAULT_STARTING_COMPANY_ID = 1000000;
+	private static long DEFAULT_STARTING_CUSTOMER_ID = 2000000;
+	private static long DEFAULT_STARTING_COUPON_ID = 3000000;
 
 	static {
 		long MaxId;
 		try {
 			
-			if (!companyFile.exists()) {
-				MaxId=START_COMPANY_ID;
-				companyFile.createNewFile();
+			if (!companyIdFile.exists()) {
+				MaxId=DEFAULT_STARTING_COMPANY_ID;
+				companyIdFile.createNewFile();
 			}else {
 				MaxId=generatCompanyId()-1;
 			}
-			for (CompanyBean company : compDAO.getAllCompanies()) {
+			for (CompanyBean company : companyDAO.getAllCompanies()) {
 				if(MaxId<company.getId()) {
 					MaxId=company.getId();
 				}
 			}
 			setCompanyStaticId(MaxId+1);
 			
-			if (!customerFile.exists()) {
-				MaxId=START_CUSTOMER_ID;
-				customerFile.createNewFile();
+			if (!customerIdFile.exists()) {
+				MaxId=DEFAULT_STARTING_CUSTOMER_ID;
+				customerIdFile.createNewFile();
 			}else {
 				MaxId = generatCustomerId()-1;
 			}
-			for (CustomerBean customer : custDAO.getAllCustomers()) {
+			for (CustomerBean customer : customerDAO.getAllCustomers()) {
 				if(MaxId<customer.getId()) {
 					MaxId=customer.getId();
 				}
 			}
 			setCustomerStaticId(MaxId+1);
 			
-			if (!couponFile.exists()) {
-				MaxId=START_COUPON_ID;
-				couponFile.createNewFile();
+			if (!couponIdFile.exists()) {
+				MaxId=DEFAULT_STARTING_COUPON_ID;
+				couponIdFile.createNewFile();
 			}else {
 				MaxId = generatCouponId()-1;
 			}
-			for (CouponBean coupon : coupDAO.getAllCoupons()) {
+			for (CouponBean coupon : couponDAO.getAllCoupons()) {
 				if(MaxId<coupon.getCouponId()) {
 					MaxId=coupon.getCouponId();
 				}
@@ -112,7 +112,7 @@ public class IdGenerator implements Serializable{
 		
 		long id = -1;
 		
-		try (DataInputStream in = new DataInputStream(new FileInputStream(companyFile));) {
+		try (DataInputStream in = new DataInputStream(new FileInputStream(companyIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to read company Id file", e);
@@ -132,7 +132,7 @@ public class IdGenerator implements Serializable{
 		
 		long id = -1;
 		
-		try (DataInputStream in = new DataInputStream(new FileInputStream(customerFile));) {
+		try (DataInputStream in = new DataInputStream(new FileInputStream(customerIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to read customer Id file", e);
@@ -152,7 +152,7 @@ public class IdGenerator implements Serializable{
 		
 		long id = -1;
 		
-		try (DataInputStream in = new DataInputStream(new FileInputStream(couponFile));) {
+		try (DataInputStream in = new DataInputStream(new FileInputStream(couponIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to read coupon Id file", e);
@@ -175,7 +175,7 @@ public class IdGenerator implements Serializable{
  */
 	public static synchronized void setCompanyStaticId(long id) throws CouponSystemException {
 
-		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(companyFile));) {
+		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(companyIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to write company Id file", e);
@@ -190,7 +190,7 @@ public class IdGenerator implements Serializable{
  */
 	public static synchronized void setCustomerStaticId(long id) throws CouponSystemException {
 	
-		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(customerFile));) {
+		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(customerIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to write customer Id file", e);
@@ -205,7 +205,7 @@ public class IdGenerator implements Serializable{
  */
 	public static synchronized void setCouponStaticId(long id) throws CouponSystemException {
 
-		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(couponFile));) {
+		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(couponIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
 			throw new CouponSystemException("IdGenerator : failed to write coupon Id file", e);
