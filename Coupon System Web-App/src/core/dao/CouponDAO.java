@@ -219,7 +219,7 @@ public class CouponDAO implements ICouponDAO {
 			int dml = stmt.executeUpdate();
 			//TODO add check to see how many rows were updated
 			if(dml==0) {
-				throw new CouponSystemException("remove company coupon from coupon failed, ID  : " + companyId);
+				throw new CouponSystemException("remove company coupon's from coupon failed, ID  : " + companyId);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException("remove coupon from coupon failed : ", e);

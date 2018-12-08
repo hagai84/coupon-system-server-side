@@ -60,8 +60,9 @@ public class CompanyAPI {
 	 *  If given company's details don't match the details of the company with the same ID in the DB
 	 *  If company deletion fails
 	 */
+	@Path("{companyId}")
 	@DELETE
-	public void removeCompany(long companyId) throws CouponSystemException {
+	public void removeCompany(@PathParam ("companyId") long companyId) throws CouponSystemException {
 		companyController.removeCompany(companyId);
 	}
 

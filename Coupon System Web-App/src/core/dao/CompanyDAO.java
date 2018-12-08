@@ -69,10 +69,14 @@ public class CompanyDAO implements ICompanyDAO{
 	public void updateCompany(CompanyBean company) throws CouponSystemException {
 
 		Connection con = pool.getConnection();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "UPDATE company " + "SET password ='" + company.getPassword() + "', email='"
-					+ company.getEmail() + "' comp_name ='" + company.getCompName() + "' WHERE id=" + company.getId();
-			if (stmt.executeUpdate(sql) == 0) {
+		String sql = "UPDATE company SET password =? , email=?, comp_name =? WHERE id=?";
+		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
+			prepardStatement.setString(1, company.getPassword());
+			prepardStatement.setString(2, company.getEmail());
+			prepardStatement.setString(3, company.getCompName());
+			prepardStatement.setLong(4, company.getId());
+			System.out.println(prepardStatement);
+			if (prepardStatement.executeUpdate() == 0) {
 				CouponSystemException exception = new CouponSystemException("0 rows were update");
 				throw exception;
 			}
@@ -91,9 +95,10 @@ public class CompanyDAO implements ICompanyDAO{
 	@Override
 	public void removeCompany(long companyId) throws CouponSystemException {
 		Connection con = pool.getConnection();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "DELETE FROM company WHERE id = " + companyId;
-			if (stmt.executeUpdate(sql) == 0) {
+		String sql = "DELETE FROM company WHERE id = ?";
+		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
+			prepardStatement.setLong(1,companyId);
+			if (prepardStatement.executeUpdate() == 0) {
 				CouponSystemException exception = new CouponSystemException("0 rows were remove");
 				throw exception;
 			}
@@ -109,12 +114,13 @@ public class CompanyDAO implements ICompanyDAO{
 	 * @see coupon.system.dao.CompanyDAO#getCompany(long)
 	 */
 	@Override
-	public CompanyBean getCompany(long id) throws CouponSystemException {
+	public CompanyBean getCompany(long companyId) throws CouponSystemException {
 		Connection con = pool.getConnection();
 
-		try (Statement stmt = con.createStatement();) {
-			String sql = "SELECT * " + "FROM company " + "WHERE id = " + id;
-			ResultSet set = stmt.executeQuery(sql);
+		String sql = "SELECT * FROM company WHERE id = ?";
+		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
+			prepardStatement.setLong(1,companyId);
+			ResultSet set = prepardStatement.executeQuery();
 			if (set.next()) {
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
@@ -123,7 +129,7 @@ public class CompanyDAO implements ICompanyDAO{
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
-				CouponSystemException exception = new CouponSystemException("can't find company with id num : " + id);
+				CouponSystemException exception = new CouponSystemException("can't find company with id num : " + companyId);
 				throw exception;
 			}
 		} catch (SQLException e) {
@@ -138,11 +144,12 @@ public class CompanyDAO implements ICompanyDAO{
 	 * @see coupon.system.dao.CompanyDAO#getCompanyByName(String)
 	 */
 	@Override
-	public CompanyBean getCompanyByName(String name) throws CouponSystemException {
+	public CompanyBean getCompanyByName(String companyName) throws CouponSystemException {
 		Connection con = pool.getConnection();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "SELECT * " + "FROM company " + "WHERE comp_name = '" + name + "'";
-			ResultSet set = stmt.executeQuery(sql);
+		String sql = "SELECT * FROM company WHERE comp_name = ?'" ;
+		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
+			prepardStatement.setString(1,companyName);
+			ResultSet set = prepardStatement.executeQuery();
 			if (set.next()) {
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
@@ -151,7 +158,7 @@ public class CompanyDAO implements ICompanyDAO{
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
-				CouponSystemException exception = new CouponSystemException("cant found company with name " + name);
+				CouponSystemException exception = new CouponSystemException("cant found company with name " + companyName);
 				throw exception;
 			}
 		} catch (SQLException e) {
@@ -236,9 +243,10 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	public long companyLogin(String companyName, String password) throws CouponSystemException {
 		Connection con = pool.getConnection();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "SELECT password, id " + "FROM company " + "where comp_name = '" + companyName + "'";
-			ResultSet set = stmt.executeQuery(sql);
+		String sql = "SELECT password, id FROM company where comp_name =?";
+		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
+			prepardStatement.setString(1,companyName);
+			ResultSet set = prepardStatement.executeQuery();
 			if (set.next()) {
 				if (set.getString("password").equals(password)) {
 					return set.getLong("ID");

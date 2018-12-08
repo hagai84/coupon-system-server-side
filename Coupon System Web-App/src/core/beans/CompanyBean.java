@@ -20,14 +20,6 @@ public class CompanyBean implements Serializable {
 	private String email;
 	private Collection<CouponBean> coupons;
 
-	/**
-	 * Company bean constructor that instantiates an ID number.
-	 * @param id Company ID.
-	 */
-	public CompanyBean(long id) {
-		super();
-		this.id = id;
-	}
 
 	/**
 	 * Empty Company bean constructor.
