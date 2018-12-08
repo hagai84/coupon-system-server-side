@@ -1,4 +1,4 @@
-package api;
+package rest.controller;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -15,20 +15,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
-import core.controller.CustomerController;
 import core.exception.CouponSystemException;
+import core.service.CustomerService;
 
 @Path("/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CustomerAPI implements Serializable{
+public class CustomerRestController implements Serializable{
 
 	
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private static final CustomerController customerController = CustomerController.getInstance();
+		private static final CustomerService customerService = CustomerService.getInstance();
 
 		/**
 		 * Attempts to create a given customer in the DB
@@ -42,7 +42,7 @@ public class CustomerAPI implements Serializable{
 		
 		@POST
 		public void createCustomer(CustomerBean customer) throws CouponSystemException {
-			customerController.createCustomer(customer);			
+			customerService.createCustomer(customer);			
 		}
 
 		/**
@@ -55,7 +55,7 @@ public class CustomerAPI implements Serializable{
 		 */
 		@PUT
 		public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
-			customerController.updateCustomer(customer);
+			customerService.updateCustomer(customer);
 		}
 
 		/**
@@ -71,7 +71,7 @@ public class CustomerAPI implements Serializable{
 		@DELETE
 		@Path("/{customerId}")
 		public void removeCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {			
-			customerController.removeCustomer(customerId);				
+			customerService.removeCustomer(customerId);				
 		}
 
 		/**
@@ -87,7 +87,7 @@ public class CustomerAPI implements Serializable{
 		@GET
 		@Path("/{customerId}")
 		public CustomerBean getCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {
-			return customerController.getCustomer(customerId);
+			return customerService.getCustomer(customerId);
 		}
 
 		/**
@@ -98,20 +98,20 @@ public class CustomerAPI implements Serializable{
 		 */
 		@GET
 		public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
-			return customerController.getAllCustomers();
+			return customerService.getAllCustomers();
 		}
 
 		/**
 		 * Logs in to the coupon system as a specific company.
 		 * @param custName Customer username
 		 * @param password Customer password
-		 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerController}
+		 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
 		 * @throws CustomerFacadeException if username or password are incorrect
 		 */
 		@POST
 		@Path("/login")
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public long customerLogin(@FormParam("name") String customerName,@FormParam("pass") String password) throws  CouponSystemException {
-			return customerController.customerLogin(customerName, password);
+			return customerService.customerLogin(customerName, password);
 		}
 }

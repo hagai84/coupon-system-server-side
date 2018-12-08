@@ -31,7 +31,7 @@ public class ExceptionThread extends TestThread {
 		for (char i = 97; i < 117; i++) {
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			try {
-				company.setId(companyController.getCompanyByName(company.getCompName()).getId());
+				company.setId(companyService.getCompanyByName(company.getCompName()).getId());
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
@@ -40,7 +40,7 @@ public class ExceptionThread extends TestThread {
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
 			try {
-				coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
+				coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
@@ -54,7 +54,7 @@ public class ExceptionThread extends TestThread {
 			coupon.setImage("aaaaaaaaaaaaaa");	
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			try {
-				customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
+				customer.setId(customerService.getCustomerByName(customer.getCustName()).getId());
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
@@ -157,7 +157,7 @@ public class ExceptionThread extends TestThread {
 			
 			
 			try {
-				companyController.createCompany(company);
+				companyService.createCompany(company);
 				System.out.println("LOG : Company created \n" + company);
 
 			} catch (CouponSystemException e) {System.err.println(e);}
@@ -165,40 +165,40 @@ public class ExceptionThread extends TestThread {
 				loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				if(companyController != null) {
-					couponController.createCoupon(coupon, company.getId());
+				if(companyService != null) {
+					couponService.createCoupon(coupon, company.getId());
 					System.out.println("LOG : Coupon created \n" + coupon);
 				}
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				customerController.createCustomer(customer);
+				customerService.createCustomer(customer);
 				System.out.println("LOG : Customer created \n" + customer);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			
 			try {
-				if(customerController != null)
+				if(customerService != null)
 				loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(e);} 
 			try {
-				if(customerController != null) {
-					couponController.purchaseCoupon(coupon.getCouponId(), customer.getId());
+				if(customerService != null) {
+					couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
 					System.out.println("LOG : Coupon purchased \n" + coupon);
 
 				}
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				if(companyController != null) {
-					couponController.removeCoupon(coupon.getCouponId());
+				if(companyService != null) {
+					couponService.removeCoupon(coupon.getCouponId());
 					System.out.println("LOG : Coupon deleted \n" + coupon);
 				}
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				customerController.removeCustomer(customer.getId());
+				customerService.removeCustomer(customer.getId());
 				System.out.println("LOG : Customer deleted \n" + customer);
 
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				companyController.removeCompany(company.getId());
+				companyService.removeCompany(company.getId());
 				System.out.println("LOG : Company deleted \n" + company);
 			} catch (CouponSystemException e) {System.err.println(e);}	
 			//TODO add all facade methods

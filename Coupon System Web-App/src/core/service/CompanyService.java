@@ -1,4 +1,4 @@
-package core.controller;
+package core.service;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,12 +18,12 @@ import core.validation.CompanyBeanValidator;
  * @author Hagai
  *
  */
-public class CompanyController implements Serializable{
+public class CompanyService implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static CompanyController companyControllerInstance = new CompanyController();
+	private static CompanyService companyServiceInstance = new CompanyService();
 	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 	private ICouponDAO couponDAO = CouponDAO.getInstance();
 	private ICompanyDAO companyDAO = CompanyDAO.getInstance();
@@ -35,12 +35,12 @@ public class CompanyController implements Serializable{
 	 * Public constructor initializes given company's access
 	 * @param company Company to access in the system
 	 */
-	private CompanyController() {
+	private CompanyService() {
 		
 	}
 	
-	public static CompanyController getInstance() {
-	return companyControllerInstance;
+	public static CompanyService getInstance() {
+	return companyServiceInstance;
 }
 
 
@@ -140,7 +140,7 @@ public class CompanyController implements Serializable{
 	 * Logs in to the coupon system as a specific company.
 	 * @param name Company username
 	 * @param password Company password
-	 * @return a new CompanyFacade instance if company's username and password are correct; otherwise, throws {@link CompanyController}
+	 * @return a new CompanyFacade instance if company's username and password are correct; otherwise, throws {@link CompanyService}
 	 * @throws CompanyFacadeException if username or password are incorrect
 	 */
 	public long companyLogin(String name, String password) throws CouponSystemException {

@@ -1,4 +1,4 @@
-package api;
+package rest.controller;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -15,22 +15,22 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CouponBean;
-import core.controller.CouponController;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
+import core.service.CouponService;
 
 
 
 @Path("/coupons")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CouponAPI implements Serializable {
+public class CouponRestController implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private CouponController couponController = CouponController.getInstance();
+	private CouponService couponService = CouponService.getInstance();
 
 	/**
 	 * Adds a new {@link CouponBean} to the DB in the following order:
@@ -46,7 +46,7 @@ public class CouponAPI implements Serializable {
 	@POST
 	@Path("/{companyId}")
 	public void createCoupon(CouponBean coupon, @PathParam("companyId") long companyId) throws CouponSystemException {
-		couponController.createCoupon(coupon, companyId);
+		couponService.createCoupon(coupon, companyId);
 	}
 
 
@@ -59,7 +59,7 @@ public class CouponAPI implements Serializable {
 	@PUT
 	@Path("/{companyId}")
 	public void updateCoupon(CouponBean coupon, @PathParam("companyId") long companyId) throws CouponSystemException {
-			couponController.updateCoupon(coupon, companyId);
+			couponService.updateCoupon(coupon, companyId);
 	}
 
 	
@@ -78,7 +78,7 @@ public class CouponAPI implements Serializable {
 	@DELETE
 	@Path("/{couponId}")
 	public void removeCoupon(@PathParam("couponId") long couponId) throws CouponSystemException {
-		couponController.removeCoupon(couponId);
+		couponService.removeCoupon(couponId);
 	}
 
 	/*
@@ -98,7 +98,7 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/{couponID}/{customerId}")
 	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId) throws CouponSystemException {
-		couponController.purchaseCoupon(couponId, customerId);
+		couponService.purchaseCoupon(couponId, customerId);
 	}
 
 
@@ -113,7 +113,7 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/{couponId}")
 	public CouponBean getCoupon(@PathParam("couponId") long couponID) throws CouponSystemException {
-		return couponController.getCoupon(couponID);
+		return couponService.getCoupon(couponID);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class CouponAPI implements Serializable {
 	@Path("/type")
 	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") CouponType couponType) throws CouponSystemException {
 		System.out.println("Get with query param");
-		return couponController.getCouponsByType(couponType);
+		return couponService.getCouponsByType(couponType);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class CouponAPI implements Serializable {
 	public Collection<CouponBean> getAllCoupons() throws CouponSystemException {
 		System.out.println("Get without query param");
 
-		return couponController.getAllCoupons();
+		return couponService.getAllCoupons();
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/company/{companyId}")
 	public Collection<CouponBean> getCompanyCoupons(@PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponController.getCompanyCoupons(companyId);
+		return couponService.getCompanyCoupons(companyId);
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class CouponAPI implements Serializable {
 	@Path("/type/company/{companyId}")
 	public Collection<CouponBean> getCompanyCouponsByType(@PathParam("companyId") long companyId,@QueryParam("couponType") CouponType type)
 			throws CouponSystemException {
-		return couponController.getCompanyCouponsByType(companyId, type);
+		return couponService.getCompanyCouponsByType(companyId, type);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId) throws CouponSystemException {
-		return couponController.getCustomerCoupons(customerId);
+		return couponService.getCustomerCoupons(customerId);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/type/customer/{companyId}")
 	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId,@QueryParam("couponType") CouponType type) throws CouponSystemException {
-		return couponController.getCustomerCouponsByType(customerId, type);
+		return couponService.getCustomerCouponsByType(customerId, type);
 	}
 
 	/**
@@ -210,6 +210,6 @@ public class CouponAPI implements Serializable {
 	@GET
 	@Path("/price/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId,@QueryParam("couponPrice") Double price) throws CouponSystemException {
-		return couponController.getCustomerCouponsByPrice(customerId, price);
+		return couponService.getCustomerCouponsByPrice(customerId, price);
 	}
 }

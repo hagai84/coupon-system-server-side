@@ -29,9 +29,9 @@ public class SynchronisationThread extends TestThread {
 		for (char j = (char)(97+startingCouponIndex); j < 117; j++) {
 			for (char i = (char)(97+startingCustomerIndex); i < 117; i++) {			
 				try {
-					coupon = couponController.getCouponByTitle(""+j+j+j+" "+j+j+j+j);
-					customer = customerController.getCustomerByName(""+i+i+i+" "+i+i+i+i);
-					couponController.purchaseCoupon(coupon.getCouponId(), customer.getId());
+					coupon = couponService.getCouponByTitle(""+j+j+j+" "+j+j+j+j);
+					customer = customerService.getCustomerByName(""+i+i+i+" "+i+i+i+i);
+					couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
 					System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
 				} catch (CouponSystemException e) {
 					System.err.println(Thread.currentThread().getName() + " : " + e);

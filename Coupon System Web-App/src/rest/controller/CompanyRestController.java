@@ -1,4 +1,4 @@
-package api;
+package rest.controller;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,19 +14,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
-import core.controller.CompanyController;
 import core.exception.CouponSystemException;
+import core.service.CompanyService;
 
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CompanyAPI implements Serializable{
+public class CompanyRestController implements Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private CompanyController companyController = CompanyController.getInstance();
+	private CompanyService companyService = CompanyService.getInstance();
 
 	/**
 	 * Creates a new company in the database
@@ -37,7 +37,7 @@ public class CompanyAPI implements Serializable{
 	 */
 	@POST
 	public void createCompany(CompanyBean company) throws CouponSystemException {
-		companyController.createCompany(company);
+		companyService.createCompany(company);
 	}
 	
 
@@ -52,7 +52,7 @@ public class CompanyAPI implements Serializable{
 	 */
 	@PUT
 	public void updateCompany(CompanyBean company) throws CouponSystemException {
-		companyController.updateCompany(company);
+		companyService.updateCompany(company);
 	}
 
 	
@@ -67,7 +67,7 @@ public class CompanyAPI implements Serializable{
 	@Path("{companyId}")
 	@DELETE
 	public void removeCompany(@PathParam ("companyId") long companyId) throws CouponSystemException {
-		companyController.removeCompany(companyId);
+		companyService.removeCompany(companyId);
 	}
 
 
@@ -84,7 +84,7 @@ public class CompanyAPI implements Serializable{
 	@GET
 	@Path("{companyId}")
 	public CompanyBean getCompany(@PathParam("companyId")long companyId) throws CouponSystemException {	
-		return companyController.getCompany(companyId);
+		return companyService.getCompany(companyId);
 	}
 
 	
@@ -99,7 +99,7 @@ public class CompanyAPI implements Serializable{
 	@Path("companies")
 	@GET
 	public Collection<CompanyBean> getAllCompanies() throws CouponSystemException{
-		return companyController.getAllCompanies();
+		return companyService.getAllCompanies();
 	}
 
 

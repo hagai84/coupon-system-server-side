@@ -1,7 +1,7 @@
 /**
  * 
  */
-package core.controller;
+package core.service;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -23,23 +23,23 @@ import core.validation.CouponBeanValidator;
  * @author Ron
  *
  */
-public class CouponController implements Serializable{
+public class CouponService implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static CouponController couponControllerInstance = new CouponController();
+	private static CouponService couponServiceInstance = new CouponService();
 	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 	private ICouponDAO couponDAO = CouponDAO.getInstance();
 
 	/**
 	 * Private constructor
 	 */
-	private CouponController() {
+	private CouponService() {
 	}
 
-	public static CouponController getInstance() {
-		return couponControllerInstance;
+	public static CouponService getInstance() {
+		return couponServiceInstance;
 	}
 
 //	private final int RETRIES = 3;

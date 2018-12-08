@@ -38,7 +38,7 @@ public class RegularThread extends TestThread {
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
-			companyController.createCompany(company);
+			companyService.createCompany(company);
 			System.out.println("LOG : Company created \n" + company);
 			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			coupon.setCouponId(200000 + i);
@@ -50,12 +50,12 @@ public class RegularThread extends TestThread {
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
 			coupon.setImage("aaaaaaaaaaaaaa");
-			couponController.createCoupon(coupon, company.getId());
+			couponService.createCoupon(coupon, company.getId());
 			System.out.println("LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
-			customerController.createCustomer(customer);
+			customerService.createCustomer(customer);
 			
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			//Only has correct Id because refferenced object is updated

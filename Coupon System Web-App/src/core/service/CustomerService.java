@@ -1,4 +1,4 @@
-package core.controller;
+package core.service;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,12 +18,12 @@ import core.validation.CustomerBeanValidator;
  * @author Yair
  *
  */
-public class CustomerController implements Serializable{
+public class CustomerService implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static CustomerController customerControllerInstance = new CustomerController();
+	private static CustomerService customerServiceInstance = new CustomerService();
 	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 	private ICustomerDAO customerDAO = CustomerDAO.getInstance();
 	private ICouponDAO couponDAO = CouponDAO.getInstance();
@@ -35,12 +35,12 @@ public class CustomerController implements Serializable{
 	 * 
 	 * @return CustomerFacadeException
 	 */
-	private CustomerController() {
+	private CustomerService() {
 		
 	}
 	
-	public static CustomerController getInstance() {
-		return customerControllerInstance;
+	public static CustomerService getInstance() {
+		return customerServiceInstance;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class CustomerController implements Serializable{
 	 * Logs in to the coupon system as a specific company.
 	 * @param custName Customer username
 	 * @param password Customer password
-	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerController}
+	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
 	 * @throws CustomerFacadeException if username or password are incorrect
 	 */
 	//@Override
