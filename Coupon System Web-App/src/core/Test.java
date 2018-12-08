@@ -66,7 +66,7 @@ public class Test {
 	 * @throws CouponSystemException
 	 */
 	private static void createDefault() throws CouponSystemException {
-		resetDB();
+//		resetDB();
 		loginAdmin();
 		if(adminFacade==null)
 			return;
@@ -105,11 +105,11 @@ public class Test {
 		}
 	}
 	private static void testExceptions() {
-		try {
+		/*try {
 			resetDB();
 		} catch (CouponSystemException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 		try {
 			loginAdmin();
 		} catch (CouponSystemException e) {System.err.println(e.getMessage());}

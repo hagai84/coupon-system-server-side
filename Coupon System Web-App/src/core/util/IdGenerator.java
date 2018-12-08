@@ -53,45 +53,46 @@ public class IdGenerator implements Serializable{
 	static {
 		long MaxId;
 		try {
+			
 			if (!companyFile.exists()) {
-				MaxId=0;
+				MaxId=START_COMPANY_ID;
 				companyFile.createNewFile();
-				for (CompanyBean company : compDAO.getAllCompanies()) {
-					if(MaxId<company.getId()) {
-						MaxId=company.getId();
-					}
-				}
-				if(MaxId==0) {
-					MaxId = START_COMPANY_ID;
-				}
-				setCompanyStaticId(MaxId+1);
+			}else {
+				MaxId=generatCompanyId()-1;
 			}
+			for (CompanyBean company : compDAO.getAllCompanies()) {
+				if(MaxId<company.getId()) {
+					MaxId=company.getId();
+				}
+			}
+			setCompanyStaticId(MaxId+1);
+			
 			if (!customerFile.exists()) {
-				MaxId=0;
+				MaxId=START_CUSTOMER_ID;
 				customerFile.createNewFile();
-				for (CustomerBean customer : custDAO.getAllCustomers()) {
-					if(MaxId<customer.getId()) {
-						MaxId=customer.getId();
-					}
-				}
-				if(MaxId==0) {
-					MaxId = START_CUSTOMER_ID;
-				}
-				setCustomerStaticId(MaxId+1);
+			}else {
+				MaxId = generatCustomerId()-1;
 			}
+			for (CustomerBean customer : custDAO.getAllCustomers()) {
+				if(MaxId<customer.getId()) {
+					MaxId=customer.getId();
+				}
+			}
+			setCustomerStaticId(MaxId+1);
+			
 			if (!couponFile.exists()) {
-				MaxId=0;
+				MaxId=START_COUPON_ID;
 				couponFile.createNewFile();
-				for (CouponBean coupon : coupDAO.getAllCoupons()) {
-					if(MaxId<coupon.getCouponId()) {
-						MaxId=coupon.getCouponId();
-					}
-				}
-				if(MaxId==0) {
-					MaxId = START_COUPON_ID;
-				}
-				setCouponStaticId(MaxId+1);
+			}else {
+				MaxId = generatCouponId()-1;
 			}
+			for (CouponBean coupon : coupDAO.getAllCoupons()) {
+				if(MaxId<coupon.getCouponId()) {
+					MaxId=coupon.getCouponId();
+				}
+			}
+			setCouponStaticId(MaxId+1);
+
 		} catch (IOException | CouponSystemException e) {
 			// TODO Manager handling
 			// e.printStackTrace();
