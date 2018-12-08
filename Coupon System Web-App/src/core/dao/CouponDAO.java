@@ -251,7 +251,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, companyId);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove Expired Coupons failed : ", e);
+			throw new CouponSystemException("remove Company Coupons From Customers failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}	
@@ -279,30 +279,31 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
-		int amount = getCoupon(couponId).getAmount();
-		
-		/*if(amount<1)
-			throw new CouponSystemException("Coupon out of Stock");*/
 		
 		Connection con = connectionPool.getConnection();
+		int amount = getCoupon(couponId).getAmount();
+		if(amount<1) {
+			throw new CouponSystemException("Coupon out of Stock");
+		}
 		
 		String sql = "INSERT INTO customer_coupon VALUES(?,?)";	
-		String sql2 = "UPDATE coupon SET AMOUNT=?";
+		String sql2 = "UPDATE coupon SET AMOUNT=? WHERE ID=?";
 		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)) {
 			stmt.setLong(1, customerId);
 			stmt.setLong(2, couponId);
 			int dml = stmt.executeUpdate();
 			if(dml==0) {
-				throw new CouponSystemException("purchase coupon failed, ID  : " + couponId);
+				throw new CouponSystemException("purchase coupon failed , ID  : " + couponId);
 			}				
 			
 			stmt2.setInt(1,amount -1);
+			stmt2.setLong(2, couponId);
 			int dml2 = stmt2.executeUpdate();
 			if(dml2==0) {
-				throw new CouponSystemException("update coupon failed, ID  : " + couponId);
+				throw new CouponSystemException("update coupon amount failed, ID  : " + couponId);
 			}				
 		} catch (SQLException e) {
-			throw new CouponSystemException("purchase coupon failed : ", e);
+			throw new CouponSystemException("purchase coupon failed : Customer already owns Coupon", e);
 		}finally {			
 			connectionPool.returnConnection(con);	
 		}
@@ -313,7 +314,7 @@ public class CouponDAO implements ICouponDAO {
 		Connection con = connectionPool.getConnection();
 		CouponBean coupon = null;		
 		
-		String sql = "SELECT * FROM coupon WHERE id =?";
+		String sql = "SELECT * FROM coupon WHERE id =? FOR UPDATE";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setLong(1, couponID);
 			ResultSet rs =  stmt.executeQuery();

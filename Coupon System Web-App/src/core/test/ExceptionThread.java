@@ -16,28 +16,35 @@ public class ExceptionThread extends TestThread {
 		super.run();
 		testExceptions();
 	}
-private void testExceptions() {
+	
+	private void testExceptions() {
 		/*try {
 			resetDB();
 		} catch (CouponSystemException e1) {
 			e1.printStackTrace();
 		}*/
-		try {
-			loginAdmin();
-		} catch (CouponSystemException e) {System.err.println(e.getMessage());}
-		if(couponController==null)
-			return;
+		
 		System.out.println("running exception test");
 		CustomerBean customer = new CustomerBean();
 		CouponBean coupon = new CouponBean();
 		CompanyBean company = new CompanyBean();
 		for (char i = 97; i < 117; i++) {
-			company.setId(100000 + i);
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
+			try {
+				company.setId(companyController.getCompanyByName(company.getCompName()).getId());
+			} catch (CouponSystemException e1) {
+				System.err.println(e1);
+				continue;
+			}
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
-			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
+			try {
+				coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
+			} catch (CouponSystemException e1) {
+				System.err.println(e1);
+				continue;
+			}
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
 			coupon.setEndDate(new Date(System.currentTimeMillis()+(1000*60*60*24*30*12)));
 			coupon.setAmount(50);
@@ -45,8 +52,13 @@ private void testExceptions() {
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
 			coupon.setImage("aaaaaaaaaaaaaa");	
-			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
+			try {
+				customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
+			} catch (CouponSystemException e1) {
+				System.err.println(e1);
+				continue;
+			}
 			customer.setPassword(""+i+i+i+i+i+i);
 			
 			

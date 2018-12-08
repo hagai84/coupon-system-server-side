@@ -14,9 +14,10 @@ public class RegularThread extends TestThread {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		System.out.println("creating default values");
 		super.run();
 		try {
-			createDefault();
+			createDefaultValues();
 		} catch (CouponSystemException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -27,12 +28,8 @@ public class RegularThread extends TestThread {
 	 * 
 	 * @throws CouponSystemException
 	 */
-	private void createDefault() throws CouponSystemException {
-//		resetDB();
-		loginAdmin();
-		if(couponController==null)
-			return;
-		System.out.println("creating default all");
+	private void createDefaultValues() throws CouponSystemException {
+
 		CustomerBean customer = new CustomerBean();
 		CouponBean coupon = new CouponBean();
 		CompanyBean company = new CompanyBean();
@@ -60,9 +57,13 @@ public class RegularThread extends TestThread {
 			customer.setPassword(""+i+i+i+i+i+i);
 			customerController.createCustomer(customer);
 			
-			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i); 
+			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
+			//Only has correct Id because refferenced object is updated
+			/*coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
+			customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
+
 			couponController.purchaseCoupon(coupon.getCouponId(), customer.getId());
-			System.out.println("LOG : Coupon purchased \n" + coupon);
+			System.out.println("LOG : Coupon purchased \n" + coupon);*/
 
 		}
 	}

@@ -42,7 +42,6 @@ public class CustomerAPI implements Serializable{
 		
 		@POST
 		public void createCustomer(CustomerBean customer) throws CouponSystemException {
-			System.out.println("OK");
 			customerController.createCustomer(customer);			
 		}
 
@@ -56,7 +55,6 @@ public class CustomerAPI implements Serializable{
 		 */
 		@PUT
 		public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
-			System.out.println("OK");
 			customerController.updateCustomer(customer);
 		}
 
@@ -73,7 +71,6 @@ public class CustomerAPI implements Serializable{
 		@DELETE
 		@Path("/{customerId}")
 		public void removeCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {			
-			System.out.println("OK");
 			customerController.removeCustomer(customerId);				
 		}
 
@@ -90,7 +87,6 @@ public class CustomerAPI implements Serializable{
 		@GET
 		@Path("/{customerId}")
 		public CustomerBean getCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {
-			System.out.println("OK");
 			return customerController.getCustomer(customerId);
 		}
 
@@ -102,7 +98,6 @@ public class CustomerAPI implements Serializable{
 		 */
 		@GET
 		public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
-			System.out.println("OK");
 			return customerController.getAllCustomers();
 		}
 
@@ -117,7 +112,6 @@ public class CustomerAPI implements Serializable{
 		@Path("/login")
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public long customerLogin(@FormParam("name") String customerName,@FormParam("pass") String password) throws  CouponSystemException {
-			System.out.println("OK");
 			return customerController.customerLogin(customerName, password);
 		}
 }

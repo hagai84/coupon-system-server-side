@@ -95,7 +95,7 @@ public class CouponAPI implements Serializable {
 	 * @throws CustomerFacadeException If coupon is out of stock or expired
 	 * @throws CustomerFacadeException If coupon purchase fails
 	 */
-	@PUT
+	@GET
 	@Path("/{couponID}/{customerId}")
 	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId) throws CouponSystemException {
 		couponController.purchaseCoupon(couponId, customerId);
@@ -193,6 +193,7 @@ public class CouponAPI implements Serializable {
 	 * @return Collection of Coupons
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
+	@GET
 	@Path("/type/customer/{companyId}")
 	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId,@QueryParam("couponType") CouponType type) throws CouponSystemException {
 		return couponController.getCustomerCouponsByType(customerId, type);
@@ -206,6 +207,7 @@ public class CouponAPI implements Serializable {
 	 * @return Collection of Coupons associated with the Customer
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
+	@GET
 	@Path("/price/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId,@QueryParam("couponPrice") Double price) throws CouponSystemException {
 		return couponController.getCustomerCouponsByPrice(customerId, price);

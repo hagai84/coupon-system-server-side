@@ -1,6 +1,5 @@
 package core.test;
 
-
 import core.CouponSystem;
 import core.exception.CouponSystemException;
 import core.util.CreateDB;
@@ -20,7 +19,7 @@ public class Test {
 	
 	
 	
-	public static void main(String[] args) {	
+	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
 		try {
 			resetDB();
@@ -28,13 +27,30 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		RegularThread testThread1 = new RegularThread();	
-		RegularThread testThread2 = new RegularThread();	
+		TestThread testThread1 = new RegularThread();	
+		TestThread testThread2 = new ExceptionThread();	
 		testThread1.start();	
-		testThread2.start();	
+//		testThread2.start();	
 		try {
 			testThread1.join();
 			testThread2.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		TestThread testThread3 = new SynchronisationThread(0, 0);	
+		TestThread testThread4 = new SynchronisationThread(0, 5);	
+		TestThread testThread5 = new SynchronisationThread(0, 10);	
+		TestThread testThread6 = new SynchronisationThread(0, 15);	
+		testThread3.start();	
+		testThread4.start();	
+		testThread5.start();	
+		testThread6.start();	
+		try {
+			testThread3.join();
+			testThread4.join();
+			testThread5.join();
+			testThread6.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

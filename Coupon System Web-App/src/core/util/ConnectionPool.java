@@ -28,7 +28,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 3;
+	private final int POOL_SIZE = 4;
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -225,12 +225,9 @@ public class ConnectionPool implements Serializable{
 	 * @throws SQLTimeoutException If a database access error occurs or the url is null
  	 */
 	private Connection newConnection() throws SQLException, SQLTimeoutException {
-		Connection con = null;
-
-		if (userName != null)
-			con = DriverManager.getConnection(databaseUrl, userName, password);
-		else
-			con = DriverManager.getConnection(databaseUrl);
+		Connection con = DriverManager.getConnection(databaseUrl, userName, password);
+		
+		con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 
 		return con;
 	}

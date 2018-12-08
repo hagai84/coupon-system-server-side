@@ -141,4 +141,9 @@ public class CustomerController implements Serializable{
 	public long customerLogin(String customerName, String password) throws  CouponSystemException {
 		return customerDAO.customerLogin(customerName, password);
 	}
+
+	public CustomerBean getCustomerByName(String customerName) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		return customerDAO.getCustomerByName(customerName);
+	}
 }

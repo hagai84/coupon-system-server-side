@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import core.beans.CompanyBean;
-import core.beans.CouponBean;
 import core.dao.CompanyDAO;
 import core.dao.CouponDAO;
 import core.dao.ICompanyDAO;
@@ -95,7 +94,6 @@ public class CompanyController implements Serializable{
 	 *  If company deletion fails
 	 */
 	public void removeCompany(long companyId) throws CouponSystemException {
-		Collection<CouponBean> compCoupons;
 		connectionPool.startTransaction();
 		try {	
 			couponDAO.removeCompanyCouponsFromCustomers(companyId);
@@ -147,6 +145,10 @@ public class CompanyController implements Serializable{
 	 */
 	public long companyLogin(String name, String password) throws CouponSystemException {
 		return companyDAO.companyLogin(name, password);
+	}
+
+	public CompanyBean getCompanyByName(String companyName) throws CouponSystemException {
+		return companyDAO.getCompanyByName(companyName);
 	}
 
 }

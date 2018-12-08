@@ -10,18 +10,16 @@ public abstract class TestThread extends Thread{
 	public CompanyController companyController = CompanyController.getInstance();
 	public CustomerController customerController = CustomerController.getInstance();
 	
-	public void loginAdmin() throws CouponSystemException {
+	public void loginAdmin()  {
 		System.out.println("LOG : Admin logged in");
 	}
 	
 	public void loginCompany(String user, String password) throws CouponSystemException {
-		companyController.companyLogin(user, password);	
-		System.out.println("LOG : Company logged in");
+		System.out.println("LOG : Company logged in : " + companyController.companyLogin(user, password));
 	}
 
 	public void loginCustomer(String user, String password) throws CouponSystemException {
-		customerController.customerLogin(user, password);	
-		System.out.println("LOG : customer logged in");
+		System.out.println("LOG : customer logged in : " + customerController.customerLogin(user, password));
 	}
 
 }

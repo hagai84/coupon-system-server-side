@@ -257,24 +257,30 @@ public class CouponController implements Serializable{
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException {
 		// checks if customer already owns this coupon
 		// TODO consider adding boolean method in couponDAO
-		CouponBean coupon1 = couponDAO.getCoupon(couponId);
+		/*CouponBean coupon1 = couponDAO.getCoupon(couponId);
 		if (couponDAO.getCustomerCoupons(customerId).contains(coupon1))
-			throw new CouponSystemException("You already own this coupon");
+			throw new CouponSystemException("You already own this coupon");*/
 		// TODO transaction
 		connectionPool.startTransaction();
 		try {
 
-			CouponBean coupon = couponDAO.getCoupon(couponId);
+			/*CouponBean coupon = couponDAO.getCoupon(couponId);
 
 			if (coupon.getAmount() < 1 || coupon.getEndDate().getTime() < System.currentTimeMillis()) {
-				throw new CouponSystemException("Coupon purchase failed : coupon is expired");
-			}
+				throw new CouponSystemException("Coupon purchase failed : coupon is expired or out of stock");
+			}*/
 			couponDAO.purchaseCoupon(couponId, customerId);
 		} catch (CouponSystemException e) {
 			connectionPool.rollback();
 			throw e;
 		} finally {
 		}
+		/*try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		connectionPool.endTransaction();
 	}
 
@@ -381,6 +387,11 @@ public class CouponController implements Serializable{
 	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, Double price)
 			throws CouponSystemException {
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);
+	}
+
+	public CouponBean getCouponByTitle(String couponTitle) throws CouponSystemException {
+		// TODO Auto-generated method stub
+		return couponDAO.getCouponByTitle(couponTitle);
 	}
 
 	////////////////////////////////////////////////////////////////////

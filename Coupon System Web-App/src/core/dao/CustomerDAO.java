@@ -247,7 +247,7 @@ public class CustomerDAO implements ICustomerDAO{
 			ResultSet rs = stmt.executeQuery();
 			
 			if(rs.next()) {
-				rs.close();
+//				rs.close();
 				return rs.getLong("ID");
 			}else {
 				throw new CouponSystemException("Incorrect Name Or Password");

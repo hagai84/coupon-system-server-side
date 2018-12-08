@@ -244,7 +244,7 @@ public class CompanyDAO implements ICompanyDAO{
 	public long companyLogin(String companyName, String password) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
 //		String sql = "SELECT password, id FROM company where comp_name =?";
-		String sql = "SELECT id FROM Coupon_Db.company WHERE NAME=? AND PASSWORD=?";
+		String sql = "SELECT id FROM company WHERE COMP_NAME=? AND PASSWORD=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1,companyName);
 			prepardStatement.setString(2,password);
