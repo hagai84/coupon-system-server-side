@@ -20,16 +20,9 @@ import core.dao.ICouponDAO;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
 
-/*import core.beans.CouponBean;
-import core.controller.CompanyFacadeException;
-import core.controller.CustomerFacadeException;
-import core.enums.CouponType;
-import core.exception.CouponSystemException;
-import core.util.ConnectionPool;
-import core.util.IdGenerator;
-import core.validation.CouponBeanValidator;*/
 
-@Path("/Coupons")
+
+@Path("/coupons")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CouponAPI {
@@ -156,7 +149,7 @@ public class CouponAPI {
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
 	@GET
-	@Path("/Company/{companyId}")
+	@Path("/company/{companyId}")
 	public Collection<CouponBean> getCompanyCoupons(@PathParam("companyId") long companyId) throws CouponSystemException {
 		return couponController.getCompanyCoupons(companyId);
 	}
@@ -169,7 +162,8 @@ public class CouponAPI {
 	 * @return Collection of Coupons
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
-	@Path("/type/Company/{companyId}")
+	@GET
+	@Path("/type/company/{companyId}")
 	public Collection<CouponBean> getCompanyCouponsByType(@PathParam("companyId") long companyId,@QueryParam("couponType") CouponType type)
 			throws CouponSystemException {
 		return couponController.getCompanyCouponsByType(companyId, type);
@@ -183,7 +177,7 @@ public class CouponAPI {
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
 	@GET
-	@Path("/Customer/{customerId}")
+	@Path("/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId) throws CouponSystemException {
 		return couponController.getCustomerCoupons(customerId);
 	}
@@ -196,7 +190,7 @@ public class CouponAPI {
 	 * @return Collection of Coupons
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
-	@Path("/type/Customer/{companyId}")
+	@Path("/type/customer/{companyId}")
 	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId,@QueryParam("couponType") CouponType type) throws CouponSystemException {
 		return couponController.getCustomerCouponsByType(customerId, type);
 	}
@@ -209,7 +203,7 @@ public class CouponAPI {
 	 * @return Collection of Coupons associated with the Customer
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
-	@Path("/price/Customer/{customerId}")
+	@Path("/price/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId,@QueryParam("couponPrice") Double price) throws CouponSystemException {
 		return couponController.getCustomerCouponsByPrice(customerId, price);
 	}

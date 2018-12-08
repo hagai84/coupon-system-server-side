@@ -17,7 +17,7 @@ import core.beans.CustomerBean;
 import core.controller.CustomerController;
 import core.exception.CouponSystemException;
 
-@Path("/Customers")
+@Path("/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CustomerAPI {
@@ -114,7 +114,9 @@ public class CustomerAPI {
 		 * @throws CustomerFacadeException if username or password are incorrect
 		 */
 		//@Override
+		@POST
 		@Path("/login")
+		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public long customerLogin(@FormParam("name") String customerName,@FormParam("pass") String password) throws  CouponSystemException {
 			System.out.println("OK");
 			return customerController.customerLogin(customerName, password);
