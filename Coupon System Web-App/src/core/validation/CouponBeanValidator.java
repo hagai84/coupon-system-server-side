@@ -5,6 +5,7 @@ import java.sql.Date;
 import core.beans.CouponBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 
 /**
  * Utility class used to check validity (length and/or format) of Coupon's String properties (checkCoupon calls all other methods in utility class)
@@ -24,21 +25,21 @@ public class CouponBeanValidator implements IBeanValidatorConstants{
 
 	public static void checkCoupon(CouponBean coupon) throws CouponSystemException {
 		if (!checkTitle(coupon.getTitle()))
-			throw new CouponSystemException("Coupon's title can't be longer than " + COUP_TITLE_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's title can't be longer than " + COUP_TITLE_LENGTH + " characters");
 		if (!checkStartDate(coupon.getStartDate()))
-			throw new CouponSystemException("Coupon's start date can't be earlier than today");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's start date can't be earlier than today");
 		if (!checkEndDate(coupon.getEndDate()))
-			throw new CouponSystemException("Coupon's expiration date can't be earlier than today");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's expiration date can't be earlier than today");
 		if (!checkAmount(coupon.getAmount()))
-			throw new CouponSystemException("Coupon's amount can't be negative");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's amount can't be negative");
 		if (!checkType(coupon.getType()))
-			throw new CouponSystemException("Coupon title cant be more than " + COUP_TITLE_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon title cant be more than " + COUP_TITLE_LENGTH + " characters");
 		if (!checkPrice(coupon.getPrice()))
-			throw new CouponSystemException("Coupon's price can't be negative");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's price can't be negative");
 		if (!checkImage(coupon.getImage()))
-			throw new CouponSystemException("Coupon image cant be ... ");//No restrictions at the momment
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon image cant be ... ");//No restrictions at the momment
 		if (!checkMessage(coupon.getMessage()))
-			throw new CouponSystemException("Coupon's message can't be longer than " + COUP_MSG_LENGTH + " characters");		
+			throw new CouponSystemException(ExceptionsEnum.VALIDATIN,"Coupon's message can't be longer than " + COUP_MSG_LENGTH + " characters");		
 		
 	}
 

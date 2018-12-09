@@ -11,6 +11,7 @@ import java.util.Collection;
 import core.beans.CouponBean;
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
 
 /**
@@ -54,11 +55,11 @@ public class CustomerDAO implements ICustomerDAO{
 			stmt.setString(3, customer.getPassword());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				throw new CouponSystemException("create customer failed, ID : " + customer.getId());
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed, ID : " + customer.getId());
 			}			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			throw new CouponSystemException("create customer failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create customer failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -79,10 +80,10 @@ public class CustomerDAO implements ICustomerDAO{
 				stmt.setLong(4, customer.getId());
 				if(stmt.executeUpdate()==0) {
 					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-					throw new CouponSystemException("update customer failed, ID : " + customer.getId());
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update customer failed, ID : " + customer.getId());
 				}
 			} catch (SQLException e) {
-				throw new CouponSystemException("update customer failed : ", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update customer failed : ", e);
 			} finally {
 				connectionPool.returnConnection(con);			
 			}
@@ -101,10 +102,10 @@ public class CustomerDAO implements ICustomerDAO{
 				stmt.setLong(1, customerId);
 				if(stmt.executeUpdate()==0) {
 					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-					throw new CouponSystemException("remove customer failed, ID : " + customerId);
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"remove customer failed, ID : " + customerId);
 				}			
 			} catch (SQLException e) {
-				throw new CouponSystemException("remove customer failed : ", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove customer failed : ", e);
 			} finally {
 				connectionPool.returnConnection(con);			
 			}
@@ -129,10 +130,10 @@ public class CustomerDAO implements ICustomerDAO{
 					return customer;
 				}else {
 					rs.close();
-					throw new CouponSystemException("get customer failed,  ID : " + custId);
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get customer failed,  ID : " + custId);
 				}
 			} catch (SQLException e) {
-				throw new CouponSystemException("get customer failed : ", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer failed : ", e);
 			} finally {
 				connectionPool.returnConnection(con);			
 			}
@@ -155,10 +156,10 @@ public class CustomerDAO implements ICustomerDAO{
 					return customer;
 				}else {
 					rs.close();
-					throw new CouponSystemException("get customer failed, name : " + custName);
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get customer failed, name : " + custName);
 				}
 			} catch (SQLException e) {
-				throw new CouponSystemException("get customer by name failed : ", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer by name failed : ", e);
 			} finally {
 				connectionPool.returnConnection(con);			
 			}
@@ -183,7 +184,7 @@ public class CustomerDAO implements ICustomerDAO{
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get all customers failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get all customers failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		
@@ -214,10 +215,10 @@ public class CustomerDAO implements ICustomerDAO{
 //				rs.close();
 				return rs.getLong("ID");
 			}else {
-				throw new CouponSystemException("Incorrect Name Or Password");
+				throw new CouponSystemException(ExceptionsEnum.AUTHENTICATION,"Incorrect Name Or Password");
 			}	
 		} catch (SQLException e) {
-			throw new CouponSystemException("customer login failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"customer login failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}	

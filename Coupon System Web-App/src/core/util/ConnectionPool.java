@@ -8,7 +8,8 @@ import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import core.exception.CouponSystemException;;
+import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;;
 
 /**
  * 
@@ -71,7 +72,7 @@ public class ConnectionPool implements Serializable{
 
 		Connection con = null;
 		if (closing) {
-			throw new CouponSystemException("Connection pool shutting down");
+			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool shutting down");
 		}
 		
 		synchronized (this) {
@@ -83,13 +84,15 @@ public class ConnectionPool implements Serializable{
 			while (availableConnections.size() < 1) {
 				try {
 					if (closing) {
-						throw new CouponSystemException("Connection pool is shutting down");
+						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool is shutting down");
 					}
 					wait();
 				} catch (InterruptedException e) {
 					// TODO Manager handling
 					// e.printStackTrace();
 					System.err.println("get connection wait interrupted : " + e);
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"database access error occurred", e);
+
 				}
 			}
 			con = availableConnections.remove(0);
@@ -103,13 +106,13 @@ public class ConnectionPool implements Serializable{
 			} catch (SQLTimeoutException e) {
 				//new connection timed out
 				availableConnections.add(con);
-				throw new CouponSystemException("Server busy. Try again later", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_TIMOUT,"Server busy. Try again later", e);
 			} catch (SQLException e) {
 				//DB error initiates pool shutdown
 				availableConnections.add(con);
 //				closeAllConnections();//is there a need ?
 //				initialized = false;
-				throw new CouponSystemException("database access error occurred", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
 			}
 			// Giving away the connection from the connection pool
 			usedConnections.put(Thread.currentThread(), con);
@@ -195,13 +198,13 @@ public class ConnectionPool implements Serializable{
 	 */
 	private void initializePool() throws CouponSystemException {
 		if (driverName == null) {
-			throw new CouponSystemException("Server details are not set");
+			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Server details are not set");
 		}
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
 			System.err.println(e);
-			throw new CouponSystemException("Connection Driver Class not found : ", e);
+			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection Driver Class not found : ", e);
 		}
 		availableConnections = new ArrayList<Connection>();
 		usedConnections = new HashMap<Thread, Connection>((int) (POOL_SIZE*1.33));
@@ -212,7 +215,7 @@ public class ConnectionPool implements Serializable{
 				System.err.println("new Connection can't be established time out exception " + e);
 			} catch (SQLException e) {
 				closeAllConnections();
-				throw new CouponSystemException("database access error occurred ", e);
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred ", e);
 			}
 		}
 		initialized = true;
@@ -280,7 +283,7 @@ public class ConnectionPool implements Serializable{
 		} catch (SQLException e) {
 			// TODO set autocommit failed
 			e.printStackTrace();
-			throw new CouponSystemException("failed operation");
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation");
 		}finally {
 			returnConnection(con);
 		}
@@ -300,7 +303,7 @@ public class ConnectionPool implements Serializable{
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			throw new CouponSystemException("failed operation");
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation");
 			/* ************************************************************************************* */
 		}finally {
 			try {

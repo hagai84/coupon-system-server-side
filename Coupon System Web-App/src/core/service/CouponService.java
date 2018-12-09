@@ -12,6 +12,7 @@ import core.dao.CouponDAO;
 import core.dao.ICouponDAO;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
 import core.util.IdGenerator;
 import core.validation.CouponBeanValidator;
@@ -57,12 +58,12 @@ public class CouponService implements Serializable{
 		CouponBeanValidator.checkCoupon(coupon);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
-			throw new CouponSystemException("Coupon Title already exists");
+			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
 		}
 		coupon.setCouponId(IdGenerator.generatCouponId());
 		//IS ALSO HANDLED BY DAO LAYER
 		if (couponDAO.couponIdAlreadyExists(coupon.getCouponId())) {
-			throw new CouponSystemException("Coupon ID already exists");
+			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Coupon ID already exists");
 		}
 		couponDAO.createCoupon(coupon, companyId);
 	}
@@ -80,7 +81,7 @@ public class CouponService implements Serializable{
 		CouponBean updatedCoupon = getCoupon(coupon.getCouponId());
 		
 		if (updatedCoupon.getCompanyId() == companyId) {
-			throw new CouponSystemException("Coupon " + coupon.getCouponId() + " doesn't belong to company " + companyId);
+			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"Coupon " + coupon.getCouponId() + " doesn't belong to company " + companyId);
 		}
 		
 		// alter the coupon data to the new ALLOWED ones

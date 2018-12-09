@@ -9,6 +9,7 @@ import core.dao.CustomerDAO;
 import core.dao.ICouponDAO;
 import core.dao.ICustomerDAO;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
 import core.util.IdGenerator;
 import core.validation.CustomerBeanValidator;
@@ -56,12 +57,12 @@ public class CustomerService implements Serializable{
 		CustomerBeanValidator.checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
-			throw new CouponSystemException("Customer Name already exists");
+			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Customer Name already exists");
 		}
 		customer.setId(IdGenerator.generatCustomerId());		
 		//IS ALSO HANDLED BY DAO LAYER
 		if(customerDAO.customerIdAlreadyExists(customer.getId())) {
-			throw new CouponSystemException("Customer ID already exists");
+			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Customer ID already exists");
 		}
 		customerDAO.createCustomer(customer);
 		

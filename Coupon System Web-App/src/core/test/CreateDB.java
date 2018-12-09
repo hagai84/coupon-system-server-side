@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
 
 /**
@@ -89,7 +90,7 @@ public class CreateDB {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			throw new CouponSystemException("create DB failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.TEST,"create DB failed : ", e);
 		}finally {
 			pool.returnConnection(con);
 		}

@@ -64,10 +64,10 @@ public class CouponDAO implements ICouponDAO {
 
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				throw new CouponSystemException("add coupon to coupon failed, ID  : " + coupon.getCouponId());
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"add coupon to coupon failed, ID  : " + coupon.getCouponId());
 			}					
 		} catch (SQLException e) {
-			throw new CouponSystemException("add coupon to coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"add coupon to coupon failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);	
 		}
@@ -113,10 +113,10 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, couponId);
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException("remove coupon from coupon failed, ID  : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"remove coupon from coupon failed, ID  : " + couponId);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from coupon failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}		
@@ -131,7 +131,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, customerId);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from coupon failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}	
@@ -146,7 +146,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, companyId);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from coupon failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}	
@@ -161,7 +161,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, couponId );
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from customers failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from customers failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}
@@ -178,7 +178,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, companyId);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove Company Coupons From Customers failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Company Coupons From Customers failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}	
@@ -196,7 +196,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setDate(1, new Date(System.currentTimeMillis()));
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException("remove Expired Coupons failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}	
@@ -216,12 +216,12 @@ public class CouponDAO implements ICouponDAO {
 			stmt2.setLong(1, couponId);
 			if(stmt2.executeUpdate()==0) {
 				connectionPool.rollback();
-				throw new CouponSystemException("purchase coupon failed - Coupon out of Stock ID : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"purchase coupon failed - Coupon out of Stock ID : " + couponId);
 			}				
 			stmt.executeUpdate();				
 		} catch (SQLException e) {
 			connectionPool.rollback();
-			throw new CouponSystemException("purchase coupon failed - Customer already owns Coupon", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"purchase coupon failed - Customer already owns Coupon", e);
 		}finally {			
 		}
 		connectionPool.endTransaction();
@@ -242,10 +242,10 @@ public class CouponDAO implements ICouponDAO {
 				return coupon;
 			}else {
 				rs.close();
-				throw new CouponSystemException("get coupon failed, ID : " + couponID);
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get coupon failed, ID : " + couponID);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException("get coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}	
@@ -266,10 +266,10 @@ public class CouponDAO implements ICouponDAO {
 				return coupon;
 			}else {
 				rs.close();
-				throw new CouponSystemException("get coupon failed, Title : " + title);
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get coupon failed, Title : " + title);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException("get coupon by title failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon by title failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}	
@@ -289,7 +289,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get coupons by type failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupons by type failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -308,7 +308,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get all coupons failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get all coupons failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -328,7 +328,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get company coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get company coupon failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		
@@ -350,7 +350,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get Company Coupons by type failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get Company Coupons by type failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -372,7 +372,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get Company Coupons by type failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get Company Coupons by type failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -394,7 +394,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get Company Coupons by type failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get Company Coupons by type failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -417,7 +417,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get customer coupons failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer coupons failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		
@@ -442,7 +442,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get customer coupons failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer coupons failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		
@@ -467,7 +467,7 @@ public class CouponDAO implements ICouponDAO {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new CouponSystemException("get customer coupons failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer coupons failed : ", e);
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		

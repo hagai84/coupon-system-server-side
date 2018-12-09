@@ -29,12 +29,7 @@ public class CompanyRestController implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private CompanyService companyService = CompanyService.getInstance();
 
-	@Path("stam")
-	@GET
-	public void toDelete() throws CouponSystemException {
-		System.out.println("stam");
-		throw new CouponSystemException(ExceptionsEnum.CANT_CREATE_COMPANY);
-	}
+
 	/**
 	 * Creates a new company in the database
 	 * @param company Company to add to the DB

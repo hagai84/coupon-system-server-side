@@ -19,6 +19,7 @@ import core.dao.ICompanyDAO;
 import core.dao.ICouponDAO;
 import core.dao.ICustomerDAO;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 
 /**
  * 
@@ -115,7 +116,7 @@ public class IdGenerator implements Serializable{
 		try (DataInputStream in = new DataInputStream(new FileInputStream(companyIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to read company Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to read company Id file", e);
 		}
 		
 		setCompanyStaticId(id+1);
@@ -135,7 +136,7 @@ public class IdGenerator implements Serializable{
 		try (DataInputStream in = new DataInputStream(new FileInputStream(customerIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to read customer Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to read customer Id file", e);
 		}
 		
 		setCustomerStaticId(id+1);
@@ -155,7 +156,7 @@ public class IdGenerator implements Serializable{
 		try (DataInputStream in = new DataInputStream(new FileInputStream(couponIdFile));) {
 			id = in.readLong();
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to read coupon Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to read coupon Id file", e);
 		}
 		
 		setCouponStaticId(id+1);
@@ -178,7 +179,7 @@ public class IdGenerator implements Serializable{
 		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(companyIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to write company Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to write company Id file", e);
 		}
 	}
 
@@ -193,7 +194,7 @@ public class IdGenerator implements Serializable{
 		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(customerIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to write customer Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to write customer Id file", e);
 		}
 	}
 
@@ -208,7 +209,7 @@ public class IdGenerator implements Serializable{
 		try (DataOutputStream out = new DataOutputStream(new FileOutputStream(couponIdFile));) {
 			out.writeLong(id);
 		} catch (IOException e) {
-			throw new CouponSystemException("IdGenerator : failed to write coupon Id file", e);
+			throw new CouponSystemException(ExceptionsEnum.IO_EXCEPTION,"IdGenerator : failed to write coupon Id file", e);
 		}
 	}
 
