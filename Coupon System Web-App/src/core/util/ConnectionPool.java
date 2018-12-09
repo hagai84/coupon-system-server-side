@@ -269,7 +269,7 @@ public class ConnectionPool implements Serializable{
 		initializePool();
 	}
 	
-	public void startTransaction() throws CouponSystemException {
+	public Connection startTransaction() throws CouponSystemException {
 //		connectionsOut.get(Thread)
 		Connection con = getConnection();
 		try {
@@ -282,6 +282,7 @@ public class ConnectionPool implements Serializable{
 		}finally {
 			returnConnection(con);
 		}
+		return con;
 	}
 	
 	public void endTransaction() throws CouponSystemException {

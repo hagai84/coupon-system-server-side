@@ -1,6 +1,7 @@
 package rest.controller;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ws.rs.Consumes;
@@ -172,6 +173,16 @@ public class CouponRestController implements Serializable {
 		return couponService.getCompanyCouponsByType(companyId, type);
 	}
 
+	@GET
+	@Path("/price/company/{companyId}")
+	public Collection<CouponBean> getCompanyCouponsByPrice(long companyId, double price) throws CouponSystemException {
+		return couponService.getCompanyCouponsByPrice(companyId, price);
+	}
+	@GET
+	@Path("/date/company/{companyId}")
+	public Collection<CouponBean> getCompanyCouponsByDate(long companyId, Date date) throws CouponSystemException {
+		return couponService.getCompanyCouponsByDate(companyId, date);
+	}
 	/**
 	 * Returns all available coupons of the given Customer
 	 * 

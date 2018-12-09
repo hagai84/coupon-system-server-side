@@ -265,7 +265,7 @@ public class CouponDAO implements ICouponDAO {
 		
 		String sql = "DELETE coupon, customer_coupon FROM coupon"
 				+ " INNER JOIN customer_coupon ON customer_coupon.coupon_id = coupon.id"
-				+ " WHERE coupon.end_date <= ?";
+				+ " WHERE coupon.end_date < ?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setDate(1, new Date(System.currentTimeMillis()));
 			stmt.executeUpdate();
@@ -280,33 +280,32 @@ public class CouponDAO implements ICouponDAO {
 	@Override
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
 		
-		Connection con = connectionPool.getConnection();
-		int amount = getCoupon(couponId).getAmount();
+//		Connection con = connectionPool.getConnection();
+		Connection con = connectionPool.startTransaction();
+		/*int amount = getCoupon(couponId).getAmount();
 		if(amount<1) {
 			throw new CouponSystemException("Coupon out of Stock");
-		}
+		}*/
 		
 		String sql = "INSERT INTO customer_coupon VALUES(?,?)";	
-		String sql2 = "UPDATE coupon SET AMOUNT=? WHERE ID=?";
+		String sql2 = "UPDATE coupon SET AMOUNT=amount-1 WHERE ID=? AND amount>0";
 		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)) {
 			stmt.setLong(1, customerId);
 			stmt.setLong(2, couponId);
-			int dml = stmt.executeUpdate();
-			if(dml==0) {
-				throw new CouponSystemException("purchase coupon failed , ID  : " + couponId);
+			stmt2.setLong(1, couponId);
+//			int dml2 = stmt2.executeUpdate();
+			if(stmt2.executeUpdate()==0) {
+				connectionPool.rollback();
+				throw new CouponSystemException("purchase coupon failed - Coupon out of Stock ID : " + couponId);
 			}				
-			
-			stmt2.setInt(1,amount -1);
-			stmt2.setLong(2, couponId);
-			int dml2 = stmt2.executeUpdate();
-			if(dml2==0) {
-				throw new CouponSystemException("update coupon amount failed, ID  : " + couponId);
-			}				
+			stmt.executeUpdate();				
 		} catch (SQLException e) {
-			throw new CouponSystemException("purchase coupon failed : Customer already owns Coupon", e);
+			connectionPool.rollback();
+			throw new CouponSystemException("purchase coupon failed - Customer already owns Coupon", e);
 		}finally {			
-			connectionPool.returnConnection(con);	
+//			connectionPool.returnConnection(con);	
 		}
+		connectionPool.endTransaction();
 	}
 
 	@Override
@@ -314,7 +313,7 @@ public class CouponDAO implements ICouponDAO {
 		Connection con = connectionPool.getConnection();
 		CouponBean coupon = null;		
 		
-		String sql = "SELECT * FROM coupon WHERE id =? FOR UPDATE";
+		String sql = "SELECT * FROM coupon WHERE id =?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setLong(1, couponID);
 			ResultSet rs =  stmt.executeQuery();
@@ -401,7 +400,7 @@ public class CouponDAO implements ICouponDAO {
 	public Collection<CouponBean> getCompanyCoupons(long companyId) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
 		Collection<CouponBean> coupons = new ArrayList<CouponBean>();		
-		String sql = "SELECT FROM coupon WHERE comp_id = ?";
+		String sql = "SELECT * FROM coupon WHERE comp_id = ?";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
 			stmt.setLong(1, companyId);	
 			ResultSet rs = stmt.executeQuery();
@@ -419,7 +418,6 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public Collection<CouponBean> getCompanyCouponsByType(long companyId, CouponType type) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Collection<CouponBean> coupons = new ArrayList<CouponBean>();
 		Connection con = connectionPool.getConnection();
 		
@@ -427,6 +425,50 @@ public class CouponDAO implements ICouponDAO {
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setLong(1, companyId);
 			stmt.setString(2, type.toString());
+			ResultSet rs =  stmt.executeQuery();
+			while(rs.next()) {	
+				coupons.add(readCoupon(rs));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			throw new CouponSystemException("get Company Coupons by type failed : ", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}
+		return coupons;
+	}
+
+	@Override
+	public Collection<CouponBean> getCompanyCouponsByPrice(long companyId, double price) throws CouponSystemException {
+		Collection<CouponBean> coupons = new ArrayList<CouponBean>();
+		Connection con = connectionPool.getConnection();
+		
+		String sql ="SELECT * FROM coupon WHERE COMP_ID =? AND PRICE <= ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, companyId);
+			stmt.setDouble(2, price);
+			ResultSet rs =  stmt.executeQuery();
+			while(rs.next()) {	
+				coupons.add(readCoupon(rs));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			throw new CouponSystemException("get Company Coupons by type failed : ", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}
+		return coupons;
+	}
+
+	@Override
+	public Collection<CouponBean> getCompanyCouponsByDate(long companyId, Date date) throws CouponSystemException {
+		Collection<CouponBean> coupons = new ArrayList<CouponBean>();
+		Connection con = connectionPool.getConnection();
+		
+		String sql ="SELECT * FROM coupon WHERE COMP_ID =? AND END_DATE <= ?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setLong(1, companyId);
+			stmt.setDate(2, date);
 			ResultSet rs =  stmt.executeQuery();
 			while(rs.next()) {	
 				coupons.add(readCoupon(rs));

@@ -4,6 +4,7 @@
 package core.service;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.Collection;
 
 import core.beans.CouponBean;
@@ -261,7 +262,7 @@ public class CouponService implements Serializable{
 		if (couponDAO.getCustomerCoupons(customerId).contains(coupon1))
 			throw new CouponSystemException("You already own this coupon");*/
 		// TODO transaction
-		connectionPool.startTransaction();
+//		connectionPool.startTransaction();
 		try {
 
 			/*CouponBean coupon = couponDAO.getCoupon(couponId);
@@ -271,17 +272,17 @@ public class CouponService implements Serializable{
 			}*/
 			couponDAO.purchaseCoupon(couponId, customerId);
 		} catch (CouponSystemException e) {
-			connectionPool.rollback();
+//			connectionPool.rollback();
 			throw e;
 		} finally {
+			/*try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+//			connectionPool.endTransaction();
 		}
-		/*try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		connectionPool.endTransaction();
 	}
 
 	/*
@@ -351,7 +352,14 @@ public class CouponService implements Serializable{
 			throws CouponSystemException {
 		return couponDAO.getCompanyCouponsByType(companyId, type);
 	}
-
+	
+	public Collection<CouponBean> getCompanyCouponsByPrice(long companyId, double price) throws CouponSystemException {
+		return couponDAO.getCompanyCouponsByPrice(companyId, price);
+	}
+	public Collection<CouponBean> getCompanyCouponsByDate(long companyId, Date date) throws CouponSystemException {
+		return couponDAO.getCompanyCouponsByDate(companyId, date);
+	}
+		
 	/**
 	 * Returns all available coupons of the given Customer
 	 * 

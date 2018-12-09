@@ -4,6 +4,7 @@
 package core.dao;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.Collection;
 
 import core.beans.CouponBean;
@@ -188,6 +189,8 @@ public interface ICouponDAO extends Serializable{
 	 * if there is none).
 	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 	 */
+	Collection<CouponBean> getCompanyCouponsByPrice(long companyId, double price) throws CouponSystemException;
+	Collection<CouponBean> getCompanyCouponsByDate(long companyId, Date date) throws CouponSystemException;
 	Collection<CouponBean> getCustomerCoupons(long customerId) throws CouponSystemException;
 	/**
 	 * Assemble and return an <code>ArrayList</code> of all the coupons of

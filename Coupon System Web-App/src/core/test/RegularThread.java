@@ -45,7 +45,7 @@ public class RegularThread extends TestThread {
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
 			coupon.setEndDate(new Date(System.currentTimeMillis()+(1000*60*60*24*30*12)));
-			coupon.setAmount(50);
+			coupon.setAmount(10);
 			coupon.setType(CouponType.CAMPING);
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
