@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import core.beans.CouponBean;
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;

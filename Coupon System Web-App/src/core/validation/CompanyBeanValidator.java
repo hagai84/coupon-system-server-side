@@ -65,7 +65,7 @@ public class CompanyBeanValidator implements IBeanValidatorConstants {
 		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
 				+ "A-Z]{2,7}$";
 		Pattern pat = Pattern.compile(emailRegex);
-		if (pat.matcher(companyEmail).matches()) {
+		if (!pat.matcher(companyEmail).matches()) {
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATIN,
 					"The company email is not valid");
 			throw e;

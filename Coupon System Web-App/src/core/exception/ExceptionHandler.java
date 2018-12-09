@@ -1,11 +1,8 @@
 package core.exception;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import com.sun.xml.internal.bind.v2.TODO;
 
 @Provider
 public class ExceptionHandler implements ExceptionMapper<CouponSystemException> {
