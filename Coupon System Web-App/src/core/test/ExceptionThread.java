@@ -17,13 +17,7 @@ public class ExceptionThread extends TestThread {
 		testExceptions();
 	}
 	
-	private void testExceptions() {
-		/*try {
-			resetDB();
-		} catch (CouponSystemException e1) {
-			e1.printStackTrace();
-		}*/
-		
+	private void testExceptions() {		
 		System.out.println("running exception test");
 		CustomerBean customer = new CustomerBean();
 		CouponBean coupon = new CouponBean();
@@ -195,7 +189,6 @@ public class ExceptionThread extends TestThread {
 			try {
 				customerService.removeCustomer(customer.getId());
 				System.out.println("LOG : Customer deleted \n" + customer);
-
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				companyService.removeCompany(company.getId());

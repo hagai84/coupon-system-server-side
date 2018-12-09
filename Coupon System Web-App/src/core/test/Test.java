@@ -2,7 +2,6 @@ package core.test;
 
 import core.CouponSystem;
 import core.exception.CouponSystemException;
-import core.util.CreateDB;
 
 /**
  * Tests the implementation of the coupon system and it's classes.
