@@ -1,12 +1,9 @@
 package core.exception;
 
 public enum ExceptionsEnum {
-	CANT_CREATE_COMPANY(510),
-	CANT_UPDATE_COMPANY(510),
-	CANT_REMOVE_COMPANY(510),
-	CANT_GET_COMPANY(510),
-	CANT_GET_ALL_COMPANIES(510),
-	CANT_LOG_IN(510);
+	UNAUTHORIZED(601),
+	DATA_BASE_ERROR(602),
+	DATA_BASE_TIMOUT(603),
 	
 	
 	private final int statusCode;

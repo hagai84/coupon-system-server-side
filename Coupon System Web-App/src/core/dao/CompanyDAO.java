@@ -53,7 +53,7 @@ public class CompanyDAO implements ICompanyDAO{
 			pstmt.setString(4, company.getEmail());
 			if (pstmt.executeUpdate() == 0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_CREATE_COMPANY,"0 rows were insert");
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"0 rows were insert");
 				throw exception;
 			}
 		} catch (SQLException e) {

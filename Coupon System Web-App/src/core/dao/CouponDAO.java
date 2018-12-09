@@ -12,6 +12,7 @@ import java.util.Collection;
 import core.beans.CouponBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;;
 
 
@@ -94,10 +95,10 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(11, coupon.getCouponId());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException("update coupon failed, ID  : " + coupon.getCouponId());
+				throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"update coupon failed, ID  : " + coupon.getCouponId());
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException("update coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update coupon failed : ", e);
 		}finally {
 			connectionPool.returnConnection(con);			
 		}
