@@ -6,40 +6,35 @@ import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
-<<<<<<< HEAD:Coupon System Web-App/src/rest/controller/CompanyRestController.java
 import core.service.CompanyService;
-=======
 import core.exception.ExceptionsEnum;
->>>>>>> exception hendler:Coupon System Web-App/src/api/CompanyAPI.java
 
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-<<<<<<< HEAD:Coupon System Web-App/src/rest/controller/CompanyRestController.java
 public class CompanyRestController implements Serializable{
 	
-=======
-public class CompanyAPI implements Serializable{
-
->>>>>>> exception hendler:Coupon System Web-App/src/api/CompanyAPI.java
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private CompanyService companyService = CompanyService.getInstance();
 
+	@Path("stam")
+	@GET
+	public void toDelete() throws CouponSystemException {
+		System.out.println("stam");
+		throw new CouponSystemException(ExceptionsEnum.NOT_AOTURIZED);
+	}
 	/**
 	 * Creates a new company in the database
 	 * @param company Company to add to the DB
@@ -52,14 +47,6 @@ public class CompanyAPI implements Serializable{
 		companyService.createCompany(company);
 	}
 	
-
-	@Path("stam")
-	@GET
-	public void toDelete() throws CouponSystemException {
-		System.out.println("stam");
-		 throw new CouponSystemException(ExceptionsEnum.NOT_AOTURIZED);
-	}
-
 
 	/**
 	 * Updates a company's details in the database
