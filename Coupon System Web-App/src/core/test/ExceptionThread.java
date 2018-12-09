@@ -194,7 +194,7 @@ public class ExceptionThread extends TestThread {
 				companyService.removeCompany(company.getId());
 				System.out.println("LOG : Company deleted \n" + company);
 			} catch (CouponSystemException e) {System.err.println(e);}	
-			//TODO add all facade methods
+			//TODO add all service methods
 		}
 	}
 }

@@ -51,6 +51,7 @@ public class CompanyDAO implements ICompanyDAO{
 			pstmt.setString(3, company.getPassword());
 			pstmt.setString(4, company.getEmail());
 			if (pstmt.executeUpdate() == 0) {
+				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				CouponSystemException exception = new CouponSystemException("0 rows were insert");
 				throw exception;
 			}
@@ -75,7 +76,7 @@ public class CompanyDAO implements ICompanyDAO{
 			prepardStatement.setString(2, company.getEmail());
 			prepardStatement.setString(3, company.getCompName());
 			prepardStatement.setLong(4, company.getId());
-			System.out.println(prepardStatement);
+			//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 			if (prepardStatement.executeUpdate() == 0) {
 				CouponSystemException exception = new CouponSystemException("0 rows were update");
 				throw exception;
@@ -99,6 +100,7 @@ public class CompanyDAO implements ICompanyDAO{
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setLong(1,companyId);
 			if (prepardStatement.executeUpdate() == 0) {
+				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 				CouponSystemException exception = new CouponSystemException("0 rows were remove");
 				throw exception;
 			}
@@ -196,40 +198,6 @@ public class CompanyDAO implements ICompanyDAO{
 		return allCompanies;
 	}
 
-	/* (non-Javadoc)
-	 * @see coupon.system.dao.CompanyDAO#getCoupons()
-	 */
-	/*@Override
-	public Collection<Coupon> getCoupons(long companyId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		List<Coupon> couponList = new ArrayList<>();
-		try (Statement stmt = con.createStatement();) {
-			String sql = "SELECT * " + "FROM company_coupon RIGHT JOIN coupon "
-					+ "ON coupon.id = company_coupon.coupon_id " + "WHERE comp_id = " + companyId;
-			ResultSet set = stmt.executeQuery(sql);
-
-			while (set.next()) {
-				Coupon coupon = new Coupon();
-				coupon.setId(set.getLong(3));
-				coupon.setTitle(set.getString(4));
-				coupon.setStartDate(set.getDate(5));
-				coupon.setEndDate(set.getDate(6));
-				coupon.setAmount(set.getInt(7));
-				CouponType couponType = CouponType.valueOf(set.getString(8));
-				coupon.setType(couponType);
-				coupon.setMessage(set.getString(9));
-				coupon.setPrice(set.getLong(10));
-				coupon.setImage(set.getString(11));
-				couponList.add(coupon);
-			}
-		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("get all company coupons failed", e);
-			throw exception;
-		} finally {
-			pool.returnConnection(con);
-		}
-		return couponList;
-	}*/
 
 	/**
 	 * Returns true if the given company user name is in the DB and if the given

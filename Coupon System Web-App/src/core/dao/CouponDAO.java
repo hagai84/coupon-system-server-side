@@ -44,9 +44,7 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public void createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		
+	public void createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {	
 		Connection con = connectionPool.getConnection();
 			
 		String sql = "INSERT INTO coupon VALUES(?,?,?,?,?,?,?,?,?,?) ";
@@ -63,9 +61,8 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setString(9, coupon.getImage());
 			stmt.setLong(10, companyId);
 
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
+			if(stmt.executeUpdate()==0) {
+				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				throw new CouponSystemException("add coupon to coupon failed, ID  : " + coupon.getCouponId());
 			}					
 		} catch (SQLException e) {
@@ -79,10 +76,8 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void updateCoupon(CouponBean coupon) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();
 		
-//		String sql = "UPDATE coupon SET END_DATE=?, AMOUNT=?, PRICE=? WHERE ID=?";
 		String sql = "UPDATE coupon SET  ID=?, TITLE=?, START_DATE=?, END_DATE=?, AMOUNT=?, TYPE=?,"
 					+ "MESSAGE=?, PRICE=?, IMAGE=?, COMP_ID=? WHERE ID=?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -97,88 +92,26 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setString(9, coupon.getImage());
 			stmt.setLong(10, coupon.getCompanyId());
 			stmt.setLong(11, coupon.getCouponId());
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
+			if(stmt.executeUpdate()==0) {
+				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 				throw new CouponSystemException("update coupon failed, ID  : " + coupon.getCouponId());
 			}
 		} catch (SQLException e) {
-//			e.printStackTrace();
 			throw new CouponSystemException("update coupon failed : ", e);
 		}finally {
 			connectionPool.returnConnection(con);			
 		}
 	}
 
-	/*@Override
-	public void addCouponToCompany(Coupon coupon, long compId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		
-		String sql = "INSERT INTO company_coupon VALUES(?,?)";	
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, compId);
-			stmt.setLong(2, coupon.getCouponId());
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("add coupon to company failed, ID  : " + coupon.getCouponId());
-			}			
-		} catch (SQLException e) {
-			throw new CouponSystemException("add coupon to company failed : ", e);
-		}finally {			
-			pool.returnConnection(con);	
-		}
-	}*/
-	
-	/*@Override
-	public void removeCouponFromCompanies(long couponId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		
-		String sql = "DELETE FROM company_coupon WHERE coupon_ID = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove coupon from companies failed, ID  : " + couponId);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from companies failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}
-	}*/
-	
-	/*@Override
-	public void removeCouponFromCustomers(long couponId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-	
-		String sql = "DELETE FROM customer_coupon WHERE cust_ coupon_ID = ? ";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(2, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove coupon from customer failed, ID  : " + couponId.getCouponId());
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from customer failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}
-	}*/
-	
 	@Override
 	public void removeCoupon(long couponId) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();		
 		
 		String sql = "DELETE FROM coupon WHERE ID = ?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setLong(1, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
+			if(stmt.executeUpdate()==0) {
+				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 				throw new CouponSystemException("remove coupon from coupon failed, ID  : " + couponId);
 			}
 		} catch (SQLException e) {
@@ -190,7 +123,6 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void removeCustomerCoupons(long customerId) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();		
 		
 		String sql = "DELETE FROM customer_coupon WHERE cust_ID = ?";
@@ -206,17 +138,12 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void removeCompanyCoupons(long companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();		
 		
 		String sql = "DELETE FROM coupon WHERE comp_ID = ?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setLong(1, companyId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove company coupon's from coupon failed, ID  : " + companyId);
-			}
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new CouponSystemException("remove coupon from coupon failed : ", e);
 		}finally {			
@@ -241,7 +168,6 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void removeCompanyCouponsFromCustomers(long companyId) throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();		
 		
 		String sql = "DELETE customer_coupon FROM customer_coupon"
@@ -260,7 +186,6 @@ public class CouponDAO implements ICouponDAO {
 
 	@Override
 	public void removeExpiredCoupons() throws CouponSystemException {
-		// TODO Auto-generated method stub
 		Connection con = connectionPool.getConnection();		
 		
 		String sql = "DELETE coupon, customer_coupon FROM coupon"
@@ -280,12 +205,7 @@ public class CouponDAO implements ICouponDAO {
 	@Override
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
 		
-//		Connection con = connectionPool.getConnection();
 		Connection con = connectionPool.startTransaction();
-		/*int amount = getCoupon(couponId).getAmount();
-		if(amount<1) {
-			throw new CouponSystemException("Coupon out of Stock");
-		}*/
 		
 		String sql = "INSERT INTO customer_coupon VALUES(?,?)";	
 		String sql2 = "UPDATE coupon SET AMOUNT=amount-1 WHERE ID=? AND amount>0";
@@ -293,7 +213,6 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, customerId);
 			stmt.setLong(2, couponId);
 			stmt2.setLong(1, couponId);
-//			int dml2 = stmt2.executeUpdate();
 			if(stmt2.executeUpdate()==0) {
 				connectionPool.rollback();
 				throw new CouponSystemException("purchase coupon failed - Coupon out of Stock ID : " + couponId);
@@ -303,7 +222,6 @@ public class CouponDAO implements ICouponDAO {
 			connectionPool.rollback();
 			throw new CouponSystemException("purchase coupon failed - Customer already owns Coupon", e);
 		}finally {			
-//			connectionPool.returnConnection(con);	
 		}
 		connectionPool.endTransaction();
 	}
@@ -555,68 +473,6 @@ public class CouponDAO implements ICouponDAO {
 		return coupons;
 	}
 
-	
-
-	
-	
-	/*@Override
-	public void addCouponToCompany(Coupon coupon, long compId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		
-		String sql = "INSERT INTO company_coupon VALUES(?,?)";	
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, compId);
-			stmt.setLong(2, coupon.getCouponId());
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("add coupon to company failed, ID  : " + coupon.getCouponId());
-			}			
-		} catch (SQLException e) {
-			throw new CouponSystemException("add coupon to company failed : ", e);
-		}finally {			
-			pool.returnConnection(con);	
-		}
-	}*/
-
-	/*@Override
-	public void removeCouponFromCompanies(long couponId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-		
-		String sql = "DELETE FROM company_coupon WHERE coupon_ID = ?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove coupon from companies failed, ID  : " + couponId);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from companies failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}
-	}*/
-
-	/*@Override
-	public void removeCouponFromCustomers(long couponId) throws CouponSystemException {
-		Connection con = pool.getConnection();
-	
-		String sql = "DELETE FROM customer_coupon WHERE cust_ coupon_ID = ? ";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(2, couponId);
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
-				throw new CouponSystemException("remove coupon from customer failed, ID  : " + couponId.getCouponId());
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException("remove coupon from customer failed : ", e);
-		}finally {			
-			pool.returnConnection(con);
-		}
-	}*/
-
 	@Override
 	public boolean couponIdAlreadyExists(long couponId) {
 		// TODO Auto-generated method stub
@@ -650,8 +506,5 @@ public class CouponDAO implements ICouponDAO {
 		coupon.setCompanyId(rs.getLong("COMP_ID"));
 		return coupon;
 	}
-
-	
-
 }
 

@@ -52,9 +52,8 @@ public class CustomerDAO implements ICustomerDAO{
 			stmt.setLong(1, customer.getId());
 			stmt.setString(2, customer.getCustName());
 			stmt.setString(3, customer.getPassword());
-			int dml = stmt.executeUpdate();
-			//TODO add check to see how many rows were updated
-			if(dml==0) {
+			if(stmt.executeUpdate()==0) {
+				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				throw new CouponSystemException("create customer failed, ID : " + customer.getId());
 			}			
 		} catch (SQLException e) {
@@ -72,18 +71,14 @@ public class CustomerDAO implements ICustomerDAO{
 		public void updateCustomer(CustomerBean customer) throws CouponSystemException {
 			Connection con = connectionPool.getConnection();		
 			
-	//		String sql = "UPDATE customer SET PASSWORD=? WHERE ID=?";
 			String sql = "UPDATE customer SET ID=?, CUST_NAME=?, PASSWORD=? WHERE ID=?";
 			try(PreparedStatement stmt = con.prepareStatement(sql)) {
-	/*			stmt.setString(1, customer.getPassword());
-				stmt.setLong(2, customer.getId());*/
 				stmt.setLong(1, customer.getId());
 				stmt.setString(2, customer.getCustName());
 				stmt.setString(3, customer.getPassword());
 				stmt.setLong(4, customer.getId());
-				int dml = stmt.executeUpdate();
-				//TODO add check to see how many rows were updated
-				if(dml==0) {
+				if(stmt.executeUpdate()==0) {
+					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 					throw new CouponSystemException("update customer failed, ID : " + customer.getId());
 				}
 			} catch (SQLException e) {
@@ -104,9 +99,8 @@ public class CustomerDAO implements ICustomerDAO{
 			String sql = "DELETE FROM customer WHERE id = ?";
 			try(PreparedStatement stmt = con.prepareStatement(sql)) {
 				stmt.setLong(1, customerId);
-				int dml = stmt.executeUpdate();
-				//TODO add check to see how many rows were updated
-				if(dml==0) {
+				if(stmt.executeUpdate()==0) {
+					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 					throw new CouponSystemException("remove customer failed, ID : " + customerId);
 				}			
 			} catch (SQLException e) {
@@ -170,35 +164,6 @@ public class CustomerDAO implements ICustomerDAO{
 			}
 		}
 
-	
-	
-	
-
-	/* (non-Javadoc)
-	 * @see coupon.system.dao.CustomerDAO#getCoupons()
-	 */
-	/*@Override
-	public Collection<Coupon> getCoupons(long customerId) throws CouponSystemException {
-		Collection<Coupon> coupons = new ArrayList<Coupon>();
-		Connection con = pool.getConnection();
-		
-		String sql="SELECT coupon.* FROM coupon " 
-				+"INNER JOIN customer_coupon ON coupon.id = customer_coupon.coupon_id "
-				+ "WHERE customer_coupon.cust_id =?";
-		try (PreparedStatement stmt = con.prepareStatement(sql)){	
-			stmt.setLong(1, customerId.getId());	
-			ResultSet rs = stmt.executeQuery();			
-			while(rs.next()) {
-				coupons.add(readCoupon(rs));
-			}
-			rs.close();
-		} catch (SQLException e) {
-			throw new CouponSystemException("get customer coupons failed : ", e);
-		} finally {
-			pool.returnConnection(con);			
-		}		
-		return coupons;
-	}*/
 
 	/* (non-Javadoc)
 	 * @see coupon.system.dao.CustomerDAO#getAllCustomers()
@@ -222,8 +187,7 @@ public class CustomerDAO implements ICustomerDAO{
 		} finally {
 			connectionPool.returnConnection(con);			
 		}		
-		return customers;
-		
+		return customers;		
 	}
 
 	/**
@@ -259,27 +223,6 @@ public class CustomerDAO implements ICustomerDAO{
 		}	
 	}
 
-	/**
-	 * Reads a ResultSet of a customer's specific coupon from the DB and into a {@link CouponBean} object
-	 * @param rs ResultSet of a single coupon
-	 * @return A Coupon object representation of the coupon
-	 * @throws SQLException If reading information from the ResultSet fails
-	 */
-	/*private Coupon readCoupon(ResultSet rs) throws SQLException {
-		// TODO Auto-generated method stub
-		Coupon coupon = new Coupon();
-		coupon.setId(rs.getLong("ID"));
-		coupon.setTitle(rs.getString("TITLE"));
-		coupon.setStartDate(rs.getDate("START_DATE"));
-		coupon.setEndDate(rs.getDate("END_DATE"));
-		coupon.setAmount(rs.getInt("AMOUNT"));
-		coupon.setType(CouponType.valueOf(rs.getString("TYPE")));
-		coupon.setMessage(rs.getString("MESSAGE"));
-		coupon.setPrice(rs.getDouble("PRICE"));
-		coupon.setImage(rs.getString("IMAGE"));
-		return coupon;
-	}
-*/
 	@Override
 	public boolean customerNameAlreadyExists(String name) {
 		// TODO Auto-generated method stub

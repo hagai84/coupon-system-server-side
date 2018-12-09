@@ -60,8 +60,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 				couponDAO.removeExpiredCoupons();
 			} catch (CouponSystemException e) {
 				// TODO Manager handling
+				//e.printStackTrace();
 				System.err.println("Daily task incomplited : " + e);
-				e.printStackTrace();
 			}
 		}
 		System.out.println("LOG : Daily Task ended");

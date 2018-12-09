@@ -43,10 +43,6 @@ public class CouponService implements Serializable{
 		return couponServiceInstance;
 	}
 
-//	private final int RETRIES = 3;
-
-	////////////////////////////////////////////////////////////////////
-
 	/**
 	 * Adds a new {@link CouponBean} to the DB in the following order:
 	 * <ul>
@@ -69,60 +65,6 @@ public class CouponService implements Serializable{
 		couponDAO.createCoupon(coupon, companyId);
 	}
 
-	/**
-	 * Logs in to the coupon system as an admin.
-	 * 
-	 * @param name     Admin user name
-	 * @param password Admin password
-	 * @return a new AdminFacade instance if admin's user name and password are
-	 *         correct; otherwise, throws {@link CouponController}
-	 * @throws AdminFacadeException if user name or password are incorrect
-	 */
-	/*
-	 * public static IController login(String name, String password) throws
-	 * CouponSystemException { if(name.equals("admin")&&password.equals("1234")) {
-	 * return new CouponController(); }else throw new
-	 * CouponSystemException("Admin : incorrect user name and/or password "); }
-	 */
-
-	/**
-	 * checks if the customer Id already exist
-	 * 
-	 * @param customer the customer to be checked
-	 * @return true if customer id exists, false if doesn't
-	 * @throws DAOException when DB error occurred
-	 */
-	/*
-	 * private boolean customerIdExists(Customer customer) throws DAOException { //
-	 * TODO Auto-generated method stub try {
-	 * customerDAO.getCustomer(customer.getId()); } catch (CustomerException e) { //
-	 * No Customer Found return false; } return true; }
-	 */
-
-	/**
-	 * checks if the customer name already exist
-	 * 
-	 * @param customer the customer to be checked
-	 * @return true if customer name exists, false if doesn't
-	 * @throws DAOException when DB error occurred
-	 */
-	/*
-	 * private boolean customerNameExists(Customer customer) throws DAOException {
-	 * // TODO Auto-generated method stub try {
-	 * customerDAO.getCustomerByName(customer.getCustName()); } catch
-	 * (CustomerException e) { // No Customer Found return false; } return true; }
-	 */
-
-	/*
-	 * public void removeCoupon(Coupon coupon) throws CompanyFacadeException {
-	 * //check if the coupon exists // if this company is authorize to remove the
-	 * coupon. getCoupon(coupon.getId()); this.checkIfCompanyAuthorize(coupon); try
-	 * { couponDAO.removeCouponFromCompanies(coupon); // remove coupon from
-	 * customer_coupon table ; couponDAO.removeCouponFromCustomers(coupon); //
-	 * remove coupon from coupon table ; couponDAO.removeCoupon(coupon); } catch
-	 * (DAOException | CouponException e) { CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant remove coupon", e); throw exception; } }
-	 */
 
 	/**
 	 * Updates a specific {@link CouponBean} in the DB.
@@ -257,44 +199,22 @@ public class CouponService implements Serializable{
 	 */
 	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException {
 		// checks if customer already owns this coupon
-		// TODO consider adding boolean method in couponDAO
+		// dao does not allow dual ownership
 		/*CouponBean coupon1 = couponDAO.getCoupon(couponId);
 		if (couponDAO.getCustomerCoupons(customerId).contains(coupon1))
 			throw new CouponSystemException("You already own this coupon");*/
-		// TODO transaction
-//		connectionPool.startTransaction();
-		try {
-
-			/*CouponBean coupon = couponDAO.getCoupon(couponId);
-
-			if (coupon.getAmount() < 1 || coupon.getEndDate().getTime() < System.currentTimeMillis()) {
-				throw new CouponSystemException("Coupon purchase failed : coupon is expired or out of stock");
-			}*/
-			couponDAO.purchaseCoupon(couponId, customerId);
-		} catch (CouponSystemException e) {
-//			connectionPool.rollback();
-			throw e;
-		} finally {
-			/*try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-//			connectionPool.endTransaction();
-		}
+		
+		//checks if coupon out of stock or expired
+		// dao does not allow negative amount
+		// expired coupons shld have been deleted and/or not shown to client can be added to dao
+		/*CouponBean coupon = couponDAO.getCoupon(couponId);
+		if (coupon.getAmount() < 1 || coupon.getEndDate().getTime() < System.currentTimeMillis()) {
+			throw new CouponSystemException("Coupon purchase failed : coupon is expired or out of stock");
+		}*/
+		
+		couponDAO.purchaseCoupon(couponId, customerId);		
 	}
 
-	/*
-	 * public void removeCoupon(Coupon coupon) throws CompanyFacadeException {
-	 * //check if the coupon exists // if this company is authorize to remove the
-	 * coupon. getCoupon(coupon.getId()); this.checkIfCompanyAuthorize(coupon); try
-	 * { couponDAO.removeCouponFromCompanies(coupon); // remove coupon from
-	 * customer_coupon table ; couponDAO.removeCouponFromCustomers(coupon); //
-	 * remove coupon from coupon table ; couponDAO.removeCoupon(coupon); } catch
-	 * (DAOException | CouponException e) { CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant remove coupon", e); throw exception; } }
-	 */
 
 	/**
 	 * Fetches a specific {@link CouponBean} from the DB using its ID.
@@ -402,41 +322,4 @@ public class CouponService implements Serializable{
 		return couponDAO.getCouponByTitle(couponTitle);
 	}
 
-	////////////////////////////////////////////////////////////////////
-
-	/*
-	 * public void createCoupon(Coupon coupon) throws CompanyFacadeException { //
-	 * generate new unique coupon id try {
-	 * coupon.setId(IdGenerator.generatCouponId()); } catch (IdGeneratorException e)
-	 * { CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant create new coupon", e); throw exception; }
-	 * 
-	 * try { // check if coupon id is unique in db
-	 * couponDAO.getCoupon(coupon.getId()); CompanyFacadeException CompanyException
-	 * = new CompanyFacadeException(
-	 * "cant create new coupon, the genereted id is olrady in db"); throw
-	 * CompanyException;
-	 * 
-	 * } catch (DAOException e) { CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant create new coupon", e); throw exception; } catch
-	 * (CouponException e) { //No coupon was found can proceed }
-	 * 
-	 * try { // check if coupon title is unique in db
-	 * couponDAO.getCouponByTitle(coupon.getTitle()); CompanyFacadeException
-	 * CompanyException = new CompanyFacadeException(
-	 * "cant create new coupon, the title is olrady in db"); throw CompanyException;
-	 * 
-	 * } catch (DAOException e) { CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant create new coupon", e); throw exception; } catch
-	 * (CouponException e) { //No coupon was found can proceed }
-	 * 
-	 * try { // check if coupon bean is legal data CouponUtil.checkCoupon(coupon);
-	 * couponDAO.createCoupon(coupon); couponDAO.addCouponToCompany(coupon,
-	 * company.getId()); } catch (DAOException | CouponException e) {
-	 * CompanyFacadeException exception = new
-	 * CompanyFacadeException("cant create new coupon : \n" + e.getMessage(), e);
-	 * throw exception; }
-	 * 
-	 * }
-	 */
 }

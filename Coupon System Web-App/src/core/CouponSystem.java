@@ -31,26 +31,6 @@ public class CouponSystem implements Serializable{
 		return couponSystemInstance;	
 	}
 
-	/**
-	 * Logs in to a user using the given info
-	 * @param name Login username
-	 * @param password Login password
-	 * @param type User login type
-	 * @return The appropriate Facade (Admin, Company, or Customer)
-	 * @throws CouponSystemException
-	 */
-	/*public CouponClientFacade login(String name, String password, ClientType type) throws  CouponSystemException {	
-		switch (type) {
-		case ADMIN:
-			return AdminFacade.login(name, password);			
-		case COMPANY:
-			return CompanyFacade.companyLogin(name, password);			
-		case CUSTOMER:
-			return CustomerFacade.login(name, password);			
-		default:
-			return null;
-		}	
-	}*/
 
 	/**
 	 * Stops all tasks and shuts down the module
