@@ -11,6 +11,7 @@ import java.util.List;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
 
 /**
@@ -52,11 +53,11 @@ public class CompanyDAO implements ICompanyDAO{
 			pstmt.setString(4, company.getEmail());
 			if (pstmt.executeUpdate() == 0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				CouponSystemException exception = new CouponSystemException("0 rows were insert");
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_CREATE_COMPANY,"0 rows were insert");
 				throw exception;
 			}
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("create company failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_CREATE_COMPANY,"create company failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -83,7 +84,7 @@ public class CompanyDAO implements ICompanyDAO{
 			}
 
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("update company failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_UPDATE_COMPANY,"update company failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -101,11 +102,11 @@ public class CompanyDAO implements ICompanyDAO{
 			prepardStatement.setLong(1,companyId);
 			if (prepardStatement.executeUpdate() == 0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				CouponSystemException exception = new CouponSystemException("0 rows were remove");
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_REMOVE_COMPANY,"0 rows were remove");
 				throw exception;
 			}
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("remove company failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_REMOVE_COMPANY,"remove company failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -131,11 +132,11 @@ public class CompanyDAO implements ICompanyDAO{
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
-				CouponSystemException exception = new CouponSystemException("can't find company with id num : " + companyId);
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_COMPANY,"can't find company with id num : " + companyId);
 				throw exception;
 			}
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("get company by id failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_COMPANY,"get company by id failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -160,11 +161,11 @@ public class CompanyDAO implements ICompanyDAO{
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
-				CouponSystemException exception = new CouponSystemException("cant found company with name " + companyName);
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_COMPANY,"cant found company with name " + companyName);
 				throw exception;
 			}
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("get company by name failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_COMPANY,"get company by name failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -190,7 +191,7 @@ public class CompanyDAO implements ICompanyDAO{
 				allCompanies.add(com);
 			}	
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("get all companies failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_ALL_COMPANIES,"get all companies failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -222,10 +223,10 @@ public class CompanyDAO implements ICompanyDAO{
 				set.close();
 				return id;
 			}else {
-				throw new CouponSystemException("Incorrect Name Or Password");
+				throw new CouponSystemException(ExceptionsEnum.CANT_LOG_IN,"Incorrect Name Or Password");
 			}			
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException("login failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.CANT_GET_ALL_COMPANIES,"login failed", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);

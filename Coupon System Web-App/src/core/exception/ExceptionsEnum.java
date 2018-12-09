@@ -1,15 +1,19 @@
 package core.exception;
 
 public enum ExceptionsEnum {
-	ID_NOT_EXIST(510),
-	NOT_AOTURIZED(511),;
+	CANT_CREATE_COMPANY(510),
+	CANT_UPDATE_COMPANY(510),
+	CANT_REMOVE_COMPANY(510),
+	CANT_GET_COMPANY(510),
+	CANT_GET_ALL_COMPANIES(510),
+	CANT_LOG_IN(510);
 	
 	
 	private final int statusCode;
-	private ExceptionsEnum(int number) {
-		this.statusCode = number;
+	private ExceptionsEnum(int statusCode) {
+		this.statusCode = statusCode;
 	}
-	public int getNumber() {
+	public int getStatusCode() {
 		return statusCode;
 	}
 	

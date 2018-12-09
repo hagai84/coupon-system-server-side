@@ -33,7 +33,7 @@ public class CompanyRestController implements Serializable{
 	@GET
 	public void toDelete() throws CouponSystemException {
 		System.out.println("stam");
-		throw new CouponSystemException(ExceptionsEnum.NOT_AOTURIZED);
+		throw new CouponSystemException(ExceptionsEnum.CANT_CREATE_COMPANY);
 	}
 	/**
 	 * Creates a new company in the database
