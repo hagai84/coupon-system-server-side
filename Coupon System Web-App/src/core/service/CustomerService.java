@@ -54,12 +54,12 @@ public class CustomerService implements Serializable{
 	 */
 	public void createCustomer(CustomerBean customer) throws CouponSystemException {
 		CustomerBeanValidator.checkCustomer(customer);
-		
+		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
 			throw new CouponSystemException("Customer Name already exists");
 		}
-		customer.setId(IdGenerator.generatCustomerId());
-		
+		customer.setId(IdGenerator.generatCustomerId());		
+		//IS ALSO HANDLED BY DAO LAYER
 		if(customerDAO.customerIdAlreadyExists(customer.getId())) {
 			throw new CouponSystemException("Customer ID already exists");
 		}

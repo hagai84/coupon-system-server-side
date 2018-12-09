@@ -53,13 +53,12 @@ public class CompanyService implements Serializable{
 	 */
 	public void createCompany(CompanyBean company) throws CouponSystemException {
 		CompanyBeanValidator.checkCompany(company);
-		
+		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
 			throw new CouponSystemException("Company Name already exists");
-		}
-		
+		}	
 		company.setId(IdGenerator.generatCompanyId());
-		
+		//IS ALSO HANDLED BY DAO LAYER
 		if(companyDAO.companyIdAlreadyExists(company.getId())) {
 			throw new CouponSystemException("Company ID already exists");
 		}
