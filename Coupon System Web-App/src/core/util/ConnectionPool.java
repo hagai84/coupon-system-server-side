@@ -28,7 +28,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 4;
+	private final int POOL_SIZE = 3;
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -69,12 +69,12 @@ public class ConnectionPool implements Serializable{
 			return usedConnections.get(Thread.currentThread());
 		}
 
+		Connection con = null;
+		if (closing) {
+			throw new CouponSystemException("Connection pool shutting down");
+		}
+		
 		synchronized (this) {
-			Connection con = null;
-			if (closing) {
-				throw new CouponSystemException("Connection pool shutting down");
-			}
-			
 			if (!initialized) {
 				initializePool();
 			}
@@ -102,12 +102,13 @@ public class ConnectionPool implements Serializable{
 				}
 			} catch (SQLTimeoutException e) {
 				//new connection timed out
+				availableConnections.add(con);
 				throw new CouponSystemException("Server busy. Try again later", e);
 			} catch (SQLException e) {
 				//DB error initiates pool shutdown
 				availableConnections.add(con);
-				closeAllConnections();//is there a need ?
-				initialized = false;
+//				closeAllConnections();//is there a need ?
+//				initialized = false;
 				throw new CouponSystemException("database access error occurred", e);
 			}
 			// Giving away the connection from the connection pool
@@ -126,18 +127,19 @@ public class ConnectionPool implements Serializable{
 
 		try {
 			if(con.getAutoCommit()) {
-				synchronized (this) {
-					if (initialized) {
+				if (initialized) {
+					synchronized (this) {
 						//attempts to remove from Out collection
 						if (usedConnections.remove(Thread.currentThread(), con)) {
 							// Adding the connection from the client back to the connection pool
 							availableConnections.add(con);
 							notifyAll();
-						}
-						
+						}	
 					}
-				}	
-			}
+				}else {
+					con.close();
+				}
+			}	
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -150,7 +152,7 @@ public class ConnectionPool implements Serializable{
 	 * sets initialized to false
 	 * 
 	 */
-	public synchronized void closeAllConnections() {
+	public void closeAllConnections() {
 		closing = true;
 		//if there are connections out wait for a set amount of millisecond
 		if (availableConnections.size() < POOL_SIZE) {
@@ -161,25 +163,26 @@ public class ConnectionPool implements Serializable{
 			}
 		}
 		initialized = false;
-		while (availableConnections.size() > 0) {
-			try {
-				availableConnections.remove(0).close();
-			} catch (SQLException e) {
-				System.err.println(e);
+		synchronized (this) {
+			for (Connection connection : availableConnections) {
+				try {
+					connection.close();				
+				} catch (SQLException e) {
+					System.err.println(e);
+				}
 			}
-		}
-		for (Connection connection : usedConnections.values()) {
-			try {
-				connection.close();;
-				//TODO itereate over collection to close all connections
-
-			} catch (SQLException e) {
-				System.err.println(e);
-			}
+			for (Connection connection : usedConnections.values()) {
+				try {
+					connection.close();				
+				} catch (SQLException e) {
+					System.err.println(e);
+				}
+			}			
 		}
 		System.out.println("LOG : connection pool closed");
 		closing = false;
 	}
+			
 
 	/**
 	 * Initializes the Connection Pool
@@ -194,15 +197,14 @@ public class ConnectionPool implements Serializable{
 		if (driverName == null) {
 			throw new CouponSystemException("Server details are not set");
 		}
-		availableConnections = new ArrayList<Connection>();
-//		connectionsOut = new ArrayList<Connection>();
-		usedConnections = new HashMap<Thread, Connection>((int) (POOL_SIZE*1.33));
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
 			System.err.println(e);
 			throw new CouponSystemException("Connection Driver Class not found : ", e);
 		}
+		availableConnections = new ArrayList<Connection>();
+		usedConnections = new HashMap<Thread, Connection>((int) (POOL_SIZE*1.33));
 		while (availableConnections.size() < POOL_SIZE) {
 			try {
 				availableConnections.add(newConnection());
