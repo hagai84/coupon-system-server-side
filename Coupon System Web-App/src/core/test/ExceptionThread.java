@@ -23,42 +23,46 @@ public class ExceptionThread extends TestThread {
 		CouponBean coupon = new CouponBean();
 		CompanyBean company = new CompanyBean();
 		for (char i = 97; i < 117; i++) {
-			company.setCompName(""+i+i+i+" "+i+i+i+i);
-			try {
-				company.setId(companyService.getCompanyByName(company.getCompName()).getId());
+			/*try {
+				company.setId(loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
-			}
+			}*/
+			company.setCompName(""+i+i+i+" "+i+i+i+i);
+			company.setId(100001+i-97);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
-			try {
+			/*try {
 				coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
-			}
+			}*/
+//			coupon.setCouponId(300001+i-97);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
 			coupon.setEndDate(new Date(System.currentTimeMillis()+(1000*60*60*24*30*12)));
 			coupon.setAmount(50);
 			coupon.setType(CouponType.CAMPING);
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
-			coupon.setImage("aaaaaaaaaaaaaa");	
-			customer.setCustName(""+i+i+i+" "+i+i+i+i);
-			try {
-				customer.setId(customerService.getCustomerByName(customer.getCustName()).getId());
+			coupon.setImage("aaaaaaaaaaaaaa");
+			coupon.setCompanyId(company.getId());
+			/*try {
+				customer.setId(loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
 			} catch (CouponSystemException e1) {
 				System.err.println(e1);
 				continue;
-			}
+			}*/
+			customer.setCustName(""+i+i+i+" "+i+i+i+i);
+//			customer.setId(200001+i-97);
 			customer.setPassword(""+i+i+i+i+i+i);
 			
 			
-			switch(i%16) {
+			switch(i%17) {
 			case 0:
-				company.setId(100000 + i);
+				company.setId(110000 + i);
 				break;
 			case 1:
 				company.setPassword(""+i+i+i+i);
@@ -67,7 +71,7 @@ public class ExceptionThread extends TestThread {
 				company.setEmail(""+i+i+i+"@"+i+i+i+i+"");
 				break;
 			case 3:
-				coupon.setCouponId(200000 + i);
+				coupon.setCouponId(330000 + i);
 				break;
 			case 4:
 				coupon.setTitle(""+i+i+i+" "+i+i+i+i +"ggggggggggggggggggggggggggggggggggggggggggggggg"
@@ -123,7 +127,7 @@ public class ExceptionThread extends TestThread {
 				coupon.setImage("aaaaaaaaaaaaaa");	
 				break;
 			case 12:
-				customer.setId(100032 + i);
+				customer.setId(220000 + i);
 				break;
 			case 13:
 				customer.setCustName(""+i+i+i+" "+i+i+i+i+"ggggggggggggggggggggggggggggggggggggggggggggggg"
@@ -146,12 +150,14 @@ public class ExceptionThread extends TestThread {
 						+ "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
 						+ "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg");
 				break;
+			case 16:
+				coupon.setCompanyId(440000);
 			}
 			//TODO Add unauthorized update/remove + same coupon purchase
 			
 			
 			try {
-				companyService.createCompany(company);
+				company.setId(companyService.createCompany(company));
 				System.out.println("LOG : Company created \n" + company);
 
 			} catch (CouponSystemException e) {System.err.println(e);}
@@ -159,32 +165,24 @@ public class ExceptionThread extends TestThread {
 				loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				if(companyService != null) {
-					couponService.createCoupon(coupon, company.getId());
-					System.out.println("LOG : Coupon created \n" + coupon);
-				}
+				coupon.setCouponId(couponService.createCoupon(coupon, company.getId()));
+				System.out.println("LOG : Coupon created \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				customerService.createCustomer(customer);
+				customer.setId(customerService.createCustomer(customer));
 				System.out.println("LOG : Customer created \n" + customer);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			
 			try {
-				if(customerService != null)
 				loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(e);} 
 			try {
-				if(customerService != null) {
-					couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
-					System.out.println("LOG : Coupon purchased \n" + coupon);
-
-				}
+				couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
+				System.out.println("LOG : Coupon purchased \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
-				if(companyService != null) {
-					couponService.removeCoupon(coupon.getCouponId(), company.getId());
-					System.out.println("LOG : Coupon deleted \n" + coupon);
-				}
+				couponService.removeCoupon(coupon.getCouponId(), company.getId());
+				System.out.println("LOG : Coupon deleted \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				customerService.removeCustomer(customer.getId());

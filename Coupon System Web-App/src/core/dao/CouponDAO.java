@@ -45,15 +45,16 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public void createCoupon(CouponBean coupon) throws CouponSystemException {	
-		Connection con = connectionPool.getConnection();
+	public long createCoupon(CouponBean coupon) throws CouponSystemException {	
+//		Connection con = connectionPool.getConnection();
+		Connection con = connectionPool.startTransaction();
 			
 		String sql = "INSERT INTO coupon "
 				+ "(title, start_date, end_date, amount, type, message, price, image, comp_id) "
 //				+ "OUTPUT inserted.ID "
 				+ "VALUES(?,?,?,?,?,?,?,?,?) ";
-
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+		String sql2 = "SELECT LAST_INSERT_ID() AS ID";
+		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)){
 //			stmt.setLong(1, coupon.getCouponId());
 			stmt.setString(1, coupon.getTitle());
 			stmt.setDate(2, coupon.getStartDate());
@@ -68,34 +69,40 @@ public class CouponDAO implements ICouponDAO {
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"Create coupon failed : ");
-			}					
+			}
+			ResultSet set = stmt2.executeQuery();
+			if(set.next()) {
+				connectionPool.endTransaction();
+				return set.getLong("ID");
+			}else {
+				connectionPool.rollback();
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
+			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed : ", e);
 		}finally {			
-			connectionPool.returnConnection(con);	
-		}
-			
-		
+//			connectionPool.returnConnection(con);	
+		}	
 	}
 
 	@Override
 	public void updateCoupon(CouponBean coupon) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
 		
-		String sql = "UPDATE coupon SET  ID=?, TITLE=?, START_DATE=?, END_DATE=?, AMOUNT=?, TYPE=?,"
+		String sql = "UPDATE coupon SET TITLE=?, START_DATE=?, END_DATE=?, AMOUNT=?, TYPE=?,"
 					+ "MESSAGE=?, PRICE=?, IMAGE=?, COMP_ID=? WHERE ID=?";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, coupon.getCompanyId());
-			stmt.setString(2, coupon.getTitle());
-			stmt.setDate(3, coupon.getStartDate());
-			stmt.setDate(4, coupon.getEndDate());
-			stmt.setInt(5, coupon.getAmount());
-			stmt.setString(6,String.valueOf(coupon.getType()));
-			stmt.setString(7, coupon.getMessage());
-			stmt.setDouble(8, coupon.getPrice());
-			stmt.setString(9, coupon.getImage());
-			stmt.setLong(10, coupon.getCompanyId());
-			stmt.setLong(11, coupon.getCouponId());
+//			stmt.setLong(1, coupon.getCompanyId());
+			stmt.setString(1, coupon.getTitle());
+			stmt.setDate(2, coupon.getStartDate());
+			stmt.setDate(3, coupon.getEndDate());
+			stmt.setInt(4, coupon.getAmount());
+			stmt.setString(5,String.valueOf(coupon.getType()));
+			stmt.setString(6, coupon.getMessage());
+			stmt.setDouble(7, coupon.getPrice());
+			stmt.setString(8, coupon.getImage());
+			stmt.setLong(9, coupon.getCompanyId());
+			stmt.setLong(10, coupon.getCouponId());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 				throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"update coupon failed, ID  : " + coupon.getCouponId());
@@ -224,7 +231,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.executeUpdate();				
 		} catch (SQLException e) {
 			connectionPool.rollback();
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"purchase coupon failed - Customer already owns Coupon", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"purchase failed - Customer already owns Coupon", e);
 		}finally {			
 		}
 		connectionPool.endTransaction();

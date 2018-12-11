@@ -52,7 +52,7 @@ public class CompanyService implements Serializable{
 	 *  If company name or ID already exist in the DB
 	 *  If company creation fails
 	 */
-	public void createCompany(CompanyBean company) throws CouponSystemException {
+	public long createCompany(CompanyBean company) throws CouponSystemException {
 		CompanyBeanValidator.checkCompany(company);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
@@ -63,7 +63,7 @@ public class CompanyService implements Serializable{
 		/*if(companyDAO.companyIdAlreadyExists(company.getId())) {
 			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Company ID already exists");
 		}*/
-		companyDAO.createCompany(company);		
+		return companyDAO.createCompany(company);		
 	}
 
 

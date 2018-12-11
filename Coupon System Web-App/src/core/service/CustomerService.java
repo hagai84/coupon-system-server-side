@@ -16,7 +16,7 @@ import core.validation.CustomerBeanValidator;
 
 /**
  * Facade used to access the coupon system by Customers
- * @author Yair
+ * @author Ron
  *
  */
 public class CustomerService implements Serializable{
@@ -53,7 +53,7 @@ public class CustomerService implements Serializable{
 	 *  If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists or is invalid).
 	 *
 	 */
-	public void createCustomer(CustomerBean customer) throws CouponSystemException {
+	public long createCustomer(CustomerBean customer) throws CouponSystemException {
 		CustomerBeanValidator.checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
@@ -64,7 +64,7 @@ public class CustomerService implements Serializable{
 		/*if(customerDAO.customerIdAlreadyExists(customer.getId())) {
 			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Customer ID already exists");
 		}*/
-		customerDAO.createCustomer(customer);
+		return customerDAO.createCustomer(customer);
 		
 	}
 

@@ -20,7 +20,6 @@ import javax.ws.rs.core.MediaType;
 import core.beans.CouponBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
-import core.exception.ExceptionsEnum;
 import core.service.CouponService;
 
 
@@ -48,9 +47,9 @@ public class CouponRestController implements Serializable {
 	 */
 	
 	@POST
-	public void createCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
-		couponService.createCoupon(coupon, companyId);
+	public long createCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
+		return couponService.createCoupon(coupon, companyId);
 	}
 
 
@@ -62,7 +61,7 @@ public class CouponRestController implements Serializable {
 	 */
 	@PUT
 	public void updateCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		couponService.updateCoupon(coupon, companyId);
 	}
 
@@ -82,7 +81,7 @@ public class CouponRestController implements Serializable {
 	@DELETE
 	@Path("/{couponId}")
 	public void removeCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);	
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		couponService.removeCoupon(couponId, companyId);
 	}
 	 
@@ -97,7 +96,7 @@ public class CouponRestController implements Serializable {
 	@PUT
 	@Path("/{couponID}")
 	public void purchaseCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = getUserId(httpServletRequest);
+		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		couponService.purchaseCoupon(couponId, customerId);
 	}
 
@@ -154,7 +153,7 @@ public class CouponRestController implements Serializable {
 	@GET
 	@Path("/company")
 	public Collection<CouponBean> getCompanyCoupons(@Context HttpServletRequest request, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCompanyCoupons(companyId);
 	}
 
@@ -169,20 +168,20 @@ public class CouponRestController implements Serializable {
 	@GET
 	@Path("/company/type")
 	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType type, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCompanyCouponsByType(companyId, type);
 	}
 
 	@GET
 	@Path("/company/price")
 	public Collection<CouponBean> getCompanyCouponsByPrice(@QueryParam("price") double price, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCompanyCouponsByPrice(companyId, price);
 	}
 	@GET
 	@Path("/company/date")
 	public Collection<CouponBean> getCompanyCouponsByDate(@QueryParam("date") Date date, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = getUserId(httpServletRequest);
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCompanyCouponsByDate(companyId, date);
 	}
 	/**
@@ -195,7 +194,7 @@ public class CouponRestController implements Serializable {
 	@GET
 	@Path("/customer")
 	public Collection<CouponBean> getCustomerCoupons(@Context HttpServletRequest request, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = getUserId(httpServletRequest);
+		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCustomerCoupons(customerId);
 	}
 
@@ -210,7 +209,7 @@ public class CouponRestController implements Serializable {
 	@GET
 	@Path("/customer/type")
 	public Collection<CouponBean> getCustomerCouponsByType(@QueryParam("couponType") CouponType type, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = getUserId(httpServletRequest);
+		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCustomerCouponsByType(customerId, type);
 	}
 
@@ -225,34 +224,7 @@ public class CouponRestController implements Serializable {
 	@GET
 	@Path("/customer/price")
 	public Collection<CouponBean> getCustomerCouponsByPrice(@QueryParam("price") double price, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = getUserId(httpServletRequest);
+		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCustomerCouponsByPrice(customerId, price);
 	}
-	
-	private long getUserId(HttpServletRequest httpServletRequest) throws CouponSystemException {
-		
-		long userId=-1;
-		/*String userType=null;
-		for (Cookie cookie : request.getCookies()) {
-			if(cookie.getName().equals("userId")) {
-				userId = Long.valueOf(cookie.getValue());
-			}
-			if(cookie.getName().equals("userType")) {
-				userType = cookie.getValue();
-			}
-		}
-		//no need for checks if login filter exists
-		if(userId == -1 || userType == null || !userType.equals("COMPANY")) {
-			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "User unauthorized for operation");
-		}*/
-		return Long.parseLong(httpServletRequest.getHeader("userId"));
-	
-/*		HttpSession session =  httpServletRequest.getSession(false);
-		if(session != null) {
-			userId = new Long((Long)session.getAttribute("userId")).longValue();
-			return userId;
-		}else {		
-			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "User unauthorized for operation");
-		}
-*/	}
 }

@@ -33,8 +33,8 @@ public class Test {
 		TestThread testThread4 = new SynchronisationThread(0, 5);	
 		TestThread testThread5 = new SynchronisationThread(0, 10);	
 		TestThread testThread6 = new SynchronisationThread(0, 15);	
-		testThread1.start();	
-//		testThread2.start();	
+//		testThread1.start();	
+		testThread2.start();	
 //		testThread3.start();	
 //		testThread4.start();	
 //		testThread5.start();	

@@ -7,7 +7,6 @@ import core.beans.CouponBean;
 import core.beans.CustomerBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
-import rest.controller.CouponRestController;
 
 public class GenerateThread extends TestThread {
 	
@@ -39,9 +38,9 @@ public class GenerateThread extends TestThread {
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
-			companyService.createCompany(company);
+			company.setId(companyService.createCompany(company));
 			System.out.println("LOG : Company created \n" + company);
-			company.setId(loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
+			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
@@ -52,14 +51,14 @@ public class GenerateThread extends TestThread {
 			coupon.setPrice(200);
 			coupon.setImage("aaaaaaaaaaaaaa");
 			coupon.setCompanyId(company.getId());
-			couponService.createCoupon(coupon, company.getId());
+			coupon.setCouponId(couponService.createCoupon(coupon, company.getId()));
 			System.out.println("LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
-			customerService.createCustomer(customer);
+			customer.setId(customerService.createCustomer(customer));
 			
-			customer.setId(loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
+			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			//Only has correct Id because refferenced object is updated
 			coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
 			customer.setId(customerService.getCustomerByName(customer.getCustName()).getId());

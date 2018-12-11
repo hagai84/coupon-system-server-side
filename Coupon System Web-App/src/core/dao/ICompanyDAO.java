@@ -22,7 +22,7 @@ public interface ICompanyDAO extends Serializable{
 	 * @throws CompanyException If insertion of the given company to the DB fails (e.g. Company ID already exists).
 	 * 
 	 */
-	void createCompany(CompanyBean company) throws CouponSystemException;
+	long createCompany(CompanyBean company) throws CouponSystemException;
 	
 	/**
 	 * Updates all of a company's fields (except ID) in the DB according to the given company bean.

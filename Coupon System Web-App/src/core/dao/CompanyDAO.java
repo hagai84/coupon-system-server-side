@@ -43,13 +43,16 @@ public class CompanyDAO implements ICompanyDAO{
 	/* (non-Javadoc)
 	 * @see coupon.system.dao.CompanyDAO#createCompany(coupon.system.beans.Company)
 	 */
-	public void createCompany(CompanyBean company) throws CouponSystemException {
-		Connection con = connectionPool.getConnection();
+	public long createCompany(CompanyBean company) throws CouponSystemException {
+//		Connection con = connectionPool.getConnection();
+		Connection con = connectionPool.startTransaction();
+
 		String sqlInsert = "INSERT INTO company "
 						+ "(comp_name, password, email) "
 //						+ "OUTPUT inserted.ID "
 						+ "VALUES(?,?,?)";
-		try (PreparedStatement pstmt = con.prepareStatement(sqlInsert);) {
+		String sql2 = "SELECT LAST_INSERT_ID() AS ID";
+		try(PreparedStatement pstmt = con.prepareStatement(sqlInsert);PreparedStatement stmt2 = con.prepareStatement(sql2)){
 			pstmt.setString(1, company.getCompName());
 			pstmt.setString(2, company.getPassword());
 			pstmt.setString(3, company.getEmail());
@@ -58,11 +61,19 @@ public class CompanyDAO implements ICompanyDAO{
 				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create company faild : ");
 				throw exception;
 			}
+			ResultSet set = stmt2.executeQuery();
+			if(set.next()) {
+				connectionPool.endTransaction();
+				return set.getLong("ID");
+			}else {
+				connectionPool.rollback();
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
+			}
 		} catch (SQLException e) {
 			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create company failed : ", e);
 			throw exception;
 		} finally {
-			connectionPool.returnConnection(con);
+//			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -73,12 +84,12 @@ public class CompanyDAO implements ICompanyDAO{
 	public void updateCompany(CompanyBean company) throws CouponSystemException {
 
 		Connection con = connectionPool.getConnection();
-		String sql = "UPDATE company SET password =? , email=?, comp_name =? WHERE id=?";
+		String sql = "UPDATE company SET  email=?, comp_name =? WHERE id=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
-			prepardStatement.setString(1, company.getPassword());
-			prepardStatement.setString(2, company.getEmail());
-			prepardStatement.setString(3, company.getCompName());
-			prepardStatement.setLong(4, company.getId());
+//			prepardStatement.setString(1, company.getPassword());
+			prepardStatement.setString(1, company.getEmail());
+			prepardStatement.setString(2, company.getCompName());
+			prepardStatement.setLong(3, company.getId());
 			//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 			if (prepardStatement.executeUpdate() == 0) {
 				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update company failed");
@@ -130,7 +141,7 @@ public class CompanyDAO implements ICompanyDAO{
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
 				com.setCompName(set.getString(2));
-//				com.setPassword(set.getString(3));
+				com.setPassword("***PASSWORD***");
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
@@ -159,7 +170,7 @@ public class CompanyDAO implements ICompanyDAO{
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
 				com.setCompName(set.getString(2));
-				com.setPassword(set.getString(3));
+				com.setPassword("***PASSWORD***");
 				com.setEmail(set.getString(4));
 				return com;
 			} else {
@@ -188,7 +199,7 @@ public class CompanyDAO implements ICompanyDAO{
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
 				com.setCompName(set.getString(2));
-				com.setPassword(set.getString(3));
+				com.setPassword("***PASSWORD***");
 				com.setEmail(set.getString(4));
 				allCompanies.add(com);
 			}	
@@ -214,7 +225,6 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	public long companyLogin(String companyName, String password) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
-//		String sql = "SELECT password, id FROM company where comp_name =?";
 		String sql = "SELECT id FROM company WHERE COMP_NAME=? AND PASSWORD=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1,companyName);

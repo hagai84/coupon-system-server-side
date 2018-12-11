@@ -15,7 +15,7 @@ import core.util.ConnectionPool;
 
 /**
  * Implements {@link ICustomerDAO} interface
- * @author Yair
+ * @author Ron
  *
  */
 public class CustomerDAO implements ICustomerDAO{
@@ -44,24 +44,33 @@ public class CustomerDAO implements ICustomerDAO{
 	 * @see coupon.system.dao.CustomerDAO#createCustomer(coupon.system.beans.Customer)
 	 */
 	@Override
-	public void createCustomer(CustomerBean customer) throws CouponSystemException {
-		Connection con = connectionPool.getConnection();
+	public long createCustomer(CustomerBean customer) throws CouponSystemException {
+//		Connection con = connectionPool.getConnection();
+		Connection con = connectionPool.startTransaction();
 		
-		String sql = "INSERT INTO customer "
-				+ "(cust_name, password) "
-				+ "VALUES(?,?)";
-		try(PreparedStatement stmt = con.prepareStatement(sql)){
+		String sql = "INSERT INTO customer (cust_name, password) VALUES(?,?)";
+		String sql2 = "SELECT LAST_INSERT_ID() AS ID";
+		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)){
 			stmt.setString(1, customer.getCustName());
 			stmt.setString(2, customer.getPassword());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
 			}			
+			ResultSet set = stmt2.executeQuery();
+			if(set.next()) {
+				connectionPool.endTransaction();
+				return set.getLong("ID");
+			}else {
+				connectionPool.rollback();
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			connectionPool.rollback();
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create customer failed : ", e);
 		} finally {
-			connectionPool.returnConnection(con);			
+//			connectionPool.returnConnection(con);			
 		}
 	}
 
@@ -72,12 +81,12 @@ public class CustomerDAO implements ICustomerDAO{
 		public void updateCustomer(CustomerBean customer) throws CouponSystemException {
 			Connection con = connectionPool.getConnection();		
 			
-			String sql = "UPDATE customer SET ID=?, CUST_NAME=?, PASSWORD=? WHERE ID=?";
+			String sql = "UPDATE customer SET CUST_NAME=? WHERE ID=?";
 			try(PreparedStatement stmt = con.prepareStatement(sql)) {
-				stmt.setLong(1, customer.getId());
-				stmt.setString(2, customer.getCustName());
-				stmt.setString(3, customer.getPassword());
-				stmt.setLong(4, customer.getId());
+//				stmt.setLong(, customer.getId());
+				stmt.setString(1, customer.getCustName());
+//				stmt.setString(, customer.getPassword());
+				stmt.setLong(2, customer.getId());
 				if(stmt.executeUpdate()==0) {
 					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update customer failed, ID : " + customer.getId());
@@ -241,7 +250,7 @@ public class CustomerDAO implements ICustomerDAO{
 		CustomerBean customer = new CustomerBean();
 		customer.setId(rs.getLong("ID"));
 		customer.setCustName(rs.getString("CUST_NAME"));
-//		customer.setPassword(rs.getString("PASSWORD"));
+		customer.setPassword("***PASSWORD***");
 		return customer;
 	}
 }

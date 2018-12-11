@@ -22,7 +22,7 @@ public interface ICustomerDAO extends Serializable {
 	 * @throws CustomerException If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists).
 	 *
 	 */
-	void createCustomer(CustomerBean customer) throws CouponSystemException;
+	long createCustomer(CustomerBean customer) throws CouponSystemException;
 
 	/**
 	 * Removes a specified customer from the DB.

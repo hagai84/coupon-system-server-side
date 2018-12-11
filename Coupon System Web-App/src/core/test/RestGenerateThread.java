@@ -46,13 +46,13 @@ public class RestGenerateThread extends RestTestThread {
 		CouponBean coupon = new CouponBean();
 		CompanyBean company = new CompanyBean();
 		for (char i = 97; i < 117; i++) {
-			company.setId(100000 + i);
+//			company.setId(100000 + i);
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			createCompany(company);
 			company.setId(loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
-			coupon.setCouponId(200000 + i);
+//			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
 			coupon.setEndDate(new Date(System.currentTimeMillis()+(1000*60*60*24*30*12)));
@@ -62,12 +62,12 @@ public class RestGenerateThread extends RestTestThread {
 			coupon.setPrice(200);
 			coupon.setImage(""+i+i+i+i+i+i+i+i+i+i+i+i);
 			coupon.setCompanyId(company.getId());
-			createCoupon(coupon, company.getId());
-			customer.setId(100032 + i);
+			coupon.setCouponId(createCoupon(coupon, company.getId()));
+//			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
 			createCustomer(customer);		
-			System.out.println("customer ID : " + loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
+			customer.setId(loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
 			//Only has correct Id because refferenced object is updated
 			/*coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
 			customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
@@ -78,7 +78,7 @@ public class RestGenerateThread extends RestTestThread {
 		}
 	}
 	
-	private void createCoupon(CouponBean coupon, long userId) {
+	private long createCoupon(CouponBean coupon, long userId) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(coupon);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
@@ -87,21 +87,21 @@ public class RestGenerateThread extends RestTestThread {
 			postMethod.setHeader("userId", String.valueOf(userId));
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
-			if(status==204) {
+			if(status==200) {
 				System.out.println("LOG : Coupon created" + coupon);
-				return;
+				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
-				return;
+				return -1;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
+			return -1;
 		}
 	}
 
-	private void createCompany(CompanyBean company) {
+	private long createCompany(CompanyBean company) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(company);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
@@ -109,21 +109,21 @@ public class RestGenerateThread extends RestTestThread {
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
-			if(status==204) {
+			if(status==200) {
 				System.out.println("LOG : Company created - " + company);
-				return;
+				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
-				return;
+				return -1;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
+			return -1;
 		}
 	}
 
-	private void createCustomer(CustomerBean customer) {
+	private long createCustomer(CustomerBean customer) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(customer);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
@@ -131,17 +131,18 @@ public class RestGenerateThread extends RestTestThread {
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
-			if(status==204) {
+//			System.out.println(status);
+			if(status==200) {
 				System.out.println("LOG : Customer created - " + customer);
-				return;
+				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
-				return;
+				return -1;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
+			return -1;
 		}
 	}
 	

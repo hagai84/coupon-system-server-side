@@ -54,7 +54,7 @@ public class CouponService implements Serializable{
 	 * @param coupon The new {@link CouponBean} to be added.
 	 * @throws CompanyFacadeException if operation was unsuccessful
 	 */
-	public void createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
+	public long createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
 		CouponBeanValidator.checkCoupon(coupon);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
@@ -68,7 +68,7 @@ public class CouponService implements Serializable{
 		if (coupon.getCompanyId() != companyId) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to ceate coupon on different company " + coupon.getCompanyId());
 		}
-		couponDAO.createCoupon(coupon);
+		return couponDAO.createCoupon(coupon);
 	}
 
 
