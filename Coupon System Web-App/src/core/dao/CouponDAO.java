@@ -478,12 +478,6 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public boolean couponIdAlreadyExists(long couponId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean couponTitleAlreadyExists(String title) {
 		// TODO Auto-generated method stub
 		return false;

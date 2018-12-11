@@ -74,9 +74,8 @@ public interface ICustomerDAO extends Serializable {
 	 */
 	Collection<CustomerBean> getAllCustomers() throws CouponSystemException;
 	
-	boolean customerNameAlreadyExists(String name);
-	boolean customerIdAlreadyExists(long customerId);
-	
 	long customerLogin(String customerName, String password) throws CouponSystemException;
+	boolean customerNameAlreadyExists(String name);
+	
 	
 }

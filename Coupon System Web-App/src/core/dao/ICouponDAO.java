@@ -237,5 +237,4 @@ public interface ICouponDAO extends Serializable{
 	//	void removeCouponFromCompanies(long couponId) throws CouponSystemException;
 	
 		boolean couponTitleAlreadyExists(String title);
-	boolean couponIdAlreadyExists(long couponId);
 }

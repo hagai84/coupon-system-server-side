@@ -241,10 +241,4 @@ public class CompanyDAO implements ICompanyDAO{
 		return false;
 	}
 
-	@Override
-	public boolean companyIdAlreadyExists(long companyId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

@@ -76,5 +76,4 @@ public interface ICompanyDAO extends Serializable{
 	long companyLogin(String companyName, String password) throws CouponSystemException;
 
 	boolean companyNameAlreadyExists(String name);
-	boolean companyIdAlreadyExists(long companyId);
 }

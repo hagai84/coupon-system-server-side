@@ -230,12 +230,6 @@ public class CustomerDAO implements ICustomerDAO{
 		return false;
 	}
 
-	@Override
-	public boolean customerIdAlreadyExists(long customerId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	/**
 	 * Reads a ResultSet of a specific customer from the DB and into a {@link CustomerBean} object
 	 * @param rs ResultSet of a single customer
