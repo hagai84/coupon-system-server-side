@@ -58,16 +58,16 @@ public class CouponSystem implements Serializable{
 	public void setServer(String driverName, String databaseUrl, String userName, String password) {
 		try {
 			connectionPool.setServer(driverName, databaseUrl, userName, password);
-			Class.forName("core.util.IdGenerator");
+//			Class.forName("core.util.IdGenerator");
 			dailyTask = DailyCouponExpirationTask.getInstance();
 		} catch (CouponSystemException e) {
 			// TODO Manager handling
 			// e.printStackTrace();
 			System.err.println("Set Server Initialize failed : " + e);
-		} catch (ClassNotFoundException e) {
+//		} catch (ClassNotFoundException e) {
 			// TODO Manager handling
 			// e.printStackTrace();
-			System.err.println("Id generator class not found : " + e);
+//			System.err.println("Id generator class not found : " + e);
 		}	
 	}
 }

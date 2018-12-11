@@ -47,14 +47,15 @@ public class CustomerDAO implements ICustomerDAO{
 	public void createCustomer(CustomerBean customer) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
 		
-		String sql = "INSERT INTO customer VALUES(?,?,?)";
+		String sql = "INSERT INTO customer "
+				+ "(cust_name, password) "
+				+ "VALUES(?,?)";
 		try(PreparedStatement stmt = con.prepareStatement(sql)){
-			stmt.setLong(1, customer.getId());
-			stmt.setString(2, customer.getCustName());
-			stmt.setString(3, customer.getPassword());
+			stmt.setString(1, customer.getCustName());
+			stmt.setString(2, customer.getPassword());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed, ID : " + customer.getId());
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
 			}			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -246,7 +247,7 @@ public class CustomerDAO implements ICustomerDAO{
 		CustomerBean customer = new CustomerBean();
 		customer.setId(rs.getLong("ID"));
 		customer.setCustName(rs.getString("CUST_NAME"));
-		customer.setPassword(rs.getString("PASSWORD"));
+//		customer.setPassword(rs.getString("PASSWORD"));
 		return customer;
 	}
 }

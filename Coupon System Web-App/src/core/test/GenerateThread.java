@@ -7,6 +7,7 @@ import core.beans.CouponBean;
 import core.beans.CustomerBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
+import rest.controller.CouponRestController;
 
 public class GenerateThread extends TestThread {
 	
@@ -40,7 +41,7 @@ public class GenerateThread extends TestThread {
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			companyService.createCompany(company);
 			System.out.println("LOG : Company created \n" + company);
-			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
+			company.setId(loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
 			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
@@ -50,6 +51,7 @@ public class GenerateThread extends TestThread {
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
 			coupon.setImage("aaaaaaaaaaaaaa");
+			coupon.setCompanyId(company.getId());
 			couponService.createCoupon(coupon, company.getId());
 			System.out.println("LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
@@ -57,13 +59,13 @@ public class GenerateThread extends TestThread {
 			customer.setPassword(""+i+i+i+i+i+i);
 			customerService.createCustomer(customer);
 			
-			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
+			customer.setId(loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
 			//Only has correct Id because refferenced object is updated
-			/*coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
-			customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
+			coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
+			customer.setId(customerService.getCustomerByName(customer.getCustName()).getId());
 
-			couponController.purchaseCoupon(coupon.getCouponId(), customer.getId());
-			System.out.println("LOG : Coupon purchased \n" + coupon);*/
+			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
+			System.out.println("LOG : Coupon purchased \n" + coupon);
 
 		}
 	}

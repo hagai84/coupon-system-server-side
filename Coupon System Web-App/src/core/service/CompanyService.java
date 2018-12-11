@@ -11,7 +11,7 @@ import core.dao.ICouponDAO;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
-import core.util.IdGenerator;
+//import core.util.IdGenerator;
 import core.validation.CompanyBeanValidator;
 
 /**
@@ -58,11 +58,11 @@ public class CompanyService implements Serializable{
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Company Name already exists");
 		}	
-		company.setId(IdGenerator.generatCompanyId());
+//		company.setId(IdGenerator.generatCompanyId());
 		//IS ALSO HANDLED BY DAO LAYER
-		if(companyDAO.companyIdAlreadyExists(company.getId())) {
+		/*if(companyDAO.companyIdAlreadyExists(company.getId())) {
 			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Company ID already exists");
-		}
+		}*/
 		companyDAO.createCompany(company);		
 	}
 

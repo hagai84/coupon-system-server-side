@@ -45,19 +45,21 @@ public class CompanyDAO implements ICompanyDAO{
 	 */
 	public void createCompany(CompanyBean company) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
-		String sqlInsert = "INSERT INTO company VALUES(?,?,?,?)";
+		String sqlInsert = "INSERT INTO company "
+						+ "(comp_name, password, email) "
+//						+ "OUTPUT inserted.ID "
+						+ "VALUES(?,?,?)";
 		try (PreparedStatement pstmt = con.prepareStatement(sqlInsert);) {
-			pstmt.setLong(1, company.getId());
-			pstmt.setString(2, company.getCompName());
-			pstmt.setString(3, company.getPassword());
-			pstmt.setString(4, company.getEmail());
+			pstmt.setString(1, company.getCompName());
+			pstmt.setString(2, company.getPassword());
+			pstmt.setString(3, company.getEmail());
 			if (pstmt.executeUpdate() == 0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create company faild");
+				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create company faild : ");
 				throw exception;
 			}
 		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create company failed", e);
+			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create company failed : ", e);
 			throw exception;
 		} finally {
 			connectionPool.returnConnection(con);
@@ -128,7 +130,7 @@ public class CompanyDAO implements ICompanyDAO{
 				CompanyBean com = new CompanyBean();
 				com.setId(set.getLong(1));
 				com.setCompName(set.getString(2));
-				com.setPassword(set.getString(3));
+//				com.setPassword(set.getString(3));
 				com.setEmail(set.getString(4));
 				return com;
 			} else {

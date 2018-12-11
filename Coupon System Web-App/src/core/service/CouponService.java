@@ -14,7 +14,7 @@ import core.enums.CouponType;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
-import core.util.IdGenerator;
+//import core.util.IdGenerator;
 import core.validation.CouponBeanValidator;
 
 /**
@@ -60,12 +60,15 @@ public class CouponService implements Serializable{
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
 		}
-		coupon.setCouponId(IdGenerator.generatCouponId());
+//		coupon.setCouponId(IdGenerator.generatCouponId());
 		//IS ALSO HANDLED BY DAO LAYER
-		if (couponDAO.couponIdAlreadyExists(coupon.getCouponId())) {
+		/*if (couponDAO.couponIdAlreadyExists(coupon.getCouponId())) {
 			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Coupon ID already exists");
+		}*/
+		if (coupon.getCompanyId() != companyId) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to ceate coupon on different company " + coupon.getCompanyId());
 		}
-		couponDAO.createCoupon(coupon, companyId);
+		couponDAO.createCoupon(coupon);
 	}
 
 
@@ -78,18 +81,21 @@ public class CouponService implements Serializable{
 	public void updateCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
 		CouponBeanValidator.checkCoupon(coupon);
 		// gets original coupon data
-		CouponBean updatedCoupon = couponDAO.getCoupon(coupon.getCouponId());
+		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
 		
-		if (updatedCoupon.getCompanyId() != companyId) {
-			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "Company does not own coupon");
+		if (coupon.getCompanyId() != originalCoupon.getCompanyId()) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to change ownership of coupon " + coupon.getCouponId());
+		}
+		if (originalCoupon.getCompanyId() != companyId) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to update a coupon it doesn't own  " + coupon.getCouponId());
 		}
 		// alter the coupon data to the new ALLOWED ones
-		updatedCoupon.setEndDate(coupon.getEndDate());
+		originalCoupon.setEndDate(coupon.getEndDate());
 		//TODO MOVE TO DELTA METHOD
-		updatedCoupon.setAmount(coupon.getAmount());
-		updatedCoupon.setPrice(coupon.getPrice());
+		originalCoupon.setAmount(coupon.getAmount());
+		originalCoupon.setPrice(coupon.getPrice());
 		// updates the coupon
-		couponDAO.updateCoupon(updatedCoupon);
+		couponDAO.updateCoupon(originalCoupon);
 	}
 
 
@@ -108,8 +114,8 @@ public class CouponService implements Serializable{
 		// TODO Start transaction
 		connectionPool.startTransaction();
 		CouponBean coupon = couponDAO.getCoupon(couponId);
-		if(companyId != coupon.getCompanyId()) {
-			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "Company does not own coupon");
+		if (coupon.getCompanyId() != companyId) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to remove coupon " + couponId +" of a different company " + coupon.getCompanyId());
 		}
 		try {
 			couponDAO.removeCouponFromCustomers(couponId);

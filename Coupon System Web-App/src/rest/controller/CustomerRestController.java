@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -19,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
-import core.exception.ExceptionsEnum;
 import core.service.CustomerService;
 
 @Path("/customers")

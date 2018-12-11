@@ -26,7 +26,7 @@ public interface ICouponDAO extends Serializable{
 	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 	 * @throws CouponException If {@link CouponBean}  could not be added
 	 */
-	void createCoupon(CouponBean coupon, long companyId) throws CouponSystemException;
+	void createCoupon(CouponBean coupon) throws CouponSystemException;
 	/**
 	 * Updates a specific {@link CouponBean} in the DB.
 	 * 

@@ -61,6 +61,7 @@ public class RestGenerateThread extends RestTestThread {
 			coupon.setMessage(""+i+i+i+i+i+i);
 			coupon.setPrice(200);
 			coupon.setImage(""+i+i+i+i+i+i+i+i+i+i+i+i);
+			coupon.setCompanyId(company.getId());
 			createCoupon(coupon, company.getId());
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);

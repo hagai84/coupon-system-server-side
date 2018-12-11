@@ -11,7 +11,7 @@ import core.dao.ICustomerDAO;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
-import core.util.IdGenerator;
+//import core.util.IdGenerator;
 import core.validation.CustomerBeanValidator;
 
 /**
@@ -59,11 +59,11 @@ public class CustomerService implements Serializable{
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Customer Name already exists");
 		}
-		customer.setId(IdGenerator.generatCustomerId());		
+//		customer.setId(IdGenerator.generatCustomerId());		
 		//IS ALSO HANDLED BY DAO LAYER
-		if(customerDAO.customerIdAlreadyExists(customer.getId())) {
+		/*if(customerDAO.customerIdAlreadyExists(customer.getId())) {
 			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Customer ID already exists");
-		}
+		}*/
 		customerDAO.createCustomer(customer);
 		
 	}

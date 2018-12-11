@@ -35,22 +35,22 @@ public class CreateDB {
 		try (Statement stmt = con.createStatement()){
 			// create company table
 			String str = "CREATE TABLE company("
-					+ "id BIGINT PRIMARY KEY, "
+					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "comp_name VARCHAR(50) NOT NULL, "
 					+ "password VARCHAR(10) NOT NULL, "
-					+ "email VARCHAR(50) NOT NULL)";
+					+ "email VARCHAR(50) NOT NULL) AUTO_INCREMENT=100001";
 			stmt.executeUpdate(str);
 
 			//create customer table
 			str = "CREATE TABLE customer("
-					+ "id BIGINT PRIMARY KEY, "
+					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "cust_name VARCHAR(50) NOT NULL, "
-					+ "password VARCHAR(10) NOT NULL)";
+					+ "password VARCHAR(10) NOT NULL) AUTO_INCREMENT=200001";
 			stmt.executeUpdate(str);
 
 			// create coupon table
 			str = "CREATE TABLE coupon ("
-					+ "id BIGINT PRIMARY KEY, "
+					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "title VARCHAR (255), "
 					+ "start_date DATE, "
 					+ "end_date DATE NOT NULL, "
@@ -60,7 +60,7 @@ public class CreateDB {
 					+ "price DOUBLE NOT NULL, "
 					+ "image VARCHAR(255), "
 					+ "comp_id BIGINT NOT NULL, "
-					+ "FOREIGN KEY (comp_id) REFERENCES company(id)) ";
+					+ "FOREIGN KEY (comp_id) REFERENCES company(id)) AUTO_INCREMENT=300001";
 //					+ "ON DELETE CASCADE ON UPDATE NO ACTION ";
 			stmt.executeUpdate(str);
 

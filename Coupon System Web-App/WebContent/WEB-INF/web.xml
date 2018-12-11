@@ -23,14 +23,14 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>SystemServlet</display-name>
-    <servlet-name>SystemServlet</servlet-name>
-    <servlet-class>rest.SystemServlet</servlet-class>
+    <display-name>InitServlet</display-name>
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>rest.InitServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>SystemServlet</servlet-name>
-    <url-pattern>/SystemServlet</url-pattern>
+    <servlet-name>InitServlet</servlet-name>
+    <url-pattern>/InitServlet</url-pattern>
   </servlet-mapping>
 </web-app>
   

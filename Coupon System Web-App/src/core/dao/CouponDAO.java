@@ -45,29 +45,32 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public void createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {	
+	public void createCoupon(CouponBean coupon) throws CouponSystemException {	
 		Connection con = connectionPool.getConnection();
 			
-		String sql = "INSERT INTO coupon VALUES(?,?,?,?,?,?,?,?,?,?) ";
+		String sql = "INSERT INTO coupon "
+				+ "(title, start_date, end_date, amount, type, message, price, image, comp_id) "
+//				+ "OUTPUT inserted.ID "
+				+ "VALUES(?,?,?,?,?,?,?,?,?) ";
 
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setLong(1, coupon.getCouponId());
-			stmt.setString(2, coupon.getTitle());
-			stmt.setDate(3, coupon.getStartDate());
-			stmt.setDate(4, coupon.getEndDate());
-			stmt.setInt(5, coupon.getAmount());
-			stmt.setString(6,coupon.getType().toString());
-			stmt.setString(7, coupon.getMessage());
-			stmt.setDouble(8, coupon.getPrice());
-			stmt.setString(9, coupon.getImage());
-			stmt.setLong(10, companyId);
+//			stmt.setLong(1, coupon.getCouponId());
+			stmt.setString(1, coupon.getTitle());
+			stmt.setDate(2, coupon.getStartDate());
+			stmt.setDate(3, coupon.getEndDate());
+			stmt.setInt(4, coupon.getAmount());
+			stmt.setString(5,coupon.getType().toString());
+			stmt.setString(6, coupon.getMessage());
+			stmt.setDouble(7, coupon.getPrice());
+			stmt.setString(8, coupon.getImage());
+			stmt.setLong(9, coupon.getCompanyId());
 
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"add coupon to coupon failed, ID  : " + coupon.getCouponId());
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"Create coupon failed : ");
 			}					
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"add coupon to coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed : ", e);
 		}finally {			
 			connectionPool.returnConnection(con);	
 		}

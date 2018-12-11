@@ -12,7 +12,7 @@ import core.CouponSystem;
  * Servlet implementation class SystemServlet
  */
 
-public class SystemServlet extends HttpServlet {
+public class InitServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static CouponSystem couonSystem = CouponSystem.getInstance();   
        
@@ -23,7 +23,7 @@ public class SystemServlet extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SystemServlet() {
+    public InitServlet() {
         super();		
         // TODO Auto-generated constructor stub
     }

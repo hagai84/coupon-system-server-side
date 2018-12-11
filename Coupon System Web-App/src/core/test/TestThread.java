@@ -14,12 +14,14 @@ public abstract class TestThread extends Thread{
 		System.out.println("LOG : Admin logged in");
 	}
 	
-	public void loginCompany(String user, String password) throws CouponSystemException {
-		System.out.println("LOG : Company logged in : " + companyService.companyLogin(user, password));
+	public long loginCompany(String user, String password) throws CouponSystemException {
+		System.out.println("LOG : Company logged in : " + user);
+		return companyService.companyLogin(user, password);
 	}
 
-	public void loginCustomer(String user, String password) throws CouponSystemException {
-		System.out.println("LOG : customer logged in : " + customerService.customerLogin(user, password));
+	public long loginCustomer(String user, String password) throws CouponSystemException {
+		System.out.println("LOG : customer logged in : " + user);
+		return customerService.customerLogin(user, password);
 	}
 
 }
