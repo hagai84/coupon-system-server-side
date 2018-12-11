@@ -182,7 +182,7 @@ public class ExceptionThread extends TestThread {
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				if(companyService != null) {
-					couponService.removeCoupon(coupon.getCouponId());
+					couponService.removeCoupon(coupon.getCouponId(), company.getId());
 					System.out.println("LOG : Coupon deleted \n" + coupon);
 				}
 			} catch (CouponSystemException e) {System.err.println(e);}

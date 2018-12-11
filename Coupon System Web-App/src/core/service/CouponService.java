@@ -78,12 +78,11 @@ public class CouponService implements Serializable{
 	public void updateCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
 		CouponBeanValidator.checkCoupon(coupon);
 		// gets original coupon data
-		CouponBean updatedCoupon = getCoupon(coupon.getCouponId());
+		CouponBean updatedCoupon = couponDAO.getCoupon(coupon.getCouponId());
 		
-		if (updatedCoupon.getCompanyId() == companyId) {
-			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"Coupon " + coupon.getCouponId() + " doesn't belong to company " + companyId);
+		if (updatedCoupon.getCompanyId() != companyId) {
+			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "Company does not own coupon");
 		}
-		
 		// alter the coupon data to the new ALLOWED ones
 		updatedCoupon.setEndDate(coupon.getEndDate());
 		//TODO MOVE TO DELTA METHOD
@@ -105,9 +104,13 @@ public class CouponService implements Serializable{
 	 * @param couponId The coupon to be removed.
 	 * @throws CompanyFacadeException if operation was unsuccessful
 	 */
-	public void removeCoupon(long couponId) throws CouponSystemException {
+	public void removeCoupon(long couponId, long companyId) throws CouponSystemException {
 		// TODO Start transaction
 		connectionPool.startTransaction();
+		CouponBean coupon = couponDAO.getCoupon(couponId);
+		if(companyId != coupon.getCompanyId()) {
+			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "Company does not own coupon");
+		}
 		try {
 			couponDAO.removeCouponFromCustomers(couponId);
 			couponDAO.removeCoupon(couponId);
@@ -242,7 +245,7 @@ public class CouponService implements Serializable{
 	 * @return Collection of Coupons associated with the Customer
 	 * @throws CustomerFacadeException If retrieval of coupons fails
 	 */
-	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, Double price)
+	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price)
 			throws CouponSystemException {
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);
 	}

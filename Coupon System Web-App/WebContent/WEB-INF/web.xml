@@ -14,7 +14,7 @@
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>rest.controller, com.fasterxml.jackson.jaxrs.json</param-value>
+      <param-value>rest, com.fasterxml.jackson.jaxrs.json</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
@@ -25,7 +25,7 @@
     <description></description>
     <display-name>SystemServlet</display-name>
     <servlet-name>SystemServlet</servlet-name>
-    <servlet-class>api.SystemServlet</servlet-class>
+    <servlet-class>rest.SystemServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>

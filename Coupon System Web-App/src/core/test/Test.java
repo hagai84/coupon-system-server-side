@@ -26,26 +26,22 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		TestThread testThread1 = new RegularThread();	
+
+		TestThread testThread1 = new GenerateThread();	
 		TestThread testThread2 = new ExceptionThread();	
-		testThread1.start();	
-//		testThread2.start();	
-		try {
-			testThread1.join();
-			testThread2.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		TestThread testThread3 = new SynchronisationThread(0, 0);	
 		TestThread testThread4 = new SynchronisationThread(0, 5);	
 		TestThread testThread5 = new SynchronisationThread(0, 10);	
 		TestThread testThread6 = new SynchronisationThread(0, 15);	
-		testThread3.start();	
-		testThread4.start();	
-		testThread5.start();	
-		testThread6.start();	
+		testThread1.start();	
+//		testThread2.start();	
+//		testThread3.start();	
+//		testThread4.start();	
+//		testThread5.start();	
+//		testThread6.start();	
 		try {
+			testThread1.join();
+			testThread2.join();
 			testThread3.join();
 			testThread4.join();
 			testThread5.join();

@@ -3,6 +3,8 @@ package rest.controller;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -12,10 +14,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.service.CustomerService;
 
 @Path("/customers")
@@ -110,8 +114,16 @@ public class CustomerRestController implements Serializable{
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long customerLogin(@FormParam("name") String customerName,@FormParam("pass") String password) throws  CouponSystemException {
+	public long customerLogin(@FormParam("name") String customerName,@FormParam("password") String password, @Context HttpServletRequest httpServletRequest) throws  CouponSystemException {
 		return customerService.customerLogin(customerName, password);
-	}
+/*		HttpSession session =  httpServletRequest.getSession(false);
+		if(session != null) {
+			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "User already logged in");
+		}
+		long userId = customerService.customerLogin(customerName, password);
+		session =  httpServletRequest.getSession();
+		session.setAttribute("userId", Long.valueOf(userId));
+		return userId;
+*/	}
 	
 }

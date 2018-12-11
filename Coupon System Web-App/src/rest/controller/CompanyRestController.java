@@ -3,21 +3,27 @@ package rest.controller;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.service.CompanyService;
+import core.service.CustomerService;
 
-@Path("/company")
+@Path("/companies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CompanyRestController implements Serializable{
@@ -63,8 +69,8 @@ public class CompanyRestController implements Serializable{
 	 *  If given company's details don't match the details of the company with the same ID in the DB
 	 *  If company deletion fails
 	 */
-	@Path("{companyId}")
 	@DELETE
+	@Path("{companyId}")
 	public void removeCompany(@PathParam ("companyId") long companyId) throws CouponSystemException {
 		companyService.removeCompany(companyId);
 	}
@@ -113,6 +119,27 @@ public class CompanyRestController implements Serializable{
 //	public long companyLogin(String name, String password) throws CouponSystemException {
 //		return companyDAO.companyLogin(name, password);
 //	}
+	/**
+	 * Logs in to the coupon system as a specific company.
+	 * @param custName Customer username
+	 * @param password Customer password
+	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
+	 * @throws CustomerFacadeException if username or password are incorrect
+	 */
+	@POST
+	@Path("/login")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public long companyLogin(@FormParam("name") String customerName,@FormParam("password") String password, @Context HttpServletRequest httpServletRequest) throws  CouponSystemException {
+		return companyService.companyLogin(customerName, password);
 
+/*		HttpSession session =  httpServletRequest.getSession(false);
+		if(session != null) {
+			throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED, "User already logged in");
+		}
+		long userId = companyService.companyLogin(customerName, password);
+		session =  httpServletRequest.getSession(true);
+		session.setAttribute("userId", Long.valueOf(userId));
+		return userId;
+*/	}
 
 }

@@ -8,7 +8,7 @@ import core.beans.CustomerBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
 
-public class RegularThread extends TestThread {
+public class GenerateThread extends TestThread {
 	
 	
 	@Override
