@@ -115,6 +115,27 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
+	public void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException {
+		Connection con = connectionPool.getConnection();
+		
+		String sql = "UPDATE coupon SET AMOUNT=AMOUNT+? WHERE ID=? AND COMP_ID=? AND AMOUNT+?>=0 ";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setInt(1, amoutDelta);
+			stmt.setLong(2,couponId);
+			stmt.setLong(3,companyId);
+			stmt.setInt(4, amoutDelta);
+			if(stmt.executeUpdate()==0) {
+				//NEGATIVE DELTA TO BIG or CLIENT SIDE ERROR
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION ,"update amount failed - negative amount not allowed");
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR ,"update coupon failed : ", e);
+		}finally {
+			connectionPool.returnConnection(con);			
+		}
+	}
+	
+	@Override
 	public void removeCoupon(long couponId) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();		
 		
@@ -123,7 +144,7 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, couponId);
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"remove coupon from coupon failed, ID  : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"remove coupon from coupon failed, ID  : " + couponId);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from coupon failed : ", e);

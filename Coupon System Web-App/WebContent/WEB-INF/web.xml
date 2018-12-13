@@ -26,6 +26,22 @@
     <display-name>InitServlet</display-name>
     <servlet-name>InitServlet</servlet-name>
     <servlet-class>rest.InitServlet</servlet-class>
+    <init-param>
+      <param-name>driverName</param-name>
+      <param-value>com.mysql.jdbc.Driver</param-value>
+    </init-param>
+    <init-param>
+      <param-name>databaseUrl</param-name>
+      <param-value>jdbc:mysql://db4free.net:3306/coupon_system</param-value>
+    </init-param>
+    <init-param>
+      <param-name>userName</param-name>
+      <param-value>coupon_group</param-value>
+    </init-param>
+    <init-param>
+      <param-name>password</param-name>
+      <param-value>12345678</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>

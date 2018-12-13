@@ -42,6 +42,8 @@ public interface ICouponDAO extends Serializable{
 	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 	 * @throws CouponException If coupon could not be purchased
 	 */
+	void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException;
+	
 	void purchaseCoupon(long couponId, long customerId) throws CouponSystemException;
 
 	/**

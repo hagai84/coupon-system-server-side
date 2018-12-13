@@ -14,8 +14,9 @@ import core.enums.CouponType;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
+import core.validation.IBeanValidatorConstants;
 //import core.util.IdGenerator;
-import core.validation.CouponBeanValidator;
+//import core.validation.CouponBeanValidator;
 
 /**
  * Facade used to access the coupon system by Administrators
@@ -25,7 +26,7 @@ import core.validation.CouponBeanValidator;
  * @author Ron
  *
  */
-public class CouponService implements Serializable{
+public class CouponService implements Serializable, IBeanValidatorConstants{
 	/**
 	 * 
 	 */
@@ -55,7 +56,7 @@ public class CouponService implements Serializable{
 	 * @throws CompanyFacadeException if operation was unsuccessful
 	 */
 	public long createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
-		CouponBeanValidator.checkCoupon(coupon);
+		checkCoupon(coupon);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
@@ -79,7 +80,7 @@ public class CouponService implements Serializable{
 	 * @throws CompanyFacadeException if operation was unsuccessful
 	 */
 	public void updateCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
-		CouponBeanValidator.checkCoupon(coupon);
+		checkCoupon(coupon);
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
 		
@@ -92,12 +93,24 @@ public class CouponService implements Serializable{
 		// alter the coupon data to the new ALLOWED ones
 		originalCoupon.setEndDate(coupon.getEndDate());
 		//TODO MOVE TO DELTA METHOD
-		originalCoupon.setAmount(coupon.getAmount());
+//		originalCoupon.setAmount(coupon.getAmount());
 		originalCoupon.setPrice(coupon.getPrice());
 		// updates the coupon
 		couponDAO.updateCoupon(originalCoupon);
 	}
 
+	public void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException {
+		// gets original coupon data
+		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
+		
+		if (originalCoupon.getCompanyId() != companyId) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to update a coupon's amount it doesn't own  " + couponId);
+		}
+		if (amoutDelta+originalCoupon.getAmount()<0) {
+			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount not allowed");
+		}
+		couponDAO.updateCouponAmout(couponId, companyId, amoutDelta);
+	}
 
 	/**
 	 * Removes a {@link CouponBean} to the DB in the following order:
@@ -261,4 +274,58 @@ public class CouponService implements Serializable{
 		return couponDAO.getCouponByTitle(couponTitle);
 	}
 
+	private void checkCoupon(CouponBean coupon) throws CouponSystemException {
+		checkTitle(coupon.getTitle());
+		checkStartDate(coupon.getStartDate());
+		checkEndDate(coupon.getEndDate());
+		checkAmount(coupon.getAmount());
+		checkType(coupon.getType());
+		checkPrice(coupon.getPrice());
+		checkImage(coupon.getImage());
+		checkMessage(coupon.getMessage());
+		
+	}
+
+	/*public void checkId(long id) {
+		return true;
+	}*/
+
+	private void checkTitle(String title) throws CouponSystemException {
+		if(title.length()>COUP_TITLE_LENGTH)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's title can't be longer than " + COUP_TITLE_LENGTH + " characters");
+	}
+
+	private void checkStartDate(Date startDate) throws CouponSystemException {
+		if(startDate.before(new java.util.Date(System.currentTimeMillis())))
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's start date can't be earlier than today");
+	}
+
+	private void checkEndDate(Date endDate) throws CouponSystemException {
+		if(endDate.before(new java.util.Date(System.currentTimeMillis())))
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's expiration date can't be earlier than today");
+	}
+
+	private void checkAmount(int amount) throws CouponSystemException {
+		if(amount<0)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's amount can't be negative");
+	}
+
+	private void checkType(CouponType type) throws CouponSystemException {
+		if(type == null)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon title cant be more than " + COUP_TITLE_LENGTH + " characters");
+	}
+
+	private void checkPrice(double price) throws CouponSystemException {
+		if(price<0)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's price can't be negative");
+	}
+
+	private void checkImage(String image) throws CouponSystemException {
+		throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon image cant be ... ");//No restrictions at the momment
+	}
+
+	private void checkMessage(String message) throws CouponSystemException {
+		if(message.length()>COUP_MSG_LENGTH)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's message can't be longer than " + COUP_MSG_LENGTH + " characters");		
+	}
 }

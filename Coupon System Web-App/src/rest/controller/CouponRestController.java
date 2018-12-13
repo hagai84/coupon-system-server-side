@@ -65,8 +65,12 @@ public class CouponRestController implements Serializable {
 		couponService.updateCoupon(coupon, companyId);
 	}
 
-	
-
+	@PUT
+	@Path("/amount/{couponId}")
+	public void updateCouponAmout(@PathParam("couponId") long couponId,@QueryParam("amountDelta") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
+		couponService.updateCouponAmout(couponId, companyId, amoutDelta);
+	}
 	/**
 	 * Removes a {@link CouponBean} to the DB in the following order:
 	 * <ul>

@@ -11,15 +11,16 @@ import core.dao.ICustomerDAO;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
+import core.validation.IBeanValidatorConstants;
 //import core.util.IdGenerator;
-import core.validation.CustomerBeanValidator;
+//import core.validation.CustomerBeanValidator;
 
 /**
  * Facade used to access the coupon system by Customers
  * @author Ron
  *
  */
-public class CustomerService implements Serializable{
+public class CustomerService implements Serializable, IBeanValidatorConstants{
 	/**
 	 * 
 	 */
@@ -54,7 +55,7 @@ public class CustomerService implements Serializable{
 	 *
 	 */
 	public long createCustomer(CustomerBean customer) throws CouponSystemException {
-		CustomerBeanValidator.checkCustomer(customer);
+		checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Customer Name already exists");
@@ -77,7 +78,7 @@ public class CustomerService implements Serializable{
 	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
 	 */
 	public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
-		CustomerBeanValidator.checkCustomer(customer);
+		checkCustomer(customer);
 		CustomerBean tmpCustomer = getCustomer(customer.getId());
 		tmpCustomer.setPassword(customer.getPassword());
 		customerDAO.updateCustomer(tmpCustomer);
@@ -146,5 +147,30 @@ public class CustomerService implements Serializable{
 	public CustomerBean getCustomerByName(String customerName) throws CouponSystemException {
 		// TODO Auto-generated method stub
 		return customerDAO.getCustomerByName(customerName);
+	}
+	
+	private void checkCustomer(CustomerBean customer) throws CouponSystemException {
+		checkCustomerName(customer.getCustName());
+		checkCustomerPassword(customer.getPassword());
+		checkCustomerPasswordNotShort(customer.getPassword());
+	}
+
+	private void checkCustomerPasswordNotShort(String password) throws CouponSystemException {
+		if (password.length() < CUST_PASSWORD_MIN_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer name cant be more than " + CUST_NAME_LENGTH + " characters");
+			
+		}
+	}
+
+	private void checkCustomerName(String custName) throws CouponSystemException {
+		if (custName.length() > CUST_NAME_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password cant be more than " + CUST_PASSWORD_LENGTH + " characters");
+		}
+	}
+
+	private void checkCustomerPassword(String password) throws CouponSystemException {
+		if (password.length() > CUST_PASSWORD_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password need to be more than " + CUST_PASSWORD_MIN_LENGTH + " characters");
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package rest;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,10 @@ public class InitServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static CouponSystem couonSystem = CouponSystem.getInstance();   
        
-	private static String driverName = "com.mysql.jdbc.Driver";
-	private static String databaseUrl = "jdbc:mysql://db4free.net:3306/coupon_system";
-	private static String userName = "coupon_group";
-	private static String password = "12345678";
+	private static String driverName;// = "com.mysql.jdbc.Driver";
+	private static String databaseUrl;// = "jdbc:mysql://db4free.net:3306/coupon_system";
+	private static String userName;// = "coupon_group";
+	private static String password;// = "12345678";
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -39,7 +40,13 @@ public class InitServlet extends HttpServlet {
 	public void init() throws ServletException {
 		// TODO Auto-generated method stub
 		super.init();
+		driverName = getInitParameter("driverName");
+		databaseUrl = getInitParameter("databaseUrl");
+		userName = getInitParameter("userName");
+		password = getInitParameter("password");
+//		System.out.println(driverName+databaseUrl+userName+password);
 		couonSystem.setServer(driverName, databaseUrl, userName, password);
+		
 	}
 
 	/**
