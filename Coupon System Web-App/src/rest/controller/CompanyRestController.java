@@ -3,6 +3,7 @@ package rest.controller;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -12,10 +13,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.service.CompanyService;
 import core.service.CustomerService;
 
@@ -56,7 +59,13 @@ public class CompanyRestController implements Serializable{
 		companyService.updateCompany(company);
 	}
 
-	
+	@PUT
+	@Path("password")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public void updateCompanyPassword(@FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
+		companyService.updateCompanyPassword(companyId, oldPassword, newPassword);
+	}
 	/**
 	 * Deletes a company in the database
 	 * -removes its coupons from DB (all tables)
@@ -97,7 +106,6 @@ public class CompanyRestController implements Serializable{
 	 * @return An <code>ArrayList</code> of all the companies in DB.
 	 * @throws AdminFacadeException If there is a connection problem or an <code>SQLException</code> is thrown to the DAO.
 	 */
-	@Path("companies")
 	@GET
 	public Collection<CompanyBean> getAllCompanies() throws CouponSystemException{
 		return companyService.getAllCompanies();

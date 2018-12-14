@@ -45,14 +45,13 @@ public class CustomerDAO implements ICustomerDAO{
 	 */
 	@Override
 	public long createCustomer(CustomerBean customer) throws CouponSystemException {
-//		Connection con = connectionPool.getConnection();
 		Connection con = connectionPool.startTransaction();
 		
 		String sql = "INSERT INTO customer (cust_name, password) VALUES(?,?)";
 		String sql2 = "SELECT LAST_INSERT_ID() AS ID";
 		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)){
 			stmt.setString(1, customer.getCustName());
-			stmt.setString(2, customer.getPassword());
+			stmt.setInt(2, customer.getPassword().hashCode());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
 				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
@@ -70,7 +69,6 @@ public class CustomerDAO implements ICustomerDAO{
 			connectionPool.rollback();
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create customer failed : ", e);
 		} finally {
-//			connectionPool.returnConnection(con);			
 		}
 	}
 
@@ -83,9 +81,7 @@ public class CustomerDAO implements ICustomerDAO{
 			
 			String sql = "UPDATE customer SET CUST_NAME=? WHERE ID=?";
 			try(PreparedStatement stmt = con.prepareStatement(sql)) {
-//				stmt.setLong(, customer.getId());
 				stmt.setString(1, customer.getCustName());
-//				stmt.setString(, customer.getPassword());
 				stmt.setLong(2, customer.getId());
 				if(stmt.executeUpdate()==0) {
 					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
@@ -97,6 +93,27 @@ public class CustomerDAO implements ICustomerDAO{
 				connectionPool.returnConnection(con);			
 			}
 	
+		}
+		
+		@Override
+		public void updateCustomerPassword(long customerId, String oldPassword, String newPassword) throws CouponSystemException {
+			Connection con = connectionPool.getConnection();		
+			
+			String sql = "UPDATE customer SET PASSWORD=? WHERE ID=? AND PASSWORD=?";
+			try(PreparedStatement stmt = con.prepareStatement(sql)) {
+				stmt.setInt(1, newPassword.hashCode());
+				stmt.setLong(2, customerId);
+				stmt.setInt(3, oldPassword.hashCode());
+				if(stmt.executeUpdate()==0) {
+					//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update customer's password failed, ID : " + customerId);
+				}
+			} catch (SQLException e) {
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update customer's password failed", e);
+			} finally {
+				connectionPool.returnConnection(con);			
+			}
+			
 		}
 
 	/* (non-Javadoc)
@@ -217,7 +234,7 @@ public class CustomerDAO implements ICustomerDAO{
 		String sql = "SELECT id FROM customer WHERE CUST_NAME=? AND PASSWORD=?";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
 			stmt.setString(1, customerName);
-			stmt.setString(2, password);
+			stmt.setInt(2, password.hashCode());
 			ResultSet rs = stmt.executeQuery();
 			
 			if(rs.next()) {

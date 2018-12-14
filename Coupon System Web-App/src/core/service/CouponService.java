@@ -259,9 +259,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		checkAmount(coupon.getAmount());
 		checkType(coupon.getType());
 		checkPrice(coupon.getPrice());
-		checkImage(coupon.getImage());
-		checkMessage(coupon.getMessage());
-		
+//		checkImage(coupon.getImage());
+		checkMessage(coupon.getMessage());		
 	}
 
 	/*public void checkId(long id) {
@@ -299,6 +298,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	}
 
 	private void checkImage(String image) throws CouponSystemException {
+		//TODO if not null check if file exists/valid
 		throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon image cant be ... ");//No restrictions at the momment
 	}
 

@@ -57,11 +57,6 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Company Name already exists");
 		}	
-//		company.setId(IdGenerator.generatCompanyId());
-		//IS ALSO HANDLED BY DAO LAYER
-		/*if(companyDAO.companyIdAlreadyExists(company.getId())) {
-			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Company ID already exists");
-		}*/
 		return companyDAO.createCompany(company);		
 	}
 
@@ -83,7 +78,9 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		companyDAO.updateCompany(tmpCompany);
 	}
 
-	
+	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword) throws CouponSystemException {
+		companyDAO.updateCompanyPassword(companyId, oldPassword, newPassword);
+	}
 	/**
 	 * Deletes a company in the database
 	 * -removes its coupons from DB (all tables)

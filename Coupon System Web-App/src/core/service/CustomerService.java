@@ -81,6 +81,9 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		customerDAO.updateCustomer(tmpCustomer);
 	}
 
+	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword) throws CouponSystemException {
+		customerDAO.updateCustomerPassword(customerId, oldPassword, newPassword);
+	}
 	/**
 	 * Deletes a specified customer from the DB.
 	 * -removes its coupons from the DB (customer_coupon table)

@@ -37,7 +37,7 @@ public class CreateDB {
 			String str = "CREATE TABLE company("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "comp_name VARCHAR(50) NOT NULL, "
-					+ "password VARCHAR(10) NOT NULL, "
+					+ "password INTEGER, "
 					+ "email VARCHAR(50) NOT NULL) AUTO_INCREMENT=100001";
 			stmt.executeUpdate(str);
 
@@ -45,7 +45,7 @@ public class CreateDB {
 			str = "CREATE TABLE customer("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "cust_name VARCHAR(50) NOT NULL, "
-					+ "password VARCHAR(10) NOT NULL) AUTO_INCREMENT=200001";
+					+ "password INTEGER) AUTO_INCREMENT=200001";
 			stmt.executeUpdate(str);
 
 			// create coupon table
@@ -75,17 +75,6 @@ public class CreateDB {
 					+ "PRIMARY KEY (cust_id, coupon_id))";
 			stmt.executeUpdate(str);
 
-			/*// create company coupon table
-			str = "CREATE TABLE company_coupon ("
-					+ "comp_id BIGINT NOT NULL, "
-					+ "coupon_id BIGINT NOT NULL, "
-					+ "FOREIGN KEY (coupon_id) REFERENCES coupon(id) "
-					+ "ON DELETE CASCADE ON UPDATE NO ACTION, "
-					+ "FOREIGN KEY (comp_id) REFERENCES company(id) "
-					+ "ON DELETE CASCADE ON UPDATE NO ACTION, "
-					+ "PRIMARY KEY (comp_id,coupon_id))";
-			stmt.executeUpdate(str);*/
-
 			System.out.println("LOG : new db created");
 
 		} catch (SQLException e) {
@@ -106,13 +95,7 @@ public class CreateDB {
 		Connection con = pool.getConnection();
 
 		try (Statement stmt = con.createStatement()){
-			stmt.executeUpdate("drop table if exists customer_coupon, customer, company_coupon, coupon, company");
-//			stmt.executeUpdate("drop table customer_coupon");
-//			stmt.executeUpdate("drop table customer");
-//			stmt.executeUpdate("drop table company_coupon");
-//			stmt.executeUpdate("drop table coupon");
-//			stmt.executeUpdate("drop table company");
-
+			stmt.executeUpdate("drop table if exists customer_coupon, customer, coupon, company");
 			System.out.println("LOG : DB removed");
 
 		} catch (SQLException e) {

@@ -33,6 +33,7 @@ public interface ICompanyDAO extends Serializable{
 	 */
 	void updateCompany(CompanyBean company) throws CouponSystemException;
 
+	void updateCompanyPassword(long companyId, String oldPassword, String newPassword) throws CouponSystemException;
 	/**
 	 * Removes a specified company from the DB.
 	 * 
@@ -76,4 +77,5 @@ public interface ICompanyDAO extends Serializable{
 	long companyLogin(String companyName, String password) throws CouponSystemException;
 
 	boolean companyNameAlreadyExists(String name);
+
 }

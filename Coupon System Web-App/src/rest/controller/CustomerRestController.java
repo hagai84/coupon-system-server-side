@@ -3,6 +3,7 @@ package rest.controller;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -12,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
@@ -57,6 +59,14 @@ public class CustomerRestController implements Serializable{
 		customerService.updateCustomer(customer);
 	}
 	
+	
+	@PUT
+	@Path("password")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public void updateCustomerPassword(@FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
+		customerService.updateCustomerPassword(customerId, oldPassword, newPassword);
+	}
 	/**
 	 * Deletes a specified customer from the DB.
 	 * -removes its coupons from the DB (customer_coupon table)
@@ -101,7 +111,7 @@ public class CustomerRestController implements Serializable{
 	}
 	
 	/**
-	 * Logs in to the coupon system as a specific company.
+	 * Logs in to the coupon system as a specific customer.
 	 * @param custName Customer username
 	 * @param password Customer password
 	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}

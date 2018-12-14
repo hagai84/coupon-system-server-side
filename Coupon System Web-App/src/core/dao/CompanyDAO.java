@@ -44,17 +44,15 @@ public class CompanyDAO implements ICompanyDAO{
 	 * @see coupon.system.dao.CompanyDAO#createCompany(coupon.system.beans.Company)
 	 */
 	public long createCompany(CompanyBean company) throws CouponSystemException {
-//		Connection con = connectionPool.getConnection();
 		Connection con = connectionPool.startTransaction();
 
 		String sqlInsert = "INSERT INTO company "
 						+ "(comp_name, password, email) "
-//						+ "OUTPUT inserted.ID "
 						+ "VALUES(?,?,?)";
 		String sql2 = "SELECT LAST_INSERT_ID() AS ID";
 		try(PreparedStatement pstmt = con.prepareStatement(sqlInsert);PreparedStatement stmt2 = con.prepareStatement(sql2)){
 			pstmt.setString(1, company.getCompName());
-			pstmt.setString(2, company.getPassword());
+			pstmt.setInt(2, company.getPassword().hashCode());
 			pstmt.setString(3, company.getEmail());
 			if (pstmt.executeUpdate() == 0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
@@ -67,13 +65,12 @@ public class CompanyDAO implements ICompanyDAO{
 				return set.getLong("ID");
 			}else {
 				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create company failed : ");
 			}
 		} catch (SQLException e) {
 			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"create company failed : ", e);
 			throw exception;
 		} finally {
-//			connectionPool.returnConnection(con);
 		}
 	}
 
@@ -86,7 +83,6 @@ public class CompanyDAO implements ICompanyDAO{
 		Connection con = connectionPool.getConnection();
 		String sql = "UPDATE company SET  email=?, comp_name =? WHERE id=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
-//			prepardStatement.setString(1, company.getPassword());
 			prepardStatement.setString(1, company.getEmail());
 			prepardStatement.setString(2, company.getCompName());
 			prepardStatement.setLong(3, company.getId());
@@ -104,6 +100,27 @@ public class CompanyDAO implements ICompanyDAO{
 		}
 	}
 
+	@Override
+	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword) throws CouponSystemException {
+		Connection con = connectionPool.getConnection();		
+		
+		String sql = "UPDATE company SET PASSWORD=? WHERE ID=? AND PASSWORD=?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setInt(1, newPassword.hashCode());
+			stmt.setLong(2, companyId);
+			stmt.setInt(3, oldPassword.hashCode());
+			if(stmt.executeUpdate()==0) {
+				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update company's password failed, ID : " + companyId);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update company's password failed", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}
+		
+	}
+	
 	/* (non-Javadoc)
 	 * @see coupon.system.dao.CompanyDAO#removeCompany(coupon.system.beans.Company)
 	 */
@@ -228,7 +245,7 @@ public class CompanyDAO implements ICompanyDAO{
 		String sql = "SELECT id FROM company WHERE COMP_NAME=? AND PASSWORD=?";
 		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
 			prepardStatement.setString(1,companyName);
-			prepardStatement.setString(2,password);
+			prepardStatement.setInt(2,password.hashCode());
 			ResultSet set = prepardStatement.executeQuery();
 			if (set.next()) {
 				long id = set.getLong("id");
