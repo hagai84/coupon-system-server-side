@@ -14,9 +14,6 @@ import core.enums.CouponType;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
-import core.validation.IBeanValidatorConstants;
-//import core.util.IdGenerator;
-//import core.validation.CouponBeanValidator;
 
 /**
  * Facade used to access the coupon system by Administrators
@@ -61,17 +58,25 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
 		}
-//		coupon.setCouponId(IdGenerator.generatCouponId());
-		//IS ALSO HANDLED BY DAO LAYER
-		/*if (couponDAO.couponIdAlreadyExists(coupon.getCouponId())) {
-			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Coupon ID already exists");
-		}*/
+
 		if (coupon.getCompanyId() != companyId) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to ceate coupon on different company " + coupon.getCompanyId());
 		}
 		return couponDAO.createCoupon(coupon);
 	}
 
+
+	/**
+	 * Purchases the given coupon, adds it to the customer and updates the coupons's
+	 * amount. -checks if customer owns this coupon
+	 * 
+	 * @param couponId Coupon to purchase
+	 * @throws CustomerFacadeException If coupon is out of stock or expired
+	 * @throws CustomerFacadeException If coupon purchase fails
+	 */
+	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException {
+		couponDAO.purchaseCoupon(couponId, customerId);		
+	}
 
 	/**
 	 * Updates a specific {@link CouponBean} in the DB.
@@ -109,7 +114,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		if (amoutDelta+originalCoupon.getAmount()<0) {
 			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount not allowed");
 		}
-		couponDAO.updateCouponAmout(couponId, companyId, amoutDelta);
+		couponDAO.updateCouponAmout(couponId, amoutDelta);
 	}
 
 	/**
@@ -140,33 +145,6 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		}
 		connectionPool.endTransaction();
 	}
-
-	/**
-	 * Purchases the given coupon, adds it to the customer and updates the coupons's
-	 * amount. -checks if customer owns this coupon
-	 * 
-	 * @param couponId Coupon to purchase
-	 * @throws CustomerFacadeException If coupon is out of stock or expired
-	 * @throws CustomerFacadeException If coupon purchase fails
-	 */
-	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException {
-		// checks if customer already owns this coupon
-		// dao does not allow dual ownership
-		/*CouponBean coupon1 = couponDAO.getCoupon(couponId);
-		if (couponDAO.getCustomerCoupons(customerId).contains(coupon1))
-			throw new CouponSystemException("You already own this coupon");*/
-		
-		//checks if coupon out of stock or expired
-		// dao does not allow negative amount
-		// expired coupons shld have been deleted and/or not shown to client can be added to dao
-		/*CouponBean coupon = couponDAO.getCoupon(couponId);
-		if (coupon.getAmount() < 1 || coupon.getEndDate().getTime() < System.currentTimeMillis()) {
-			throw new CouponSystemException("Coupon purchase failed : coupon is expired or out of stock");
-		}*/
-		
-		couponDAO.purchaseCoupon(couponId, customerId);		
-	}
-
 
 	/**
 	 * Fetches a specific {@link CouponBean} from the DB using its ID.
@@ -277,7 +255,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	private void checkCoupon(CouponBean coupon) throws CouponSystemException {
 		checkTitle(coupon.getTitle());
 		checkStartDate(coupon.getStartDate());
-		checkEndDate(coupon.getEndDate());
+		checkEndDate(coupon.getEndDate(), coupon.getStartDate());
 		checkAmount(coupon.getAmount());
 		checkType(coupon.getType());
 		checkPrice(coupon.getPrice());
@@ -300,8 +278,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's start date can't be earlier than today");
 	}
 
-	private void checkEndDate(Date endDate) throws CouponSystemException {
-		if(endDate.before(new java.util.Date(System.currentTimeMillis())))
+	private void checkEndDate(Date endDate, Date startDate) throws CouponSystemException {
+		if(endDate.before(startDate))
 			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's expiration date can't be earlier than today");
 	}
 

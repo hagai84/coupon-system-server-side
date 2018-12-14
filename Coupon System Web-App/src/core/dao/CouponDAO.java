@@ -68,7 +68,7 @@ public class CouponDAO implements ICouponDAO {
 
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS EXCEPTION BEFORE
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"Create coupon failed : ");
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"Create coupon failed : " + coupon);
 			}
 			ResultSet set = stmt2.executeQuery();
 			if(set.next()) {
@@ -76,13 +76,37 @@ public class CouponDAO implements ICouponDAO {
 				return set.getLong("ID");
 			}else {
 				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"create customer failed : ");
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"create customer failed : " + coupon);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed", e);
 		}finally {			
 //			connectionPool.returnConnection(con);	
 		}	
+	}
+
+	@Override
+	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
+		
+		Connection con = connectionPool.startTransaction();
+		
+		String sql = "INSERT INTO customer_coupon VALUES(?,?)";	
+		String sql2 = "UPDATE coupon SET AMOUNT=amount-1 WHERE ID=? AND amount>0";
+		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)) {
+			stmt.setLong(1, customerId);
+			stmt.setLong(2, couponId);
+			stmt2.setLong(1, couponId);
+			if(stmt2.executeUpdate()==0) {
+				connectionPool.rollback();
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"purchase coupon failed - Coupon out of Stock ID : " + couponId);
+			}				
+			stmt.executeUpdate();				
+		} catch (SQLException e) {
+			connectionPool.rollback();
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"purchase failed - Customer might already owns Coupon", e);
+		}finally {			
+		}
+		connectionPool.endTransaction();
 	}
 
 	@Override
@@ -105,31 +129,30 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(10, coupon.getCouponId());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.UNAUTHORIZED,"update coupon failed, ID  : " + coupon.getCouponId());
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"update coupon failed :" + coupon);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update coupon failed", e);
 		}finally {
 			connectionPool.returnConnection(con);			
 		}
 	}
 
 	@Override
-	public void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException {
+	public void updateCouponAmout(long couponId, int amoutDelta) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();
 		
-		String sql = "UPDATE coupon SET AMOUNT=AMOUNT+? WHERE ID=? AND COMP_ID=? AND AMOUNT+?>=0 ";
+		String sql = "UPDATE coupon SET AMOUNT=AMOUNT+? WHERE ID=? AND AMOUNT+?>=0 ";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setInt(1, amoutDelta);
 			stmt.setLong(2,couponId);
-			stmt.setLong(3,companyId);
-			stmt.setInt(4, amoutDelta);
+			stmt.setInt(3, amoutDelta);
 			if(stmt.executeUpdate()==0) {
 				//NEGATIVE DELTA TO BIG or CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION ,"update amount failed - negative amount not allowed");
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS ,"update amount failed : " + couponId);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR ,"update coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR ,"update coupon failed", e);
 		}finally {
 			connectionPool.returnConnection(con);			
 		}
@@ -144,10 +167,10 @@ public class CouponDAO implements ICouponDAO {
 			stmt.setLong(1, couponId);
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"remove coupon from coupon failed, ID  : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"remove coupon failed, ID  : " + couponId);
 			}
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon from coupon failed : ", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon failed", e);
 		}finally {			
 			connectionPool.returnConnection(con);
 		}		
@@ -232,30 +255,6 @@ public class CouponDAO implements ICouponDAO {
 			connectionPool.returnConnection(con);
 		}	
 		
-	}
-
-	@Override
-	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
-		
-		Connection con = connectionPool.startTransaction();
-		
-		String sql = "INSERT INTO customer_coupon VALUES(?,?)";	
-		String sql2 = "UPDATE coupon SET AMOUNT=amount-1 WHERE ID=? AND amount>0";
-		try(PreparedStatement stmt = con.prepareStatement(sql);PreparedStatement stmt2 = con.prepareStatement(sql2)) {
-			stmt.setLong(1, customerId);
-			stmt.setLong(2, couponId);
-			stmt2.setLong(1, couponId);
-			if(stmt2.executeUpdate()==0) {
-				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"purchase coupon failed - Coupon out of Stock ID : " + couponId);
-			}				
-			stmt.executeUpdate();				
-		} catch (SQLException e) {
-			connectionPool.rollback();
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"purchase failed - Customer already owns Coupon", e);
-		}finally {			
-		}
-		connectionPool.endTransaction();
 	}
 
 	@Override

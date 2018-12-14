@@ -11,9 +11,6 @@ import core.dao.ICustomerDAO;
 import core.exception.CouponSystemException;
 import core.exception.ExceptionsEnum;
 import core.util.ConnectionPool;
-import core.validation.IBeanValidatorConstants;
-//import core.util.IdGenerator;
-//import core.validation.CustomerBeanValidator;
 
 /**
  * Facade used to access the coupon system by Customers
@@ -152,25 +149,22 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	private void checkCustomer(CustomerBean customer) throws CouponSystemException {
 		checkCustomerName(customer.getCustName());
 		checkCustomerPassword(customer.getPassword());
-		checkCustomerPasswordNotShort(customer.getPassword());
 	}
 
-	private void checkCustomerPasswordNotShort(String password) throws CouponSystemException {
-		if (password.length() < CUST_PASSWORD_MIN_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer name cant be more than " + CUST_NAME_LENGTH + " characters");
-			
-		}
-	}
+	
 
 	private void checkCustomerName(String custName) throws CouponSystemException {
 		if (custName.length() > CUST_NAME_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password cant be more than " + CUST_PASSWORD_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password cant be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
 		}
 	}
 
 	private void checkCustomerPassword(String password) throws CouponSystemException {
-		if (password.length() > CUST_PASSWORD_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password need to be more than " + CUST_PASSWORD_MIN_LENGTH + " characters");
+		if (password.length() > CUST_PASSWORD_MAX_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password need to be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
+		}
+		if (password.length() < CUST_PASSWORD_MIN_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be shorter than " + CUST_PASSWORD_MIN_LENGTH + " characters");
 		}
 	}
 }

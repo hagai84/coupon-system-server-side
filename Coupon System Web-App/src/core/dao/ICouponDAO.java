@@ -12,7 +12,7 @@ import core.enums.CouponType;
 import core.exception.CouponSystemException;
 
 /**
- * An interface for a DAO class which accesses a {@link CouponBean} type DAO.
+ * An interface for a DAO class which provides access to {@link CouponBean} DTO data type.
  * 
  * @author Ron
  *
@@ -20,68 +20,55 @@ import core.exception.CouponSystemException;
 public interface ICouponDAO extends Serializable{
 
 	/**
-	 * Adds a new {@link CouponBean} to coupon table
+	 * Adds a new coupon entity to the repository.
 	 * 
-	 * @param coupon The new {@link CouponBean} to be added.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CouponException If {@link CouponBean}  could not be added
+	 * @param coupon the new {@link CouponBean} object to be added.
+	 * @return the created coupon's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
 	 */
 	long createCoupon(CouponBean coupon) throws CouponSystemException;
-	/**
-	 * Updates a specific {@link CouponBean} in the DB.
-	 * 
-	 * @param coupon The {@link CouponBean}  to be updated.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CouponException If {@link CouponBean}  could not be updated
-	 */
-	void updateCoupon(CouponBean coupon) throws CouponSystemException;
-	/**
-	 * Adds a {@link CouponBean} to the {@link CustomerBean} and updates the amount.
-	 * @param couponId The {@link CouponBean} to purchase.
-	 * @param customerId The ID of the {@link CustomerBean} purchasing the coupon.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CouponException If coupon could not be purchased
-	 */
-	void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException;
 	
+	/**
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param customerId the customer's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
+	 */
 	void purchaseCoupon(long couponId, long customerId) throws CouponSystemException;
 
 	/**
-		 * Adds a coupon to a Company ({@link CompanyBean}).
-		 *
-		 * @param coupon The coupon to be added
-		 * @param compId The company's Id 
-		 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-		 * @throws CouponException If could not add coupon to company
-		 */
-	//	void addCouponToCompany(CouponBean coupon, long compId) throws CouponSystemException;
+	 * Updates a coupon entity in the repository.
+	 * 
+	 * @param coupon the {@link CouponBean} object to be updated.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 */
+	void updateCoupon(CouponBean coupon) throws CouponSystemException;
 	
-		/**
-		 * Removes a {@link CouponBean} from coupon table
-		 * 
-		 * @param couponId The {@link CouponBean}  to be removed.
-		 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-		 * @throws CouponException If {@link CouponBean}  could not be removed
-		 */
-		void removeCoupon(long couponId) throws CouponSystemException;
 	/**
-		 * Removes a coupon from a Company ({@link CompanyBean}).
-		 *
-		 * @param couponId the coupon to be removed
-		 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-		 * @throws CouponException If could not remove coupon from company
-		 */
-	//	void removeCouponFromCompanies(long couponId) throws CouponSystemException;
+	 * Updates a coupon entity's amount in the repository.
+	 * cannot be resolve if it results in a negative amount. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param amountDelta the amount of coupons to be added or removed (negative amount).
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
+	 *  no matching data.
+	 */
+	void updateCouponAmout(long couponId, int amoutDelta) throws CouponSystemException;
 	
-		/**
-		 * Removes a coupon from a Company ({@link CompanyBean}).
-		 *
-		 * @param couponId the coupon to be removed
-		 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-		 * @throws CouponException If could not remove coupon from company
-		 */
-	//	void removeCouponFromCompanies(long couponId) throws CouponSystemException;
+	/**
+	 * Removes a coupon entity from the repository.
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 */
+	void removeCoupon(long couponId) throws CouponSystemException;
 	
+	/*
+	 * jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+	 */
 		/**
 		 * Removes all coupons of a company ({@link CompanyBean}).
 		 *

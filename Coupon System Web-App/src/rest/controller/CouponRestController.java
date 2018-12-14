@@ -51,8 +51,6 @@ public class CouponRestController implements Serializable {
 		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.createCoupon(coupon, companyId);
 	}
-
-
 	/**
 	 * Updates a specific {@link CouponBean} in the DB.
 	 *
@@ -197,7 +195,7 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/customer")
-	public Collection<CouponBean> getCustomerCoupons(@Context HttpServletRequest request, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public Collection<CouponBean> getCustomerCoupons(@Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		return couponService.getCustomerCoupons(customerId);
 	}
