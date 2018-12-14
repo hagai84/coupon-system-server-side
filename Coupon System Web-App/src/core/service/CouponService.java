@@ -247,11 +247,6 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);
 	}
 
-	public CouponBean getCouponByTitle(String couponTitle) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		return couponDAO.getCouponByTitle(couponTitle);
-	}
-
 	private void checkCoupon(CouponBean coupon) throws CouponSystemException {
 		checkTitle(coupon.getTitle());
 		checkStartDate(coupon.getStartDate());
@@ -259,13 +254,9 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		checkAmount(coupon.getAmount());
 		checkType(coupon.getType());
 		checkPrice(coupon.getPrice());
-//		checkImage(coupon.getImage());
+		checkImage(coupon.getImage());
 		checkMessage(coupon.getMessage());		
 	}
-
-	/*public void checkId(long id) {
-		return true;
-	}*/
 
 	private void checkTitle(String title) throws CouponSystemException {
 		if(title.length()>COUP_TITLE_LENGTH)
@@ -299,7 +290,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 
 	private void checkImage(String image) throws CouponSystemException {
 		//TODO if not null check if file exists/valid
-		throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon image cant be ... ");//No restrictions at the momment
+//		throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon image cant be ... ");//No restrictions at the momment
 	}
 
 	private void checkMessage(String message) throws CouponSystemException {

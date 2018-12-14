@@ -281,29 +281,6 @@ public class CouponDAO implements ICouponDAO {
 		}	
 	}
 
-	@Override
-	public CouponBean getCouponByTitle(String title) throws CouponSystemException {
-		Connection con = connectionPool.getConnection();
-		CouponBean coupon = null;
-		
-		String sql = "SELECT * FROM coupon WHERE TITLE =?";
-		try(PreparedStatement stmt = con.prepareStatement(sql)) {
-			stmt.setString(1, title);
-			ResultSet rs =  stmt.executeQuery();
-			if(rs.next()) {
-				coupon = readCoupon(rs);
-				rs.close();
-				return coupon;
-			}else {
-				rs.close();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get coupon failed, Title : " + title);
-			}
-		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon by title failed : ", e);
-		} finally {
-			connectionPool.returnConnection(con);			
-		}	
-	}
 
 	@Override
 	public Collection<CouponBean> getCouponsByType(CouponType type) throws CouponSystemException {
@@ -505,9 +482,23 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public boolean couponTitleAlreadyExists(String title) {
+	public boolean couponTitleAlreadyExists(String title) throws CouponSystemException {
 		// TODO Auto-generated method stub
-		return false;
+		Connection con = connectionPool.getConnection();
+		String sql = "SELECT TITLE FROM coupon WHERE TITLE=? LIMIT 1";
+		try (PreparedStatement stmt = con.prepareStatement(sql)){
+			stmt.setString(1, title);
+			ResultSet set = stmt.executeQuery();
+			if (set.next()) {
+				return true;
+			}else {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon by title failed : ", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}
 	}
 
 	/**
@@ -531,5 +522,28 @@ public class CouponDAO implements ICouponDAO {
 		coupon.setCompanyId(rs.getLong("COMP_ID"));
 		return coupon;
 	}
+	/*@Override
+	public CouponBean getCouponByTitle(String title) throws CouponSystemException {
+		Connection con = connectionPool.getConnection();
+		CouponBean coupon = null;
+		
+		String sql = "SELECT * FROM coupon WHERE TITLE =?";
+		try(PreparedStatement stmt = con.prepareStatement(sql)) {
+			stmt.setString(1, title);
+			ResultSet rs =  stmt.executeQuery();
+			if(rs.next()) {
+				coupon = readCoupon(rs);
+				rs.close();
+				return coupon;
+			}else {
+				rs.close();
+				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get coupon failed, Title : " + title);
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon by title failed : ", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}	
+	}*/
 }
 

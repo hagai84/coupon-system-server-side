@@ -57,11 +57,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Customer Name already exists");
 		}
-//		customer.setId(IdGenerator.generatCustomerId());		
-		//IS ALSO HANDLED BY DAO LAYER
-		/*if(customerDAO.customerIdAlreadyExists(customer.getId())) {
-			throw new CouponSystemException(ExceptionsEnum.ID_EXISTS,"Customer ID already exists");
-		}*/
+
 		return customerDAO.createCustomer(customer);
 		
 	}
@@ -142,11 +138,6 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	//@Override
 	public long customerLogin(String customerName, String password) throws  CouponSystemException {
 		return customerDAO.customerLogin(customerName, password);
-	}
-
-	public CustomerBean getCustomerByName(String customerName) throws CouponSystemException {
-		// TODO Auto-generated method stub
-		return customerDAO.getCustomerByName(customerName);
 	}
 	
 	private void checkCustomer(CustomerBean customer) throws CouponSystemException {

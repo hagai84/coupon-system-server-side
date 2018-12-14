@@ -56,13 +56,8 @@ public class GenerateThread extends TestThread {
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
-			customer.setId(customerService.createCustomer(customer));
-			
+			customer.setId(customerService.createCustomer(customer));		
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
-			//Only has correct Id because refferenced object is updated
-			coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
-			customer.setId(customerService.getCustomerByName(customer.getCustName()).getId());
-
 			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
 			System.out.println("LOG : Coupon purchased \n" + coupon);
 

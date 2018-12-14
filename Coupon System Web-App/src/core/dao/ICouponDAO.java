@@ -123,17 +123,6 @@ public interface ICouponDAO extends Serializable{
 	CouponBean getCoupon(long couponID) throws CouponSystemException;
 
 	/**
-	 * Fetches a specific {@link CouponBean} from the DB using its title.
-	 *
-	 * @param title The title of the desired {@link CouponBean}.
-	 * @return The {@link CouponBean}  that matches the title; <br>
-	 * 		   <code>null</code> if there is no match.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CouponException If could not get coupon
-	 */
-	CouponBean getCouponByTitle(String title) throws CouponSystemException;
-
-	/**
 	 * Gets all coupons of the given CouponType
 	 * @param type The Type of coupons desired.
 	 * @return a Collection of all coupons with matching a Type
@@ -225,5 +214,5 @@ public interface ICouponDAO extends Serializable{
 		 */
 	//	void removeCouponFromCompanies(long couponId) throws CouponSystemException;
 	
-		boolean couponTitleAlreadyExists(String title);
+		boolean couponTitleAlreadyExists(String title) throws CouponSystemException;
 }

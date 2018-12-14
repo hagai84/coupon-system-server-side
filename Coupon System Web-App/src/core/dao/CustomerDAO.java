@@ -166,33 +166,6 @@ public class CustomerDAO implements ICustomerDAO{
 		}
 
 	/* (non-Javadoc)
-		 * @see coupon.system.dao.CustomerDAO#getCustomerByName(String)
-		 */
-		public CustomerBean getCustomerByName(String custName) throws CouponSystemException {
-			Connection con = connectionPool.getConnection();
-			CustomerBean customer=null;
-			
-			String sql = "SELECT * FROM customer WHERE CUST_NAME=?";
-			try (PreparedStatement stmt = con.prepareStatement(sql)){
-				stmt.setString(1, custName);
-				ResultSet rs = stmt.executeQuery();		
-				if(rs.next()) {
-					customer = readCustomer(rs);
-					rs.close();
-					return customer;
-				}else {
-					rs.close();
-					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get customer failed, name : " + custName);
-				}
-			} catch (SQLException e) {
-				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer by name failed : ", e);
-			} finally {
-				connectionPool.returnConnection(con);			
-			}
-		}
-
-
-	/* (non-Javadoc)
 	 * @see coupon.system.dao.CustomerDAO#getAllCustomers()
 	 */
 	@Override
@@ -251,9 +224,23 @@ public class CustomerDAO implements ICustomerDAO{
 	}
 
 	@Override
-	public boolean customerNameAlreadyExists(String name) {
+	public boolean customerNameAlreadyExists(String customerName) throws CouponSystemException {
 		// TODO Auto-generated method stub
-		return false;
+		Connection con = connectionPool.getConnection();
+		String sql = "SELECT CUST_NAME FROM customer WHERE CUST_NAME=?  LIMIT 1";
+		try (PreparedStatement stmt = con.prepareStatement(sql)){
+			stmt.setString(1, customerName);
+			ResultSet set = stmt.executeQuery();
+			if (set.next()) {
+				return true;
+			}else {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer by name failed : ", e);
+		} finally {
+			connectionPool.returnConnection(con);			
+		}
 	}
 
 	/**
@@ -270,4 +257,28 @@ public class CustomerDAO implements ICustomerDAO{
 		customer.setPassword("***PASSWORD***");
 		return customer;
 	}
+	/*	public CustomerBean getCustomerByName(String custName) throws CouponSystemException {
+			Connection con = connectionPool.getConnection();
+			CustomerBean customer=null;
+			
+			String sql = "SELECT * FROM customer WHERE CUST_NAME=?";
+			try (PreparedStatement stmt = con.prepareStatement(sql)){
+				stmt.setString(1, custName);
+				ResultSet rs = stmt.executeQuery();		
+				if(rs.next()) {
+					customer = readCustomer(rs);
+					rs.close();
+					return customer;
+				}else {
+					rs.close();
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get customer failed, name : " + custName);
+				}
+			} catch (SQLException e) {
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get customer by name failed : ", e);
+			} finally {
+				connectionPool.returnConnection(con);			
+			}
+		}
+
+	 */
 }

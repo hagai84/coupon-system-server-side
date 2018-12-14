@@ -143,18 +143,13 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		return companyDAO.companyLogin(name, password);
 	}
 
-	public CompanyBean getCompanyByName(String companyName) throws CouponSystemException {
-		return companyDAO.getCompanyByName(companyName);
-	}
-
-	
 	private void checkCompany(CompanyBean company) throws CouponSystemException {
 		checkCompanyName(company.getCompName());
 		checkCompanyPassword(company.getPassword());
 		checkCompanyEmail(company.getEmail());
 	}
 
-	public static void checkCompanyName(String compName) throws CouponSystemException {
+	private void checkCompanyName(String compName) throws CouponSystemException {
 		if (compName.length() > COMP_NAME_LENGTH) {
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATION,
 					"The company name cant be more than " + COMP_NAME_LENGTH + " characters");

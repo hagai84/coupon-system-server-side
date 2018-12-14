@@ -56,17 +56,6 @@ public interface ICompanyDAO extends Serializable{
 	CompanyBean getCompany(long companyId) throws CouponSystemException;
 
 	/**
-	 * Searches the DB for a company with the given name and
-	 * returns a {@link CompanyBean} bean with it's data from the DB.
-	 *
-	 * @param name The name of company to find in the DB.
-	 * @return {@link CompanyBean} bean; <code>null</code> - if no company with the given ID exists in DB
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CompanyException If the given company's ID can't be found in the DB (0 rows were returned).
-	 */
-	CompanyBean getCompanyByName(String name) throws CouponSystemException;
-
-	/**
 	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
 	 * 
 	 * @return An <code>ArrayList</code> of all the companies in DB.
@@ -76,6 +65,6 @@ public interface ICompanyDAO extends Serializable{
 
 	long companyLogin(String companyName, String password) throws CouponSystemException;
 
-	boolean companyNameAlreadyExists(String name);
+	boolean companyNameAlreadyExists(String companyName) throws CouponSystemException;
 
 }

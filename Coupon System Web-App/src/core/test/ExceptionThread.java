@@ -23,24 +23,14 @@ public class ExceptionThread extends TestThread {
 		CouponBean coupon = new CouponBean();
 		CompanyBean company = new CompanyBean();
 		for (char i = 97; i < 117; i++) {
-			/*try {
-				company.setId(loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
-			} catch (CouponSystemException e1) {
-				System.err.println(e1);
-				continue;
-			}*/
+			
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			company.setId(100001+i-97);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
-			/*try {
-				coupon.setCouponId(couponService.getCouponByTitle(coupon.getTitle()).getCouponId());
-			} catch (CouponSystemException e1) {
-				System.err.println(e1);
-				continue;
-			}*/
-//			coupon.setCouponId(300001+i-97);
+			
+			coupon.setCouponId(300001+i-97);
 			coupon.setStartDate(new Date(System.currentTimeMillis()+(1000*60*60*24)));
 			coupon.setEndDate(new Date(System.currentTimeMillis()+(1000*60*60*24*30*12)));
 			coupon.setAmount(50);
@@ -56,7 +46,7 @@ public class ExceptionThread extends TestThread {
 				continue;
 			}*/
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
-//			customer.setId(200001+i-97);
+			customer.setId(200001+i-97);
 			customer.setPassword(""+i+i+i+i+i+i);
 			
 			

@@ -56,18 +56,6 @@ public interface ICustomerDAO extends Serializable {
 	CustomerBean getCustomer(long customerID) throws CouponSystemException;
 
 	/**
-	 * Searches the DB for a customer with the given name and
-	 * returns a {@link CustomerBean} bean with it's data from the DB.
-	 *
-	 * @param customerName The name of customer to find in the DB.
-	 * @return {@link CustomerBean} bean; <code>null</code> - if no customer with the given ID exists in DB
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CustomerException If the given customer's ID can't be found in the DB (0 rows were returned).
-	 */
-	CustomerBean getCustomerByName(String customerName) throws CouponSystemException;
-
-	
-	/**
 	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
 	 *
 	 * @return An <code>ArrayList</code> of all the companies in DB.
@@ -76,7 +64,7 @@ public interface ICustomerDAO extends Serializable {
 	Collection<CustomerBean> getAllCustomers() throws CouponSystemException;
 	
 	long customerLogin(String customerName, String password) throws CouponSystemException;
-	boolean customerNameAlreadyExists(String name);
+	boolean customerNameAlreadyExists(String custName) throws CouponSystemException;
 	
 	
 }
