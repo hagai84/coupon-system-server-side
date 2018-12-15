@@ -30,9 +30,9 @@ public class Test {
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	
 		GenericThread testThread3 = new RestCreateThread();	
-		GenericThread testThread4 = new SynchronisationThread(0, 5);	
-		GenericThread testThread5 = new SynchronisationThread(0, 10);	
-		GenericThread testThread6 = new SynchronisationThread(0, 15);	
+		GenericThread testThread4 = new PurchaseThread(0, 5);	
+		GenericThread testThread5 = new PurchaseThread(0, 10);	
+		GenericThread testThread6 = new PurchaseThread(0, 15);	
 //		testThread1.start();	
 //		testThread2.start();	
 		testThread3.start();	

@@ -4,11 +4,11 @@ package core.test;
 import core.beans.CouponBean;
 import core.exception.CouponSystemException;
 
-public class SynchronisationThread extends GenericThread {
+public class PurchaseThread extends GenericThread {
 	int startingCouponIndex;
 	int startingCustomerIndex;
 	
-	public SynchronisationThread(int startingCouponIndex, int startingCustomerIndex) {
+	public PurchaseThread(int startingCouponIndex, int startingCustomerIndex) {
 		super();
 		this.startingCouponIndex = startingCouponIndex;
 		this.startingCustomerIndex = startingCustomerIndex;
