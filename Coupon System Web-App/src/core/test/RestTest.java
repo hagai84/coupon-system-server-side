@@ -9,12 +9,12 @@ public class RestTest {
 	
 	public static void main(String[] args) {
 		
-		RestTestThread testThread1 = new RestGenerateThread();	
-		RestTestThread testThread2 = new RestGenerateThread();	
-		RestTestThread testThread3 = new RestGenerateThread();	
-		RestTestThread testThread4 = new RestGenerateThread();	
-		RestTestThread testThread5 = new RestGenerateThread();	
-		RestTestThread testThread6 = new RestGenerateThread();				
+		RestGenericThread testThread1 = new RestCreateThread();	
+		RestGenericThread testThread2 = new RestCreateThread();	
+		RestGenericThread testThread3 = new RestCreateThread();	
+		RestGenericThread testThread4 = new RestCreateThread();	
+		RestGenericThread testThread5 = new RestCreateThread();	
+		RestGenericThread testThread6 = new RestCreateThread();				
 		testThread1.start();	
 //		testThread2.start();	
 //		testThread3.start();	

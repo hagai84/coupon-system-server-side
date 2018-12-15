@@ -4,7 +4,7 @@ package core.test;
 import core.beans.CouponBean;
 import core.exception.CouponSystemException;
 
-public class SynchronisationThread extends TestThread {
+public class SynchronisationThread extends GenericThread {
 	int startingCouponIndex;
 	int startingCustomerIndex;
 	

@@ -27,12 +27,12 @@ public class Test {
 			e.printStackTrace();
 		}*/
 
-		TestThread testThread1 = new GenerateThread();	
-		TestThread testThread2 = new ExceptionThread();	
-		TestThread testThread3 = new SynchronisationThread(0, 0);	
-		TestThread testThread4 = new SynchronisationThread(0, 5);	
-		TestThread testThread5 = new SynchronisationThread(0, 10);	
-		TestThread testThread6 = new SynchronisationThread(0, 15);	
+		GenericThread testThread1 = new CreateThread();	
+		GenericThread testThread2 = new ExceptionThread();	
+		GenericThread testThread3 = new SynchronisationThread(0, 0);	
+		GenericThread testThread4 = new SynchronisationThread(0, 5);	
+		GenericThread testThread5 = new SynchronisationThread(0, 10);	
+		GenericThread testThread6 = new SynchronisationThread(0, 15);	
 //		testThread1.start();	
 //		testThread2.start();	
 		testThread3.start();	

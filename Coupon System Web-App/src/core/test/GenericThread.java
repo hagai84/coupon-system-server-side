@@ -5,7 +5,7 @@ import core.service.CompanyService;
 import core.service.CouponService;
 import core.service.CustomerService;
 
-public abstract class TestThread extends Thread{
+public abstract class GenericThread extends Thread{
 	public CouponService couponService = CouponService.getInstance();
 	public CompanyService companyService = CompanyService.getInstance();
 	public CustomerService customerService = CustomerService.getInstance();
