@@ -16,28 +16,40 @@ public class ExceptionHandler implements ExceptionMapper<CouponSystemException> 
 	HttpServletRequest request;
 	@Override
 	public Response toResponse(CouponSystemException e) {
+		ResourceBundle errorMessages;
+		int statusCode = e.getExceptionsEnum().getStatusCode();
+		String message;
 		try {
-			System.out.println(request.getLocale());
-			ResourceBundle errorMessages = ResourceBundle.getBundle("core.exception.errorMessages", request.getLocale());
-			int statusCode = e.getExceptionsEnum().getStatusCode();
-			String message = errorMessages.getString(e.getExceptionsEnum().name());
-			
-			System.out.println("ExceptionMapper was called :");
-			System.out.println("Enum : " + e.getExceptionsEnum());
-			System.out.println("Internal message : " + e.getMessage());
-
-			if (statusCode >= 600 && statusCode < 700) {
-				return Response.status(statusCode).entity(message).build();
-			}
-			if (statusCode > 700 && statusCode < 800 ) {
-				//TODO send email to manager.
-				return Response.status(statusCode).entity(message).build();
-			}
-			return Response.status(800).entity("Action failed").build();
+			errorMessages = ResourceBundle.getBundle("core.exception.errorMessages", request.getLocale());			
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			return Response.status(900).entity("Language not supported").build();
+			errorMessages = ResourceBundle.getBundle("core.exception.errorMessages_en");
+			System.err.println(String.format("%s does not have error support", request.getLocale().getDisplayLanguage()));
 		}
+		try {
+			message = errorMessages.getString(e.getExceptionsEnum().name());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			System.err.println(String.format("Error code %s is not supported for %s", String.valueOf(statusCode), request.getLocale().getDisplayLanguage()));
+			errorMessages = ResourceBundle.getBundle("core.exception.errorMessages_en");
+			try {
+				message = errorMessages.getString(e.getExceptionsEnum().name());
+			} catch (Exception e2) {
+				System.err.println(String.format("Error code %s does not have default error message", String.valueOf(statusCode)));
+				message = "error message unavailable";
+			}
+		}
+		System.out.println("ExceptionMapper was called :");
+		System.out.println("Enum : " + e.getExceptionsEnum());
+		System.out.println("Internal message : " + e.getMessage());
+		
+		if (statusCode >= 600 && statusCode < 700) {
+			return Response.status(statusCode).entity(message).build();
+		}
+		if (statusCode > 700 && statusCode < 800 ) {
+			//TODO send email to manager.
+			return Response.status(statusCode).entity(message).build();
+		}
+		return Response.status(800).entity("Action failed").build();
 	}
 }

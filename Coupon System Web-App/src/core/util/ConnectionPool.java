@@ -29,7 +29,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 3;
+	private final int POOL_SIZE = 2;
 
 	private String driverName = null;
 	private String databaseUrl;
