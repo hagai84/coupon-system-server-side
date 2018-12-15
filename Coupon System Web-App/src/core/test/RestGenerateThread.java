@@ -31,7 +31,7 @@ public class RestGenerateThread extends RestTestThread {
 		try {
 			createDefaultValues();
 		} catch (CouponSystemException e) {
-			System.err.println(e.getMessage());
+			System.err.println(Thread.currentThread().getName() + e.getMessage());
 			e.printStackTrace();
 		} 
 	}
@@ -68,12 +68,9 @@ public class RestGenerateThread extends RestTestThread {
 			customer.setPassword(""+i+i+i+i+i+i);
 			createCustomer(customer);		
 			customer.setId(loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i));
-			//Only has correct Id because refferenced object is updated
-			/*coupon.setCouponId(couponController.getCouponByTitle(coupon.getTitle()).getCouponId());
-			customer.setId(customerController.getCustomerByName(customer.getCustName()).getId());
 
-			couponController.purchaseCoupon(coupon.getCouponId(), customer.getId());
-			System.out.println("LOG : Coupon purchased \n" + coupon);*/
+//			purchaseCoupon(coupon.getCouponId(), customer.getId());
+//			System.out.println("LOG : Coupon purchased \n" + coupon);
 
 		}
 	}

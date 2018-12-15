@@ -19,7 +19,7 @@ public class GenerateThread extends TestThread {
 		try {
 			createDefaultValues();
 		} catch (CouponSystemException e) {
-			System.err.println(e.getMessage());
+			System.err.println(Thread.currentThread().getName() + e.getMessage());
 			e.printStackTrace();
 		} 
 	}
@@ -39,7 +39,7 @@ public class GenerateThread extends TestThread {
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			company.setId(companyService.createCompany(company));
-			System.out.println("LOG : Company created \n" + company);
+			System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
 			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
@@ -52,14 +52,14 @@ public class GenerateThread extends TestThread {
 			coupon.setImage("aaaaaaaaaaaaaa");
 			coupon.setCompanyId(company.getId());
 			coupon.setCouponId(couponService.createCoupon(coupon, company.getId()));
-			System.out.println("LOG : Coupon created \n" + coupon);
+			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
 			customer.setId(customerService.createCustomer(customer));		
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
-			System.out.println("LOG : Coupon purchased \n" + coupon);
+			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
 
 		}
 	}

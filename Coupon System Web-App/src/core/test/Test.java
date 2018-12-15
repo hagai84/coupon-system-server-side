@@ -20,12 +20,12 @@ public class Test {
 	
 	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
-		try {
+		/*try {
 			resetDB();
 		} catch (CouponSystemException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		TestThread testThread1 = new GenerateThread();	
 		TestThread testThread2 = new ExceptionThread();	
@@ -34,11 +34,11 @@ public class Test {
 		TestThread testThread5 = new SynchronisationThread(0, 10);	
 		TestThread testThread6 = new SynchronisationThread(0, 15);	
 //		testThread1.start();	
-		testThread2.start();	
-//		testThread3.start();	
-//		testThread4.start();	
-//		testThread5.start();	
-//		testThread6.start();	
+//		testThread2.start();	
+		testThread3.start();	
+		testThread4.start();	
+		testThread5.start();	
+		testThread6.start();	
 		try {
 			testThread1.join();
 			testThread2.join();

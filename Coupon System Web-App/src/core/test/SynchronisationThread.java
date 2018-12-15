@@ -1,5 +1,7 @@
 package core.test;
 
+
+import core.beans.CouponBean;
 import core.exception.CouponSystemException;
 
 public class SynchronisationThread extends TestThread {
@@ -21,10 +23,22 @@ public class SynchronisationThread extends TestThread {
 	
 	private void multiplePurchases() {
 
-		for (long i = 300001; i < 20; i++) {
-			for (long j = 200001; j < 20; j++) {
+		CouponBean[] coupons = new CouponBean[0];
+		long couponId, customerId;
+		try {
+//			System.out.println(couponService.getAllCoupons());
+			coupons = couponService.getAllCoupons().toArray(coupons);
+		} catch (CouponSystemException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return;
+		}
+		for (int i = 0+startingCouponIndex; i < coupons.length; i++) {
+			for (char j = (char)(97+startingCustomerIndex) ; j < 117; j++) {
 				try {
-					couponService.purchaseCoupon(i, j);
+					couponId = coupons[i].getCouponId();
+					customerId = loginCustomer(""+j+j+j+" "+j+j+j+j, ""+j+j+j+j+j+j);
+					couponService.purchaseCoupon(couponId, customerId);
 					System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + i);
 				} catch (CouponSystemException e) {
 					System.err.println(Thread.currentThread().getName() + " : " + e);

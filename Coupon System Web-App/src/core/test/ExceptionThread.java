@@ -148,40 +148,40 @@ public class ExceptionThread extends TestThread {
 			
 			try {
 				company.setId(companyService.createCompany(company));
-				System.out.println("LOG : Company created \n" + company);
+				System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
 
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
-			} catch (CouponSystemException e) {System.err.println(e);}
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
 				coupon.setCouponId(couponService.createCoupon(coupon, company.getId()));
 				System.out.println("LOG : Coupon created \n" + coupon);
-			} catch (CouponSystemException e) {System.err.println(e);}
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
 				customer.setId(customerService.createCustomer(customer));
-				System.out.println("LOG : Customer created \n" + customer);
-			} catch (CouponSystemException e) {System.err.println(e);}
+				System.out.println(Thread.currentThread().getName() + " : LOG : Customer created \n" + customer);
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			
 			try {
 				loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
-			} catch (CouponSystemException e) {System.err.println(e);} 
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);} 
 			try {
 				couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
-				System.out.println("LOG : Coupon purchased \n" + coupon);
-			} catch (CouponSystemException e) {System.err.println(e);}
+				System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
 				couponService.removeCoupon(coupon.getCouponId(), company.getId());
-				System.out.println("LOG : Coupon deleted \n" + coupon);
-			} catch (CouponSystemException e) {System.err.println(e);}
+				System.out.println(Thread.currentThread().getName() + " : LOG : Coupon deleted \n" + coupon);
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
 				customerService.removeCustomer(customer.getId());
-				System.out.println("LOG : Customer deleted \n" + customer);
-			} catch (CouponSystemException e) {System.err.println(e);}
+				System.out.println(Thread.currentThread().getName() + " : LOG : Customer deleted \n" + customer);
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
 				companyService.removeCompany(company.getId());
-				System.out.println("LOG : Company deleted \n" + company);
-			} catch (CouponSystemException e) {System.err.println(e);}	
+				System.out.println(Thread.currentThread().getName() + " : LOG : Company deleted \n" + company);
+			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}	
 			//TODO add all service methods
 		}
 	}
