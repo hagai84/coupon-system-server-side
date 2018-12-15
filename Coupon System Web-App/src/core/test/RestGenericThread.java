@@ -25,17 +25,20 @@ public abstract class RestGenericThread extends GenericThread{
 
 	private static String url = "http://localhost:8080/Coupon_System_Web-App/rest";
 	
-	public void loginAdmin()  {
+	@Override
+	protected void loginAdmin()  {
 		System.out.println("LOG : Admin logged in");
 	}
 	
-	public long loginCompany(String user, String password) {
+	@Override
+	protected long loginCompany(String user, String password) {
 		
 		List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("name", user));
         form.add(new BasicNameValuePair("password", password));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/companies/login");
+        postMethod.addHeader("Accept-Language", "en");
         postMethod.setEntity(entity);
 		HttpResponse response;
 		try {
@@ -55,12 +58,14 @@ public abstract class RestGenericThread extends GenericThread{
 		}
 	}
 
-	public long loginCustomer(String user, String password) {
+	@Override
+	protected long loginCustomer(String user, String password) {
 		List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("name", user));
         form.add(new BasicNameValuePair("password", password));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/customers/login");
+        postMethod.addHeader("Accept-Language", "de");
         postMethod.setEntity(entity);
 		HttpResponse response;
 		try {
@@ -80,13 +85,14 @@ public abstract class RestGenericThread extends GenericThread{
 		}
 	}
 	
-	public long createCoupon(CouponBean coupon, long userId) {
+	protected long createCoupon(CouponBean coupon, long userId) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(coupon);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/coupons");
 			postMethod.setEntity(entity);
 			postMethod.setHeader("userId", String.valueOf(userId));
+	        postMethod.addHeader("Accept-Language", "it");
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
@@ -103,11 +109,12 @@ public abstract class RestGenericThread extends GenericThread{
 		}
 	}
 
-	public long createCompany(CompanyBean company) {
+	protected long createCompany(CompanyBean company) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(company);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/companies");
+	        postMethod.addHeader("Accept-Language", "en");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
@@ -125,11 +132,12 @@ public abstract class RestGenericThread extends GenericThread{
 		}
 	}
 
-	public long createCustomer(CustomerBean customer) {
+	protected long createCustomer(CustomerBean customer) {
 		try {
 			String json = new ObjectMapper().writeValueAsString(customer);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/customers");
+	        postMethod.addHeader("Accept-Language", "de");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();

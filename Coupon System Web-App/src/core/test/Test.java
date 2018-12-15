@@ -20,12 +20,12 @@ public class Test {
 	
 	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
-		try {
+	/*	try {
 			resetDB();
 		} catch (CouponSystemException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	

@@ -280,7 +280,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 
 	private void checkType(CouponType type) throws CouponSystemException {
 		if(type == null)
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon title cant be more than " + COUP_TITLE_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon type cant be more than " + COUP_TITLE_LENGTH + " characters");
 	}
 
 	private void checkPrice(double price) throws CouponSystemException {
