@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import core.exception.ClientSideException;
 import core.exception.CouponSystemException;
 
 @Provider
@@ -43,13 +44,13 @@ public class ExceptionHandler implements ExceptionMapper<CouponSystemException> 
 		System.out.println("Enum : " + e.getExceptionsEnum());
 		System.out.println("Internal message : " + e.getMessage());
 		
+		ClientSideException clientSide = new ClientSideException(e.getMessage(), message, statusCode);
 		if (statusCode >= 600 && statusCode < 700) {
-			return Response.status(statusCode).entity(message).build();
+			//TODO appropriate handling, log
 		}
 		if (statusCode > 700 && statusCode < 800 ) {
 			//TODO send email to manager.
-			return Response.status(statusCode).entity(message).build();
 		}
-		return Response.status(800).entity("Action failed").build();
+		return Response.status(statusCode).entity(clientSide).build();
 	}
 }
