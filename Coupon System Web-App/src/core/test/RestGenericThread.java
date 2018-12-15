@@ -21,7 +21,7 @@ import core.beans.CompanyBean;
 import core.beans.CouponBean;
 import core.beans.CustomerBean;
 
-public abstract class RestGenericThread extends Thread{
+public abstract class RestGenericThread extends GenericThread{
 
 	private static String url = "http://localhost:8080/Coupon_System_Web-App/rest";
 	
