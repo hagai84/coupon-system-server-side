@@ -35,7 +35,7 @@ public class logInFilter implements Filter {
 		// if try to login let him
 		if (pathRequstedByUser.equals("/login")) {
 			System.out.println("login filter: login path");
-//			httpRequest.setAttribute("userId", userId);
+			httpRequest.setAttribute("userId", userId);
 			chain.doFilter(request, response);
 			return;
 		}
