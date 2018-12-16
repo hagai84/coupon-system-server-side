@@ -11,38 +11,44 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.core.Context;
 
 /**
  * Servlet Filter implementation class logInFilter
  */
 @WebFilter("/logInFilter")
 public class logInFilter implements Filter {
-	
 
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		System.out.println("log in filter was run");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		String userId = null;
-		String pathRequstedByUser = httpRequest.getPathTranslated();
+		String pathRequstedByUser = httpRequest.getPathInfo();
+		System.out.println("the path is: " + pathRequstedByUser);
 		
-		
-		Cookie [] userCookies =  httpRequest.getCookies();
-		for (Cookie cookie : userCookies) {
-			if (cookie.getName() == "userId") {
-				userId = cookie.getValue();
+		Cookie[] userCookies = httpRequest.getCookies();
+		// if user have a userId cookie then he loged in an can countunue.
+		if (userCookies != null) {
+			System.out.println("log in filter found some cookies");
+			for (Cookie cookie : userCookies) {
+				if (cookie.getName() == "userId") {
+					System.out.println("log in filter found userId cookie");
+					userId = cookie.getValue();
+					httpRequest.setAttribute("userId", userId);
+					chain.doFilter(request, response);
+					return;
+				}
 			}
 		}
-		
-		if (userId != null || pathRequstedByUser == "login") {
-			httpRequest.setAttribute("userId",userId);
+		// if try to login let him
+		if (pathRequstedByUser.equals("/login")) {
+			System.out.println("login filter: login path");
+			httpRequest.setAttribute("userId", userId);
 			chain.doFilter(request, response);
 			return;
 		}
-		
+		// if user not login and not try to login throw exception
 		httpRespone.setStatus(401);
-		
 	}
-
 }
