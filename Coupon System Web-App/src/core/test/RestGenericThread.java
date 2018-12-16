@@ -92,7 +92,7 @@ public abstract class RestGenericThread extends GenericThread{
 			HttpPost postMethod = new HttpPost(url + "/coupons");
 			postMethod.setEntity(entity);
 			postMethod.setHeader("userId", String.valueOf(userId));
-	        postMethod.addHeader("Accept-Language", "it");
+	        postMethod.addHeader("Accept-Language", "fr");
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {

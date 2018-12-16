@@ -145,8 +145,6 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	public Collection<CouponBean> getAllCoupons(@Context HttpServletRequest request) throws CouponSystemException {
-		System.out.println("Get without query param");
-
 		return couponService.getAllCoupons();
 	}
 

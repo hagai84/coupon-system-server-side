@@ -28,14 +28,14 @@ public class logInFilter implements Filter {
 		System.out.println("log in filter was run");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
-		String userId = null;
+		Long userId = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
 		System.out.println("the path is: " + pathRequstedByUser);
 		
 		// if try to login let him
 		if (pathRequstedByUser.equals("/login")) {
 			System.out.println("login filter: login path");
-			httpRequest.setAttribute("userId", userId);
+//			httpRequest.setAttribute("userId", userId);
 			chain.doFilter(request, response);
 			return;
 		}
@@ -46,7 +46,7 @@ public class logInFilter implements Filter {
 			for (Cookie cookie : userCookies) {
 				if (cookie.getName().equals("userId")) {
 					System.out.println("log in filter found userId cookie");
-					userId = cookie.getValue();
+					userId = Long.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userId", userId);
 					chain.doFilter(request, response);
 					return;

@@ -29,7 +29,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 2;
+	private final int POOL_SIZE = 3;
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -116,6 +116,7 @@ public class ConnectionPool implements Serializable{
 			}
 			// Giving away the connection from the connection pool
 			usedConnections.put(Thread.currentThread(), con);
+			System.out.println("Get Connection");
 			return con;
 		}
 	}
@@ -136,6 +137,8 @@ public class ConnectionPool implements Serializable{
 						if (usedConnections.remove(Thread.currentThread(), con)) {
 							// Adding the connection from the client back to the connection pool
 							availableConnections.add(con);
+							System.out.println("Return Connection");
+
 							notifyAll();
 						}	
 					}
@@ -156,6 +159,7 @@ public class ConnectionPool implements Serializable{
 	 * 
 	 */
 	public void closeAllConnections() {
+		System.out.println("LOG : connection pool closing");
 		closing = true;
 		//if there are connections out wait for a set amount of millisecond
 		if (availableConnections.size() < POOL_SIZE) {
@@ -165,8 +169,10 @@ public class ConnectionPool implements Serializable{
 				System.err.println(e);
 			}
 		}
+		System.out.println("LOG : connection pool before");
 		initialized = false;
 		synchronized (this) {
+			System.out.println("LOG : connection pool after");
 			for (Connection connection : availableConnections) {
 				try {
 					connection.close();				

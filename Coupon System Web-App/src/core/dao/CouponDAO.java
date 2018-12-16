@@ -72,11 +72,12 @@ public class CouponDAO implements ICouponDAO {
 			}
 			ResultSet set = stmt2.executeQuery();
 			if(set.next()) {
+				long id = set.getLong("ID");
 				connectionPool.endTransaction();
-				return set.getLong("ID");
+				return id;
 			}else {
 				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"create customer failed : " + coupon);
+				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"create coupon failed : " + coupon);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed", e);
