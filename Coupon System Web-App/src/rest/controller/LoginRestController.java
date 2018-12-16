@@ -42,9 +42,15 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
 		}
 		
-		/***********************************************/
+		if(userType == null && !userName.equals("admin")) {
+			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
+		}
 
-		if (userType.equals("customer")) {
+		if (userName.equals("admin") && userPassword.equals("1234")) {
+			cookieUserId = new Cookie("userId", "123456789");
+			userType = "admin";
+			userId = -1;
+		}else if (userType.equals("customer")) {
 			System.out.println("login customer was cold");
 			userId = CustomerService.getInstance().customerLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
@@ -52,27 +58,21 @@ public class LoginRestController {
 			System.out.println("login company was cold");
 			userId = CompanyService.getInstance().companyLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
-		} else if (userName.equals("admin") && userPassword.equals("1234")) {
-			cookieUserId = new Cookie("userId", "-1");
-			userType = "admin";
-			userId = -1;
 		} else {
-			System.out.println("before");
-			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
+			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
-		System.out.println("after");
 
-		/*if (remeberMe != null && remeberMe.equals("true")) {
+		if (remeberMe != null && remeberMe.equals("true")) {
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {
 			cookieUserId.setMaxAge(-1);
-		}*/
-		cookieUserId.setMaxAge(60 * 60 * 24 * 365);
+		}
 
 		Cookie cookieUserTypeCookie = new Cookie("userType", userType);
 		response.addCookie(cookieUserId);
 		response.addCookie(cookieUserTypeCookie);
 		return userId;
 	}
+
 
 }
