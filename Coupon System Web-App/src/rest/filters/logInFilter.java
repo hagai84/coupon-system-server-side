@@ -44,7 +44,7 @@ public class logInFilter implements Filter {
 		if (userCookies != null) {
 			System.out.println("log in filter found some cookies");
 			for (Cookie cookie : userCookies) {
-				if (cookie.getName() == "userId") {
+				if (cookie.getName().equals("userId")) {
 					System.out.println("log in filter found userId cookie");
 					userId = cookie.getValue();
 					httpRequest.setAttribute("userId", userId);
