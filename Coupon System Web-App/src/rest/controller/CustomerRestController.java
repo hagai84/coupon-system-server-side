@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.service.CustomerService;
 
 @Path("/customers")
@@ -121,6 +122,9 @@ public class CustomerRestController implements Serializable{
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long customerLogin(@FormParam("name") String customerName,@FormParam("password") String password) throws  CouponSystemException {
+		if(customerName == null || password == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+		}
 		return customerService.customerLogin(customerName, password);
 	}
 	

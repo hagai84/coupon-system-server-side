@@ -35,7 +35,7 @@ public abstract class RestGenericThread extends GenericThread{
 		
 		List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("name", user));
-        form.add(new BasicNameValuePair("password", password));
+//        form.add(new BasicNameValuePair("password", password));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/companies/login");
         postMethod.addHeader("Accept-Language", "en");

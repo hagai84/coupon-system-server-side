@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
+import core.exception.ExceptionsEnum;
 import core.service.CompanyService;
 import core.service.CustomerService;
 
@@ -132,8 +133,11 @@ public class CompanyRestController implements Serializable{
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long companyLogin(@FormParam("name") String customerName,@FormParam("password") String password) throws  CouponSystemException {
-		return companyService.companyLogin(customerName, password);
+	public long companyLogin(@FormParam("name") String companyName,@FormParam("password") String password) throws  CouponSystemException {
+		if(companyName == null || password == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+		}
+		return companyService.companyLogin(companyName, password);
 	}
 
 }

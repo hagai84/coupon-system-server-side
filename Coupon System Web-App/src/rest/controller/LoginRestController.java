@@ -34,6 +34,14 @@ public class LoginRestController {
 		System.out.println("login service was cold");
 		long userId;
 		Cookie cookieUserId;
+		
+		
+		
+		if(userName == null || userPassword == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+		}
+		
+		/***********************************************/
 
 		if (userType.equals("customer")) {
 			System.out.println("login customer was cold");

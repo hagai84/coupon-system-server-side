@@ -229,8 +229,8 @@ public class CompanyDAO implements ICompanyDAO{
 		} catch (SQLException e) {
 			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"login failed", e);
 			throw exception;
-		} catch (NullPointerException e) {
-			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+//		} catch (NullPointerException e) {
+//			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
 		} finally {
 			connectionPool.returnConnection(con);
 		}		

@@ -218,8 +218,8 @@ public class CustomerDAO implements ICustomerDAO{
 			}	
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"customer login failed : ", e);
-		} catch (NullPointerException e) {
-			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+//		} catch (NullPointerException e) {
+//			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
 		}
 		finally {
 			connectionPool.returnConnection(con);			

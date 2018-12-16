@@ -49,14 +49,14 @@
     <url-pattern>/InitServlet</url-pattern>
   </servlet-mapping>
   
-  <filter>
+  <!-- <filter>
   	<filter-name>logInFilter</filter-name>
   	<filter-class>rest.filters.logInFilter</filter-class>
   </filter>
   <filter-mapping>
   	<filter-name>logInFilter</filter-name>
   	<url-pattern>/rest/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping> -->
 </web-app>
 <!--  
 <filter>
