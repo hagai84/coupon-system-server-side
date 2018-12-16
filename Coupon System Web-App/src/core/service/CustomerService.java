@@ -132,8 +132,8 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 * Logs in to the coupon system as a specific company.
 	 * @param custName Customer username
 	 * @param password Customer password
-	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
-	 * @throws CustomerFacadeException if username or password are incorrect
+	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws exception
+	 * @throws CouponSystemException if username or password are incorrect
 	 */
 	//@Override
 	public long customerLogin(String customerName, String password) throws  CouponSystemException {

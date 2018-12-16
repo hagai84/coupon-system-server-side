@@ -7,12 +7,12 @@ public class CouponSystemException extends Exception {
 	private static final long serialVersionUID = 1L;
 	ExceptionsEnum exceptionsEnum;
 	
-	public CouponSystemException(ExceptionsEnum exceptionsEnum, String message, Throwable cause) {
-		super(message, cause);
+	public CouponSystemException(ExceptionsEnum exceptionsEnum, String internalMessage, Throwable cause) {
+		super(internalMessage, cause);
 		this.exceptionsEnum = exceptionsEnum;
 	}
-	public CouponSystemException(ExceptionsEnum exceptionsEnum, String message) {
-		super(message);
+	public CouponSystemException(ExceptionsEnum exceptionsEnum, String internalMessage) {
+		super(internalMessage);
 		this.exceptionsEnum = exceptionsEnum;
 	}
 	public CouponSystemException(ExceptionsEnum exceptionsEnum) {
@@ -22,5 +22,9 @@ public class CouponSystemException extends Exception {
 	public ExceptionsEnum getExceptionsEnum() {
 		return exceptionsEnum;
 	}
+	public String getInternalMessage() {
+		return super.getMessage();
+	}
 
+	
 }

@@ -59,7 +59,7 @@ public interface ICustomerDAO extends Serializable {
 	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
 	 *
 	 * @return An <code>ArrayList</code> of all the companies in DB.
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
 	 */
 	Collection<CustomerBean> getAllCustomers() throws CouponSystemException;
 	
