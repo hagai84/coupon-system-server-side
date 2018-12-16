@@ -23,7 +23,8 @@ public enum ExceptionsEnum {
 	REST_ERROR(704),
 	SECURITY_BREACH(705),
 	
-	DATA_CONFLICTS(800);
+	DATA_CONFLICTS(800),
+	NO_COOKIES(401);
 	
 	
 	

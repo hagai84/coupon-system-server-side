@@ -8,7 +8,7 @@ import core.beans.CustomerBean;
 import core.enums.CouponType;
 import core.exception.CouponSystemException;
 
-public class RestCreateThread extends RestGenericThread {
+public class RestCreateCookieThread extends RestGenericCookieThread {
 	
 	@Override
 	public void run() {

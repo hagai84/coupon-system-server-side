@@ -62,6 +62,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			}
 			return Response.status(statusCode).entity(exceptionBean).build();
 		}
+		System.out.println("Exception handler");
 		exception.printStackTrace();
 		return Response.status(500).entity("Something went wrong").build();
 		

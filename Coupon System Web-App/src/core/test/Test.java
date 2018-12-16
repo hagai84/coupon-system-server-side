@@ -20,24 +20,24 @@ public class Test {
 	
 	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
-	/*	try {
+		try {
 			resetDB();
 		} catch (CouponSystemException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	
 		GenericThread testThread3 = new RestCreateThread();	
-		GenericThread testThread4 = new PurchaseThread(0, 5);	
-		GenericThread testThread5 = new PurchaseThread(0, 10);	
-		GenericThread testThread6 = new PurchaseThread(0, 15);	
+		GenericThread testThread4 = new RestCreateCookieThread();	
+		GenericThread testThread5 = new PurchaseThread(0, 0);	
+		GenericThread testThread6 = new PurchaseThread(0, 10);	
 //		testThread1.start();	
 //		testThread2.start();	
-		testThread3.start();	
-//		testThread4.start();	
-//		testThread5.start();	
+//		testThread3.start();	
+		testThread4.start();	
+//		testThread5.start();
 //		testThread6.start();	
 		try {
 			testThread1.join();

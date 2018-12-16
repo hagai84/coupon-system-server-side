@@ -24,12 +24,13 @@ public class LoginRestController {
 	@Context
 	HttpServletResponse response;
 
-	@GET
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long login(
-			@QueryParam("userName") String userName,
-			@QueryParam("userPassword") String userPassword,
-			@QueryParam("userType") String userType,
-			@QueryParam("remeberMe") String remeberMe)
+			@FormParam("userName") String userName,
+			@FormParam("userPassword") String userPassword,
+			@FormParam("userType") String userType,
+			@FormParam("remeberMe") String remeberMe)
 			throws CouponSystemException {
 		System.out.println("login service was cold");
 		long userId;
@@ -48,9 +49,10 @@ public class LoginRestController {
 			userId = CustomerService.getInstance().customerLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
 		} else if (userType.equals("company")) {
+			System.out.println("login company was cold");
 			userId = CompanyService.getInstance().companyLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
-		} else if (userName == "admin" && userPassword == "1234") {
+		} else if (userName.equals("admin") && userPassword.equals("1234")) {
 			cookieUserId = new Cookie("userId", "-1");
 			userType = "admin";
 			userId = -1;
@@ -60,11 +62,12 @@ public class LoginRestController {
 		}
 		System.out.println("after");
 
-		if (remeberMe != null && remeberMe.equals("true")) {
+		/*if (remeberMe != null && remeberMe.equals("true")) {
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {
 			cookieUserId.setMaxAge(-1);
-		}
+		}*/
+		cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 
 		Cookie cookieUserTypeCookie = new Cookie("userType", userType);
 		response.addCookie(cookieUserId);
