@@ -130,7 +130,7 @@ public class CompanyRestController implements Serializable{
 	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
 	 * @throws CustomerFacadeException if username or password are incorrect
 	 */
-	@POST
+	/*@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public long companyLogin(@FormParam("name") String companyName,@FormParam("password") String password) throws  CouponSystemException {
@@ -138,6 +138,6 @@ public class CompanyRestController implements Serializable{
 			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
 		}
 		return companyService.companyLogin(companyName, password);
-	}
+	}*/
 
 }
