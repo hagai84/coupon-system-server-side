@@ -36,9 +36,9 @@ public class ConnectionPool implements Serializable{
 	private String userName;
 	private String password;	
 
-	private ArrayList<Connection> availableConnections;
+	private ArrayList<Connection> availableConnections = new ArrayList<>();
 //	private ArrayList<Connection> connectionsOut;
-	private HashMap<Thread, Connection> usedConnections;
+	private HashMap<Thread, Connection> usedConnections = new HashMap<>();
 	private boolean closing = false;
 	private boolean initialized = false;
 
@@ -165,8 +165,8 @@ public class ConnectionPool implements Serializable{
 				System.err.println(e);
 			}
 		}
-		initialized = false;
 		synchronized (this) {
+			initialized = false;
 			for (Connection connection : availableConnections) {
 				try {
 					connection.close();				
@@ -196,6 +196,10 @@ public class ConnectionPool implements Serializable{
 	 * If an error occurred while attempting to access the database
 	 */
 	private void initializePool() throws CouponSystemException {
+		//Critical section should be in synchronized block
+		//however in order to not create a queue of threads invoking this method
+		//it is privately invoked in a synchronized block
+		initialized = false;
 		if (driverName == null) {
 			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Server details are not set");
 		}
@@ -260,17 +264,19 @@ public class ConnectionPool implements Serializable{
 	 * If connection times out
 	 * If an error occurred while attempting to access the database
 	 */
-	public synchronized void setServer(String driverName, String databaseUrl, String userName, String password)
-			throws CouponSystemException {
-		if (initialized) {
-			closeAllConnections();
+	public void setServer(String driverName, String databaseUrl, String userName, String password) throws CouponSystemException {
+		
+		synchronized(availableConnections) {
+			if (initialized) {
+				closeAllConnections();
+			}
+			this.driverName = driverName;
+			this.databaseUrl = databaseUrl;
+			this.userName = userName;
+			this.password = password;
+			
+			initializePool();			
 		}
-		this.driverName = driverName;
-		this.databaseUrl = databaseUrl;
-		this.userName = userName;
-		this.password = password;
-
-		initializePool();
 	}
 	
 	public Connection startTransaction() throws CouponSystemException {

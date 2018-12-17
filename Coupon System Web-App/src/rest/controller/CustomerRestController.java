@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CustomerBean;
 import core.exception.CouponSystemException;
-import core.exception.ExceptionsEnum;
 import core.service.CustomerService;
 
 @Path("/customers")

@@ -45,6 +45,7 @@ public class InitServlet extends HttpServlet {
 		userName = getInitParameter("userName");
 		password = getInitParameter("password");
 //		System.out.println(driverName+databaseUrl+userName+password);
+		System.out.println("");
 		couonSystem.setServer(driverName, databaseUrl, userName, password);
 		
 	}

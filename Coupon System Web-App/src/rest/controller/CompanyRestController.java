@@ -18,9 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import core.beans.CompanyBean;
 import core.exception.CouponSystemException;
-import core.exception.ExceptionsEnum;
 import core.service.CompanyService;
-import core.service.CustomerService;
 
 @Path("/companies")
 @Produces(MediaType.APPLICATION_JSON)
