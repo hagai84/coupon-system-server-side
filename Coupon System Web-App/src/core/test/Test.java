@@ -33,10 +33,10 @@ public class Test {
 		GenericThread testThread4 = new RestCreateCookieThread();	
 		GenericThread testThread5 = new PurchaseThread(0, 0);	
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
-		testThread1.start();	
+//		testThread1.start();	
 //		testThread2.start();	
 //		testThread3.start();	
-//		testThread4.start();	
+		testThread4.start();	
 //		testThread5.start();
 //		testThread6.start();	
 		try {
