@@ -20,12 +20,7 @@ public class Test {
 	
 	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
-		try {
-			resetDB();
-		} catch (CouponSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		resetDB();
 
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	
@@ -33,9 +28,9 @@ public class Test {
 		GenericThread testThread4 = new PurchaseThread(0, 0);	
 		GenericThread testThread5 = new PurchaseThread(0, 5);	
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
-		testThread1.start();	
+//		testThread1.start();	
 //		testThread2.start();	
-//		testThread3.start();	
+		testThread3.start();	
 //		testThread4.start();	
 //		testThread5.start();
 //		testThread6.start();	
@@ -58,10 +53,15 @@ public class Test {
 	 * Resets the DB from scratch.
 	 * @throws DAOException
 	 */
-	public static void resetDB() throws CouponSystemException {
+	public static void resetDB() {
+		try {
 			CreateDB db = new CreateDB();
 			db.dropTables();
 			db.createDb();
+		} catch (CouponSystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

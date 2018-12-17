@@ -25,7 +25,7 @@
     <description></description>
     <display-name>InitServlet</display-name>
     <servlet-name>InitServlet</servlet-name>
-    <servlet-class>rest.InitServlet</servlet-class>
+    <servlet-class>com.ronhagai.couponfaphase3.rest.InitServlet</servlet-class>
     <init-param>
       <param-name>driverName</param-name>
       <param-value>com.mysql.jdbc.Driver</param-value>
@@ -46,7 +46,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>InitServlet</servlet-name>
-    <url-pattern>com.ronhagai.couponfaphase3.rest.InitServlet</url-pattern>
+    <url-pattern>/InitServlet</url-pattern>
   </servlet-mapping>
   
   <filter>

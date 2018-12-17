@@ -25,18 +25,18 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			int statusCode = theException.getExceptionsEnum().getStatusCode();
 			String externalMessage;
 			try {
-				errorMessages = ResourceBundle.getBundle("core.exception.errorMessages", request.getLocale());			
+				errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", request.getLocale());			
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				System.err.println(String.format("%s does not have error support", request.getLocale().getDisplayLanguage()));
-				errorMessages = ResourceBundle.getBundle("core.exception.errorMessages_en");
+				errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages_en");
 			}
 			try {
 				externalMessage = errorMessages.getString(theException.getExceptionsEnum().name());
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				System.err.println(String.format("Error code %s is not supported for %s", String.valueOf(statusCode), request.getLocale().getDisplayLanguage()));
-				errorMessages = ResourceBundle.getBundle("core.exception.errorMessages_en");
+				errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages_en");
 				try {
 					externalMessage = errorMessages.getString(theException.getExceptionsEnum().name());
 				} catch (Exception e2) {
