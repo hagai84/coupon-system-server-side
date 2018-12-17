@@ -14,7 +14,7 @@
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>rest, com.fasterxml.jackson.jaxrs.json</param-value>
+      <param-value>com.ronhagai.couponfaphase3.rest, com.fasterxml.jackson.jaxrs.json</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
@@ -46,12 +46,12 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>InitServlet</servlet-name>
-    <url-pattern>/InitServlet</url-pattern>
+    <url-pattern>/Coupon System Web-App/src/com/ronhagai/couponfaphase3/rest/InitServlet</url-pattern>
   </servlet-mapping>
   
   <filter>
   	<filter-name>logInFilter</filter-name>
-  	<filter-class>rest.filters.logInFilter</filter-class>
+  	<filter-class>/Coupon System Web-App/src/com/ronhagai/couponfaphase3/rest/filters/logInFilter</filter-class>
   </filter>
   <filter-mapping>
   	<filter-name>logInFilter</filter-name>
