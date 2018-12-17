@@ -32,7 +32,6 @@ public class LoginRestController {
 			@FormParam("userType") String userType,
 			@FormParam("remeberMe") String remeberMe)
 			throws CouponSystemException {
-		System.out.println("login service was cold");
 		long userId;
 		Cookie cookieUserId;
 		
@@ -51,11 +50,9 @@ public class LoginRestController {
 			userType = "admin";
 			userId = -1;
 		}else if (userType.equals("customer")) {
-			System.out.println("login customer was cold");
 			userId = CustomerService.getInstance().customerLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
 		} else if (userType.equals("company")) {
-			System.out.println("login company was cold");
 			userId = CompanyService.getInstance().companyLogin(userName, userPassword);
 			cookieUserId = new Cookie("userId", String.valueOf(userId));
 		} else {

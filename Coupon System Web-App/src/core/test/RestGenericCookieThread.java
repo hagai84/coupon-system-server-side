@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -36,7 +37,7 @@ public abstract class RestGenericCookieThread extends GenericThread{
 		postMethod.setEntity(entity);
 		HttpResponse response;
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);	
+			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : Admin logged in");
@@ -61,10 +62,11 @@ public abstract class RestGenericCookieThread extends GenericThread{
         form.add(new BasicNameValuePair("userType", "company"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/login");
+        postMethod.addHeader("Accept-Language", "en");
         postMethod.setEntity(entity);
 		HttpResponse response;
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);	
+			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : Company logged in : " + user);
@@ -88,10 +90,11 @@ public abstract class RestGenericCookieThread extends GenericThread{
         form.add(new BasicNameValuePair("userType", "customer"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/login");
+        postMethod.addHeader("Accept-Language", "de");
         postMethod.setEntity(entity);
 		HttpResponse response;
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);	
+			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : customer logged in : " + user);
@@ -113,7 +116,7 @@ public abstract class RestGenericCookieThread extends GenericThread{
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/coupons");
 			postMethod.setEntity(entity);
-			postMethod.setHeader("userId", String.valueOf(userId));
+			postMethod.setHeader("Cookie", "userId="+userId+"; userType=company");
 	        postMethod.addHeader("Accept-Language", "it");
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
@@ -133,10 +136,10 @@ public abstract class RestGenericCookieThread extends GenericThread{
 
 	protected long createCompany(CompanyBean company) {
 		try {
-			System.out.println("create C");
 			String json = new ObjectMapper().writeValueAsString(company);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/companies");
+			postMethod.setHeader("Cookie", "userId=123456789; userType=admin");
 	        postMethod.addHeader("Accept-Language", "en");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
@@ -160,6 +163,7 @@ public abstract class RestGenericCookieThread extends GenericThread{
 			String json = new ObjectMapper().writeValueAsString(customer);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/customers");
+			postMethod.setHeader("Cookie", "userId=123456789; userType=admin");
 	        postMethod.addHeader("Accept-Language", "de");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
@@ -180,3 +184,4 @@ public abstract class RestGenericCookieThread extends GenericThread{
 	}
 
 }
+
