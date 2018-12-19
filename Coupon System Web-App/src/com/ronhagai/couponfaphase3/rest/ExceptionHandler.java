@@ -64,6 +64,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 		}
 		System.out.println("Exception handler");
 		exception.printStackTrace();
+		System.out.println("exception massge form uncatch exceptions from the hendler: " + exception.getMessage());
 		return Response.status(500).entity("Something went wrong").build();
 		
 	}
