@@ -30,7 +30,8 @@ public class ConnectionPool implements Serializable{
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
 	private final int POOL_SIZE = 4;
-	private final int CLOSING_WAITING_PERIOD = 10;
+	private final int CLOSING_WAITING_PERIOD = 5000;
+	private final int VALIDITY_WAITING_PERIOD = 10;
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -88,6 +89,7 @@ public class ConnectionPool implements Serializable{
 					}
 					wait();
 				} catch (InterruptedException e) {
+					//TODO consolidate the 2, create specific error code
 					System.err.println("LOG : get connection wait interrupted : " + e);
 					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"database access error occurred", e);
 
@@ -97,7 +99,7 @@ public class ConnectionPool implements Serializable{
 			
 			try {
 				//checks if connection isValid if not attempts to open a new one
-				if (!connection.isValid(CLOSING_WAITING_PERIOD)) {
+				if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
 					connection.close();
 					connection = newConnection();
 				}
@@ -159,9 +161,9 @@ public class ConnectionPool implements Serializable{
 		//if there are connections out wait for a set amount of millisecond
 		if (availableConnections.size() < POOL_SIZE) {
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(CLOSING_WAITING_PERIOD);
 			} catch (InterruptedException e) {
-				System.err.println(e);
+				System.err.println("LOG : close all connections wait interrupted, " + e);
 			}
 		}
 		synchronized (this) {
@@ -170,19 +172,19 @@ public class ConnectionPool implements Serializable{
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println(e);
+					System.err.println("LOG : close all - close connection failed , " + e);
 				}
 			}
 			for (Connection connection : usedConnections.values()) {
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println(e);
+					System.err.println("LOG : close all - close connection failed , " + e);
 				}
 			}			
 		}
 		closing = false;
-		System.err.println("LOG : return connection failed");
+		System.out.println("LOG : Connection pool Closed");
 	}
 			
 
@@ -207,7 +209,7 @@ public class ConnectionPool implements Serializable{
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
-			System.err.println(e);
+//			System.err.println(e);
 			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection Driver Class not found : ", e);
 		}
 		availableConnections = new ArrayList<Connection>();
