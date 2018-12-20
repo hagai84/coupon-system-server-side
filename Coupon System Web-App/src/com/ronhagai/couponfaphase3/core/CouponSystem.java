@@ -20,7 +20,7 @@ public class CouponSystem implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static CouponSystem couponSystemInstance = new CouponSystem();
 	private static ConnectionPool connectionPool = ConnectionPool.getInstance();
-	private static DailyCouponExpirationTask dailyTask = DailyCouponExpirationTask.getInstance();;
+	private static DailyCouponExpirationTask2 dailyTask = DailyCouponExpirationTask2.getInstance();;
 	
 	private CouponSystem() { 
 	}
@@ -40,7 +40,7 @@ public class CouponSystem implements Serializable{
 	public void shutdown(){
 		dailyTask.stopTask();
 		try {
-			dailyTask.getThread().join();
+			dailyTask.join();
 		} catch (InterruptedException e) {
 			// TODO Manager handling - add logging functionality
 			// e.printStackTrace();
