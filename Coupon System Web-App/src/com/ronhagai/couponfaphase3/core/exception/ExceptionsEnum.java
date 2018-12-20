@@ -15,6 +15,7 @@ public enum ExceptionsEnum {
 	BAD_NAME_OR_PASSWORD(610),
 	USER_TYPE_REQUIRED(611),
 	NULL_DATA(612),
+	CUSTOMER_OWNS_COUPON(613),
 	
 	FAILED_OPERATION(700),
 	CONNECTION_POOL_FAILUER(701),
@@ -25,7 +26,6 @@ public enum ExceptionsEnum {
 	
 	DATA_CONFLICTS(800),
 	NO_COOKIES(401);
-	
 	
 	
 	

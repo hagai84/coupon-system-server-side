@@ -30,9 +30,9 @@ public class Test {
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
 //		testThread1.start();	
 //		testThread2.start();	
-		testThread3.start();	
-//		testThread4.start();	
-//		testThread5.start();
+//		testThread3.start();	
+		testThread4.start();	
+		testThread5.start();
 //		testThread6.start();	
 		try {
 			testThread1.join();

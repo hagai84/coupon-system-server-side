@@ -22,12 +22,11 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	
 	
 	
-	public Thread getT() {
+	public Thread getThread() {
 		return dailyTaskThread;
 	}
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
-//	private CouponController couponController = new CouponController();
 	private boolean quit = false; 
 
 	/**
@@ -40,20 +39,17 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 		this.dailyTaskThread.start();
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
 		System.out.println("LOG : Daily Task started");
 		while(!quit) {
 			try {
-				//Sets the next iteration for 00:00 hour  
+				//Sets the next iteration for 00:00 hour TLV
 				Thread.sleep((long)(System.currentTimeMillis()%(24*60*60*1000) + (2*60*60*1000)));
 			} catch (InterruptedException e) {
 				// TODO Manager handling
-				// e.printStackTrace();
-				System.err.println("Daily task sleep interrupted : " + e);	
+				// shld be picked by tomcat logger
+				System.err.println("LOG : Daily task sleep interrupted : " + e);	
 				continue;
 			}
 						
@@ -61,8 +57,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 				couponDAO.removeExpiredCoupons();
 			} catch (CouponSystemException e) {
 				// TODO Manager handling
-				//e.printStackTrace();
-				System.err.println("Daily task incomplited : " + e);
+				// shld be picked by tomcat logger
+				System.err.println("LOG : Daily task incomplited : " + e);
 			}
 		}
 		System.out.println("LOG : Daily Task ended");
