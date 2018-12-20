@@ -10,6 +10,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.ronhagai.couponfaphase3.core.beans.ExceptionBean;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
+import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 
 @Provider
 public class ExceptionHandler implements ExceptionMapper<Throwable> {
@@ -22,7 +23,8 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 		if (exception instanceof CouponSystemException) {
 			CouponSystemException theException = (CouponSystemException)exception;
 			ResourceBundle errorMessages;
-			int statusCode = theException.getExceptionsEnum().getStatusCode();
+			ExceptionsEnum exceptionsEnum = theException.getExceptionsEnum();
+			int statusCode = exceptionsEnum.getStatusCode();
 			String externalMessage;
 			try {
 				errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", request.getLocale());			
@@ -44,11 +46,8 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 					externalMessage = "error message unavailable";
 				}
 			}
-			System.out.println("ExceptionMapper was called :");
-			System.out.println("Enum : " + theException.getExceptionsEnum());
-			System.out.println("Internal message : " + theException.getMessage());
 			
-			ExceptionBean exceptionBean = new ExceptionBean(statusCode, externalMessage, theException.getInternalMessage());
+			ExceptionBean exceptionBean = new ExceptionBean(statusCode, externalMessage, exceptionsEnum.getInternalMessage());
 			if (statusCode >= 600 && statusCode < 700) {
 				// TODO appropriate handling, log
 				return Response.status(statusCode).entity(exceptionBean).build();
@@ -62,10 +61,9 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			}
 			return Response.status(statusCode).entity(exceptionBean).build();
 		}
-		System.out.println("Exception handler");
-		exception.printStackTrace();
-		System.out.println("exception massge form uncatch exceptions from the hendler: " + exception.getMessage());
-		return Response.status(500).entity("Something went wrong").build();
+		
+		System.err.println("exception massge form uncatch exceptions from the hendler: " + exception);
+		return Response.status(999).entity("Something went wrong").build();
 		
 	}
 
