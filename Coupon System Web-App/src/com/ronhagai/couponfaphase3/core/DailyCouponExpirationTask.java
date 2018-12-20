@@ -1,6 +1,7 @@
 package com.ronhagai.couponfaphase3.core;
 
 import java.io.Serializable;
+import java.util.TimeZone;
 
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
@@ -44,8 +45,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 		System.out.println("LOG : Daily Task started");
 		while(!quit) {
 			try {
-				//Sets the next iteration for 00:00 hour TLV
-				Thread.sleep((long)(System.currentTimeMillis()%(24*60*60*1000) + (2*60*60*1000)));
+				//Sets the next iteration for 00:00 server local time
+				Thread.sleep((long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset()));
 			} catch (InterruptedException e) {
 				// TODO Manager handling
 				// shld be picked by tomcat logger
