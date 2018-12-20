@@ -65,7 +65,7 @@ public class CouponDAO implements ICouponDAO {
 
 			if(insertStatment.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - THROWS SQL EXCEPTION BEFORE
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"Create coupon failed : " + coupon);
+				throw new CouponSystemException(ExceptionsEnum.COUPON_NOT_CREATED,"Create coupon failed : " + coupon);
 			}
 			ResultSet createIdResultSet = selectStatement.executeQuery();
 			if(createIdResultSet.next()) {
@@ -74,7 +74,7 @@ public class CouponDAO implements ICouponDAO {
 				return id;
 			}else {
 				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"create coupon failed : " + coupon);
+				throw new CouponSystemException(ExceptionsEnum.GENERATE_ID_NOT_RETRIEVED,"create coupon failed : " + coupon);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"Create coupon failed", e);
@@ -95,7 +95,7 @@ public class CouponDAO implements ICouponDAO {
 			updateStatement.setLong(1, couponId);
 			if(updateStatement.executeUpdate()==0) {
 				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"purchase coupon failed - Coupon out of Stock ID : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.COUPON_NOT_PURCHASED,"purchase coupon failed - Coupon out of Stock ID : " + couponId);
 			}				
 			insertStatement.executeUpdate();				
 		} catch (SQLException e) {
@@ -125,7 +125,7 @@ public class CouponDAO implements ICouponDAO {
 			updateStatement.setLong(10, coupon.getCouponId());
 			if(updateStatement.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"update coupon failed :" + coupon);
+				throw new CouponSystemException(ExceptionsEnum.COUPON_NOT_UPDATED,"update coupon failed :" + coupon);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"update coupon failed", e);
@@ -145,7 +145,7 @@ public class CouponDAO implements ICouponDAO {
 			updateStatement.setInt(3, amoutDelta);
 			if(updateStatement.executeUpdate()==0) {
 				//NEGATIVE DELTA TO BIG or CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS ,"update amount failed : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.AMOUNT_NOT_UPDATED ,"update amount failed : " + couponId);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR ,"update coupon failed", e);
@@ -163,7 +163,7 @@ public class CouponDAO implements ICouponDAO {
 			deleteStatement.setLong(1, couponId);
 			if(deleteStatement.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
-				throw new CouponSystemException(ExceptionsEnum.DATA_CONFLICTS,"remove coupon failed, ID  : " + couponId);
+				throw new CouponSystemException(ExceptionsEnum.COUPON_NOT_REMOVED,"remove coupon failed, ID  : " + couponId);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove coupon failed", e);
@@ -268,7 +268,7 @@ public class CouponDAO implements ICouponDAO {
 				return coupon;
 			}else {
 				couponResultSet.close();
-				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get coupon failed, ID : " + couponID);
+				throw new CouponSystemException(ExceptionsEnum.GET_COUPON_FAILED,"get coupon failed, ID : " + couponID);
 			}
 		} catch (SQLException e) {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get coupon failed : ", e);

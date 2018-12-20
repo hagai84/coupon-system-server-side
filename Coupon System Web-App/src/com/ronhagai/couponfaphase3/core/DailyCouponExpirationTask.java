@@ -13,21 +13,15 @@ import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
  * @author Ron
  *
  */
-public class DailyCouponExpirationTask implements Runnable , Serializable{
+public class DailyCouponExpirationTask extends Thread implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static DailyCouponExpirationTask dailyExpirationTaskInstance = new DailyCouponExpirationTask();
-	private Thread dailyTaskThread; 	
-	
-	
-	
-	public Thread getThread() {
-		return dailyTaskThread;
-	}
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
+	private long timeTillMidnight = 0;
 	private boolean quit = false; 
 
 	/**
@@ -36,8 +30,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	 * 
 	 */
 	private DailyCouponExpirationTask(){
-		this.dailyTaskThread = new Thread(this);
-		this.dailyTaskThread.start();
+		
+		this.start();
 	}
 
 	@Override
@@ -45,8 +39,7 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 		System.out.println("LOG : Daily Task started");
 		while(!quit) {
 			try {
-				//Sets the next iteration for 00:00 server local time
-				Thread.sleep((long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset()));
+				Thread.sleep(timeTillMidnight);
 			} catch (InterruptedException e) {
 				// TODO Manager handling
 				// shld be picked by tomcat logger
@@ -61,6 +54,8 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 				// shld be picked by tomcat logger
 				System.err.println("LOG : Daily task incomplited : " + e);
 			}
+			//Sets the next iteration for 00:00 server local time
+			timeTillMidnight = (long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset());
 		}
 		System.out.println("LOG : Daily Task ended");
 	}
@@ -71,7 +66,7 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	public void stopTask() {
 		System.out.println("LOG : Daily Task stopped");
 		quit = true;
-		dailyTaskThread.interrupt();
+		interrupt();
 	}
 
 	/**

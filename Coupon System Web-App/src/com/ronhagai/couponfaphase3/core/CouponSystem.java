@@ -20,7 +20,7 @@ public class CouponSystem implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static CouponSystem couponSystemInstance = new CouponSystem();
 	private static ConnectionPool connectionPool = ConnectionPool.getInstance();
-	private static DailyCouponExpirationTask2 dailyTask = DailyCouponExpirationTask2.getInstance();;
+	private static DailyCouponExpirationTask dailyTask;
 	
 	private CouponSystem() { 
 	}
@@ -64,6 +64,7 @@ public class CouponSystem implements Serializable{
 			// TODO Manager handling - add logging functionality
 			// e.printStackTrace();
 			System.err.println("LOG : Set Server Initialize failed : " + e);
-		}	
+		}
+		dailyTask = DailyCouponExpirationTask.getInstance();
 	}
 }
