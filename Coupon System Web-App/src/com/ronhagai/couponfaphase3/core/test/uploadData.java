@@ -8,6 +8,7 @@ import com.ronhagai.couponfaphase3.core.CouponSystem;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
@@ -47,7 +48,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			customer.setId((10000 + i));
 			customer.setPassword("100000" + i);
 			try {
-				CustomerService.getInstance().createCustomer(customer);
+				CustomerService.getInstance().createCustomer(customer, 123456789, ClientType.ADMIN);
 				System.out.println("critical point 4");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block
@@ -62,7 +63,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			company.setPassword("1000000" + i);
 			company.setEmail("email"+i+"@gmail.com");
 			try {
-				companyids.add(CompanyService.getInstance().createCompany(company));
+				companyids.add(CompanyService.getInstance().createCompany(company, 123456789, ClientType.ADMIN));
 				System.out.println("critical point 5");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block
@@ -99,7 +100,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			}
 
 			try {
-				CouponService.getInstance().createCoupon(coupon, companyids.remove(0));
+				CouponService.getInstance().createCoupon(coupon, companyids.remove(0), ClientType.COMPANY);
 				System.out.println("critical point 6");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block

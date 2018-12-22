@@ -101,14 +101,13 @@ public class CompanyDAO implements ICompanyDAO{
 	}
 
 	@Override
-	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword) throws CouponSystemException {
+	public void updateCompanyPassword(long companyId, String newPassword) throws CouponSystemException {
 		Connection con = connectionPool.getConnection();		
 		
-		String sql = "UPDATE company SET PASSWORD=? WHERE ID=? AND PASSWORD=?";
+		String sql = "UPDATE company SET PASSWORD=? WHERE ID=? ";
 		try(PreparedStatement stmt = con.prepareStatement(sql)) {
 			stmt.setInt(1, newPassword.hashCode());
 			stmt.setLong(2, companyId);
-			stmt.setInt(3, oldPassword.hashCode());
 			if(stmt.executeUpdate()==0) {
 				//SHLD NEVER HAPPEN - CLIENT SIDE ERROR
 				throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"update company's password failed, ID : " + companyId);
@@ -256,33 +255,5 @@ public class CompanyDAO implements ICompanyDAO{
 			connectionPool.returnConnection(con);			
 		}
 	}
-	/* (non-Javadoc)
-	 * @see coupon.system.dao.CompanyDAO#getCompanyByName(String)
-	 
-	@Override
-	public CompanyBean getCompanyByName(String companyName) throws CouponSystemException {
-		Connection con = connectionPool.getConnection();
-		String sql = "SELECT * FROM company WHERE comp_name = ?'" ;
-		try (PreparedStatement prepardStatement  = con.prepareStatement(sql);) {
-			prepardStatement.setString(1,companyName);
-			ResultSet set = prepardStatement.executeQuery();
-			if (set.next()) {
-				CompanyBean com = new CompanyBean();
-				com.setId(set.getLong(1));
-				com.setCompName(set.getString(2));
-				com.setPassword("***PASSWORD***");
-				com.setEmail(set.getString(4));
-				return com;
-			} else {
-				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"cant found company with name " + companyName);
-				throw exception;
-			}
-		} catch (SQLException e) {
-			CouponSystemException exception = new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"get company by name failed", e);
-			throw exception;
-		} finally {
-			connectionPool.returnConnection(con);
-		}
-	}*/
 
 }

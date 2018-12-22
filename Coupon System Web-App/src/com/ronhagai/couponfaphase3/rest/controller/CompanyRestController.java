@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
 
@@ -40,8 +41,10 @@ public class CompanyRestController implements Serializable{
 	 *  If company creation fails
 	 */
 	@POST
-	public long createCompany(CompanyBean company) throws CouponSystemException {
-		return companyService.createCompany(company);
+	public long createCompany(CompanyBean company, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return companyService.createCompany(company, userId, userType);
 	}
 	
 
@@ -53,16 +56,19 @@ public class CompanyRestController implements Serializable{
 	 *  If updating of the company's details fails
 	 */
 	@PUT
-	public void updateCompany(CompanyBean company) throws CouponSystemException {
-		companyService.updateCompany(company);
+	public void updateCompany(CompanyBean company, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		companyService.updateCompany(company, userId, userType);
 	}
 
 	@PUT
-	@Path("password")
+	@Path("/{companyId}/password")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void updateCompanyPassword(@FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = Long.parseLong(httpServletRequest.getHeader("userId"));
-		companyService.updateCompanyPassword(companyId, oldPassword, newPassword);
+	public void updateCompanyPassword(@PathParam ("companyId") long companyId, @FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		companyService.updateCompanyPassword(companyId, oldPassword, newPassword, userId, userType);
 	}
 	/**
 	 * Deletes a company in the database
@@ -74,8 +80,10 @@ public class CompanyRestController implements Serializable{
 	 */
 	@DELETE
 	@Path("{companyId}")
-	public void removeCompany(@PathParam ("companyId") long companyId) throws CouponSystemException {
-		companyService.removeCompany(companyId);
+	public void removeCompany(@PathParam ("companyId") long companyId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		companyService.removeCompany(companyId, userId, userType);
 	}
 
 

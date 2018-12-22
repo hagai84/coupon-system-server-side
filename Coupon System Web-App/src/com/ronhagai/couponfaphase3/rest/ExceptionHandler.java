@@ -43,12 +43,13 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			}
 		}else {
 			//TODO Log uncaught exception
-			System.err.println("Different exception than CouponSystemException: " + exception);
+			System.err.println("Different exception than CouponSystemException: ");
 			exceptionEnum = ExceptionsEnum.FAILED_OPERATION;
 			statusCode = exceptionEnum.getStatusCode();
 			internalMessage = exceptionEnum.getInternalMessage();
 		}
-		
+//		TODO proper logging
+//		exception.printStackTrace();
 		externalMessage = getTranslatedMessage(exceptionEnum);
 		exceptionBean = new ExceptionBean(statusCode, externalMessage, internalMessage);
 		return Response.status(statusCode).entity(exceptionBean).build();	

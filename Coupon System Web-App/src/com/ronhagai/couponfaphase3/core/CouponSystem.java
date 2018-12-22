@@ -44,7 +44,8 @@ public class CouponSystem implements Serializable{
 		} catch (InterruptedException e) {
 			// TODO Manager handling - add logging functionality
 			// e.printStackTrace();
-			System.err.println("LOG : CS shutdown join interrupted : " + e);
+			System.err.println("LOG : CS shutdown join interrupted : ");
+			e.printStackTrace();
 		}
 		connectionPool.closeAllConnections();
 		System.out.println("LOG : shut down completed");
@@ -63,7 +64,8 @@ public class CouponSystem implements Serializable{
 		} catch (CouponSystemException e) {
 			// TODO Manager handling - add logging functionality
 			// e.printStackTrace();
-			System.err.println("LOG : Set Server Initialize failed : " + e);
+			System.err.println("LOG : Set Server Initialize failed : ");
+			e.printStackTrace();
 		}
 		dailyTask = DailyCouponExpirationTask.getInstance();
 	}

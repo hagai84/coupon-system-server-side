@@ -21,7 +21,7 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 	private static DailyCouponExpirationTask dailyExpirationTaskInstance = new DailyCouponExpirationTask();
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
-	private long timeTillMidnight = 0;
+	private long timeTillMidnight = 5000;
 	private boolean quit = false; 
 
 	/**
@@ -43,7 +43,8 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 			} catch (InterruptedException e) {
 				// TODO Manager handling
 				// shld be picked by tomcat logger
-				System.err.println("LOG : Daily task sleep interrupted : " + e);	
+				System.err.println("LOG : Daily task sleep interrupted : ");
+				e.printStackTrace();
 				continue;
 			}
 						
@@ -52,7 +53,8 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 			} catch (CouponSystemException e) {
 				// TODO Manager handling
 				// shld be picked by tomcat logger
-				System.err.println("LOG : Daily task incomplited : " + e);
+				System.err.println("LOG : Daily task incomplited : ");
+				e.printStackTrace();
 			}
 			//Sets the next iteration for 00:00 server local time
 			timeTillMidnight = (long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset());

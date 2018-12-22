@@ -31,41 +31,43 @@ public class LoginRestController {
 			@FormParam("remeberMe") String remeberMe)
 			throws CouponSystemException {
 		long userId;
-		Cookie cookieUserId;
+		Cookie cookieUserId, cookieUserType;
 		
 		
 		
-		if(userName == null || userPassword == null) {
-			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
+		if(userName == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user name seem to be missing");
+		}
+		if(userPassword == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user password seem to be missing");
 		}
 		
-		if(userType == null && !userName.equals("admin")) {
+		if(userType == null) {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
-		if (userName.equals("admin") && userPassword.equals("1234")) {
-			cookieUserId = new Cookie("userId", "123456789");
-			userType = "admin";
-			userId = -1;
-		}else if (userType.equals("customer")) {
+		if (userType.equals("ADMIN") && userName.equals("admin") && userPassword.equals("1234")) {
+			userId = 123456789;
+		}else if (userType.equals("CUSTOMER")) {
 			userId = CustomerService.getInstance().customerLogin(userName, userPassword);
-			cookieUserId = new Cookie("userId", String.valueOf(userId));
-		} else if (userType.equals("company")) {
+		} else if (userType.equals("COMPANY")) {
 			userId = CompanyService.getInstance().companyLogin(userName, userPassword);
-			cookieUserId = new Cookie("userId", String.valueOf(userId));
 		} else {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
 
+		cookieUserType = new Cookie("userType", userType);
+		cookieUserId = new Cookie("userId", String.valueOf(userId));
 		if (remeberMe != null && remeberMe.equals("true")) {
+			cookieUserType.setMaxAge(60 * 60 * 24 * 365);
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {
+			cookieUserType.setMaxAge(-1);
 			cookieUserId.setMaxAge(-1);
 		}
 
-		Cookie cookieUserTypeCookie = new Cookie("userType", userType);
 		response.addCookie(cookieUserId);
-		response.addCookie(cookieUserTypeCookie);
+		response.addCookie(cookieUserType);
 		return userId;
 	}
 

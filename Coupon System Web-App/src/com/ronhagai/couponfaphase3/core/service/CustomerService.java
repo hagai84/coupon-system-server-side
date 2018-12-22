@@ -8,6 +8,7 @@ import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.CustomerDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICustomerDAO;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.util.ConnectionPool;
@@ -51,15 +52,21 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 *  If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists or is invalid).
 	 *
 	 */
-	public long createCustomer(CustomerBean customer) throws CouponSystemException {
+	public long createCustomer(CustomerBean customer, long userId, ClientType userType) throws CouponSystemException {
+		//can be used if customer registration should be restricted 
+		if (!userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to create customer " + customer);
+		}
+		
 		checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(customerDAO.customerNameAlreadyExists(customer.getCustName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Customer Name already exists");
 		}
 
-		return customerDAO.createCustomer(customer);
-		
+		long customerId = customerDAO.createCustomer(customer);
+		System.out.println("LOG : User " + userType + " - " + userId + " created customer " + customer);
+		return customerId;
 	}
 
 	/**
@@ -70,15 +77,27 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
 	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
 	 */
-	public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
+	public void updateCustomer(CustomerBean customer, long userId, ClientType userType) throws CouponSystemException {		
+		if ((customer.getId() != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to update customer " + customer);
+		}
 		checkCustomer(customer);
 		CustomerBean tmpCustomer = getCustomer(customer.getId());
 		tmpCustomer.setPassword(customer.getPassword());
 		customerDAO.updateCustomer(tmpCustomer);
+		System.out.println("LOG : User " + userType + " - " + userId + " updated customer " + customer);		
 	}
 
-	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword) throws CouponSystemException {
-		customerDAO.updateCustomerPassword(customerId, oldPassword, newPassword);
+	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword, long userId, ClientType userType) throws CouponSystemException {
+		if ((customerId != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change customer's password " + customerId);
+		}
+		if(userType.equals(ClientType.CUSTOMER)) {			
+			String customerName = customerDAO.getCustomer(customerId).getCustName();
+			customerDAO.customerLogin(customerName, oldPassword);
+		}		
+		customerDAO.updateCustomerPassword(customerId, newPassword);
+		System.out.println("LOG : User " + userType + " - " + userId + " changed customer's password " + customerId);
 	}
 	/**
 	 * Deletes a specified customer from the DB.
@@ -90,7 +109,11 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 *  If the given customer's ID can't be found in the DB.
 	 *
 	 */
-	public void removeCustomer(long customerId) throws CouponSystemException {
+	public void removeCustomer(long customerId, long userId, ClientType userType) throws CouponSystemException {
+		//can be modified if customer removing should be restricted
+		if (!userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove customer " + customerId);
+		}
 		connectionPool.startTransaction();
 		try {
 			couponDAO.removeCustomerCoupons(customerId);
@@ -101,7 +124,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		}finally {
 		}
 		connectionPool.endTransaction();			
-		
+		System.out.println("LOG : User " + userType + " - " + userId + " removed customer " + customerId);			
 	}
 
 	/**

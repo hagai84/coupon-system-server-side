@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
+
 
 /**
  * Servlet Filter implementation class logInFilter
@@ -25,6 +27,7 @@ public class logInFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		Long userId = null;
+		ClientType userType = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
 		// if try to login let him
 		if (pathRequstedByUser.equals("/login") || (pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))) {
@@ -38,9 +41,15 @@ public class logInFilter implements Filter {
 				if (cookie.getName().equals("userId")) {
 					userId = Long.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userId", userId);
-					chain.doFilter(request, response);
-					return;
 				}
+				if (cookie.getName().equals("userType")) {
+					userType = ClientType.valueOf(cookie.getValue());
+					httpRequest.setAttribute("userType", userType);
+				}
+			}
+			if (userId != null && userType != null) {
+				chain.doFilter(request, response);
+				return;
 			}
 		}
 		

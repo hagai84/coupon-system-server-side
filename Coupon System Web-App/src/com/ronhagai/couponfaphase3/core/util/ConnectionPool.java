@@ -73,7 +73,7 @@ public class ConnectionPool implements Serializable{
 
 		Connection connection = null;
 		if (closing) {
-			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool shutting down");
+			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_CLOSING,"Connection pool shutting down");
 		}
 		
 		synchronized (this) {
@@ -85,14 +85,14 @@ public class ConnectionPool implements Serializable{
 			while (availableConnections.size() < 1) {
 				try {
 					if (closing) {
-						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool is shutting down");
+						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_CLOSING,"Connection pool is shutting down");
 					}
 					wait();
 				} catch (InterruptedException e) {
 					//TODO consolidate the 2, create specific error code
-					System.err.println("LOG : get connection wait interrupted : " + e);
-					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"database access error occurred", e);
-
+					System.err.println("LOG : get connection wait interrupted : ");
+					e.printStackTrace();
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get connection wait interrupted", e);
 				}
 			}
 			connection = availableConnections.remove(0);
@@ -163,7 +163,8 @@ public class ConnectionPool implements Serializable{
 			try {
 				Thread.sleep(CLOSING_WAITING_PERIOD);
 			} catch (InterruptedException e) {
-				System.err.println("LOG : close all connections wait interrupted, " + e);
+				System.err.println("LOG : close all connections wait interrupted");
+				e.printStackTrace();
 			}
 		}
 		synchronized (this) {
@@ -172,14 +173,16 @@ public class ConnectionPool implements Serializable{
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println("LOG : close all - close connection failed , " + e);
+					System.err.println("LOG : close all - close connection failed");
+					e.printStackTrace();
 				}
 			}
 			for (Connection connection : usedConnections.values()) {
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println("LOG : close all - close connection failed , " + e);
+					System.err.println("LOG : close all - close connection failed");
+					e.printStackTrace();
 				}
 			}			
 		}

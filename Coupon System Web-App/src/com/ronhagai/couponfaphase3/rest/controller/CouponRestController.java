@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CouponService;
@@ -50,10 +51,27 @@ public class CouponRestController implements Serializable {
 	 */
 	@POST
 	public long createCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		return couponService.createCoupon(coupon, companyId);
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return couponService.createCoupon(coupon, userId, userType);
 	}
 	
+	/**
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
+	 */
+	@PUT
+	@Path("/{couponID}/{customerId}")
+	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		couponService.purchaseCoupon(couponId, customerId, userId, userType);
+	}
+
 	/**
 	 * Updates a coupon entity in the repository.
 	 * 
@@ -63,8 +81,9 @@ public class CouponRestController implements Serializable {
 	 */
 	@PUT
 	public void updateCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		couponService.updateCoupon(coupon, companyId);
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		couponService.updateCoupon(coupon, userId, userType);
 	}
 
 	/**
@@ -79,8 +98,9 @@ public class CouponRestController implements Serializable {
 	@PUT
 	@Path("/amount/{couponId}")
 	public void updateCouponAmout(@PathParam("couponId") long couponId,@QueryParam("amountDelta") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		couponService.updateCouponAmout(couponId, companyId, amoutDelta);
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);
 	}
 	
 	/**
@@ -93,25 +113,11 @@ public class CouponRestController implements Serializable {
 	@DELETE
 	@Path("/{couponId}")
 	public void removeCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long companyId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		couponService.removeCoupon(couponId, companyId);
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		couponService.removeCoupon(couponId, userId, userType);
 	}
 	 
-	/**
-	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
-	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
-	 * 
-	 * @param couponId the coupon's ID.
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
-	 *  existing ownership or no matching data.
-	 */
-	@PUT
-	@Path("/{couponID}")
-	public void purchaseCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		couponService.purchaseCoupon(couponId, customerId);
-	}
-
 	/**
 	 * Retrieves a coupon entity from the repository.
 	 * 
@@ -158,7 +164,7 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/company/{companyId}")
-	public Collection<CouponBean> getCompanyCoupons(@Context HttpServletRequest request, @PathParam("companyId") long companyId) throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCoupons(@PathParam("companyId") long companyId) throws CouponSystemException {
 		return couponService.getCompanyCoupons(companyId);
 	}
 
@@ -166,42 +172,42 @@ public class CouponRestController implements Serializable {
 	 * Retrieves all the coupons entities of said Type for said Company from the repository .
 	 * 
 	 * @param companyId the company's Id.
-	 * @param type the coupons Type.
+	 * @param couponType the coupons Type.
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/company/{companyId}/type")
-	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType type, @PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponService.getCompanyCouponsByType(companyId, type);
+	@Path("/company/{companyId}/couponType")
+	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
+		return couponService.getCompanyCouponsByType(companyId, couponType);
 	}
 
 	/**
 	 * Retrieves all the coupons entities bellow said Price for said Company from the repository .
 	 * 
 	 * @param companyId the company's Id.
-	 * @param price the coupons Price.
+	 * @param couponPrice the coupons Price.
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/company/{companyId}/price")
-	public Collection<CouponBean> getCompanyCouponsByPrice(@QueryParam("price") double price, @PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponService.getCompanyCouponsByPrice(companyId, price);
+	@Path("/company/{companyId}/couponPrice")
+	public Collection<CouponBean> getCompanyCouponsByPrice(@PathParam("companyId") long companyId, @QueryParam("couponPrice") double couponPrice) throws CouponSystemException {
+		return couponService.getCompanyCouponsByPrice(companyId, couponPrice);
 	}
 	
 	/**
 	 * Retrieves all the coupons entities expiring before said Date for said Company from the repository .
 	 * 
 	 * @param companyId the company's Id.
-	 * @param date the latest (max) expiration Date.
+	 * @param expirationDate the latest (max) expiration Date.
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/company/{companyId}/date")
-	public Collection<CouponBean> getCompanyCouponsByDate(@QueryParam("date") Date date, @PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponService.getCompanyCouponsByDate(companyId, date);
+	@Path("/company/{companyId}/expirationDate")
+	public Collection<CouponBean> getCompanyCouponsByDate(@PathParam("companyId") long companyId, @QueryParam("expirationDate") Date expirationDate) throws CouponSystemException {
+		return couponService.getCompanyCouponsByDate(companyId, expirationDate);
 	}
 	
 	/**
@@ -213,35 +219,41 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/customer/{customerId}")
-	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId) throws CouponSystemException {
-		return couponService.getCustomerCoupons(customerId);
+	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return couponService.getCustomerCoupons(customerId, userId, userType);
 	}
 
 	/**
 	 * Retrieves all the coupons entities of said Type for said Customer from the repository .
 	 * 
 	 * @param customerId the customer's Id.
-	 * @param type the coupons Type.
+	 * @param couponType the coupons Type.
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/customer/{customerId}/type")
-	public Collection<CouponBean> getCustomerCouponsByType(@QueryParam("couponType") CouponType type, @PathParam("customerId") long customerId) throws CouponSystemException {
-		return couponService.getCustomerCouponsByType(customerId, type);
+	@Path("/customer/{customerId}/couponType")
+	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return couponService.getCustomerCouponsByType(customerId, couponType, userId, userType);
 	}
 
 	/**
 	 * Retrieves all the coupons entities bellow said Price for said Customer from the repository .
 	 * 
 	 * @param customerId the customer's Id.
-	 * @param price the coupons Price.
+	 * @param couponPrice the coupons Price.
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/customer/{customerId}/price")
-	public Collection<CouponBean> getCustomerCouponsByPrice(@QueryParam("price") double price, @PathParam("customerId") long customerId) throws CouponSystemException {
-		return couponService.getCustomerCouponsByPrice(customerId, price);
+	@Path("/customer/{customerId}/couponPrice")
+	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId, @QueryParam("couponPrice") double couponPrice, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return couponService.getCustomerCouponsByPrice(customerId, couponPrice, userId, userType);
 	}
 }
