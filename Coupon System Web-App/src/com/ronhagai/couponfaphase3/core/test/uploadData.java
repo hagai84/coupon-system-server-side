@@ -48,7 +48,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			customer.setId((10000 + i));
 			customer.setPassword("100000" + i);
 			try {
-				CustomerService.getInstance().createCustomer(customer, 123456789, ClientType.ADMIN);
+				CustomerService.getInstance().createCustomer(customer/*, 123456789, ClientType.ADMIN*/);
 				System.out.println("critical point 4");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block
@@ -63,7 +63,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			company.setPassword("1000000" + i);
 			company.setEmail("email"+i+"@gmail.com");
 			try {
-				companyids.add(CompanyService.getInstance().createCompany(company, 123456789, ClientType.ADMIN));
+				companyids.add(CompanyService.getInstance().createCompany(company/*, 123456789, ClientType.ADMIN*/));
 				System.out.println("critical point 5");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block

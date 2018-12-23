@@ -239,14 +239,24 @@ public class CouponDAO implements ICouponDAO {
 	public void removeExpiredCoupons() throws CouponSystemException {
 		Connection connection = connectionPool.getConnection();		
 		
-		String deleteSql = "DELETE coupon, customer_coupon FROM coupon"
-				+ " INNER JOIN customer_coupon ON customer_coupon.coupon_id = coupon.id"
-				+ " WHERE coupon.end_date < ?";
+		String deleteSql = "DELETE customer_coupon FROM customer_coupon"
+				+ " RIGHT JOIN coupon ON customer_coupon.coupon_id = coupon.id"
+				+ " WHERE coupon.end_date < ? ";
 		try(PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
 			deleteStatement.setDate(1, new Date(System.currentTimeMillis()));
 			deleteStatement.executeUpdate();
 		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons failed", e);
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons from customers failed", e);
+		}finally {			
+//			connectionPool.returnConnection(connection);
+		}	
+		
+		deleteSql = "DELETE FROM coupon WHERE end_date < ? ";
+		try(PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
+			deleteStatement.setDate(1, new Date(System.currentTimeMillis()));
+			deleteStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons from coupon failed", e);
 		}finally {			
 			connectionPool.returnConnection(connection);
 		}	

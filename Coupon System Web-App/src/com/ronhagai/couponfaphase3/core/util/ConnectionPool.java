@@ -29,7 +29,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 4;
+	private final int POOL_SIZE = 3;
 	private final int CLOSING_WAITING_PERIOD = 5000;
 	private final int VALIDITY_WAITING_PERIOD = 10;
 

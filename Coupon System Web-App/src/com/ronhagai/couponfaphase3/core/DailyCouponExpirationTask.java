@@ -21,7 +21,7 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 	private static DailyCouponExpirationTask dailyExpirationTaskInstance = new DailyCouponExpirationTask();
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
-	private long timeTillMidnight = 5000;
+	private long timeTillMidnight = 60000;
 	private boolean quit = false; 
 
 	/**

@@ -52,18 +52,18 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 *  If company name or ID already exist in the DB
 	 *  If company creation fails
 	 */
-	public long createCompany(CompanyBean company, long userId, ClientType userType) throws CouponSystemException {
+	public long createCompany(CompanyBean company/*, long userId, ClientType userType*/) throws CouponSystemException {
 		//can be used if company registration should be restricted 
-		if (!userType.equals(ClientType.ADMIN)) {
+		/*if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to create company " + company);
-		}
+		}*/
 		checkCompany(company);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Company Name already exists");
 		}	
 		long companyId = companyDAO.createCompany(company);
-		System.out.println("LOG : User " + userType + " - " + userId + " created company " + company);
+//		System.out.println("LOG : User " + userType + " - " + userId + " created company " + company);
 		return companyId;
 	}
 
@@ -109,7 +109,8 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void removeCompany(long companyId, long userId, ClientType userType) throws CouponSystemException {
 		//can be modified if company removing should be restricted
-		if (!userType.equals(ClientType.ADMIN)) {
+		if ((companyId != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+//		if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove company " + companyId);
 		}
 		connectionPool.startTransaction();

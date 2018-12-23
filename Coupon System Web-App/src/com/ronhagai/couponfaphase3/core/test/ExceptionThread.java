@@ -148,9 +148,9 @@ public class ExceptionThread extends GenericThread {
 			
 			
 			try {
-				company.setId(companyService.createCompany(company, 123456789, ClientType.ADMIN));
+				company.setId(companyService.createCompany(company/*, 123456789, ClientType.ADMIN*/));
 				System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
-
+				coupon.setCompanyId(company.getId());
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
@@ -160,7 +160,7 @@ public class ExceptionThread extends GenericThread {
 				System.out.println("LOG : Coupon created \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				customer.setId(customerService.createCustomer(customer, 123456789, ClientType.ADMIN));
+				customer.setId(customerService.createCustomer(customer/*, 123456789, ClientType.ADMIN*/));
 				System.out.println(Thread.currentThread().getName() + " : LOG : Customer created \n" + customer);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			

@@ -52,11 +52,11 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 *  If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists or is invalid).
 	 *
 	 */
-	public long createCustomer(CustomerBean customer, long userId, ClientType userType) throws CouponSystemException {
+	public long createCustomer(CustomerBean customer/*, long userId, ClientType userType*/) throws CouponSystemException {
 		//can be used if customer registration should be restricted 
-		if (!userType.equals(ClientType.ADMIN)) {
+		/*if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to create customer " + customer);
-		}
+		}*/
 		
 		checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
@@ -65,7 +65,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		}
 
 		long customerId = customerDAO.createCustomer(customer);
-		System.out.println("LOG : User " + userType + " - " + userId + " created customer " + customer);
+//		System.out.println("LOG : User " + userType + " - " + userId + " created customer " + customer);
 		return customerId;
 	}
 
@@ -111,7 +111,8 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void removeCustomer(long customerId, long userId, ClientType userType) throws CouponSystemException {
 		//can be modified if customer removing should be restricted
-		if (!userType.equals(ClientType.ADMIN)) {
+		if ((customerId != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+//		if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove customer " + customerId);
 		}
 		connectionPool.startTransaction();

@@ -67,8 +67,9 @@ public class CreateDB {
 			// create customer coupon table
 			str = "CREATE TABLE customer_coupon ("
 					+ "cust_id BIGINT NOT NULL, "
-					+ "coupon_id BIGINT NOT NULL, "
 					+ "FOREIGN KEY (cust_id) REFERENCES customer(id), "
+					+ "coupon_id BIGINT NOT NULL, "
+					+ "FOREIGN KEY (coupon_id) REFERENCES coupon(id), "
 					/*+ "ON DELETE CASCADE ON UPDATE NO ACTION, "
 					+ "FOREIGN KEY (coupon_id) REFERENCES coupon(id) "
 					+ "ON DELETE CASCADE ON UPDATE NO ACTION), "*/

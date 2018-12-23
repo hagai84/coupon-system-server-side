@@ -39,7 +39,7 @@ public class CreateThread extends GenericThread {
 			company.setCompName(""+i+i+i+" "+i+i+i+i);
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
-			company.setId(companyService.createCompany(company, 123456789, ClientType.ADMIN));
+			company.setId(companyService.createCompany(company/*, 123456789, ClientType.ADMIN*/));
 			System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
 			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			coupon.setCouponId(200000 + i);
@@ -57,7 +57,7 @@ public class CreateThread extends GenericThread {
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
-			customer.setId(customerService.createCustomer(customer, 123456789, ClientType.ADMIN));		
+			customer.setId(customerService.createCustomer(customer/*, 123456789, ClientType.ADMIN*/));		
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId(), customer.getId(), ClientType.CUSTOMER);
 			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);

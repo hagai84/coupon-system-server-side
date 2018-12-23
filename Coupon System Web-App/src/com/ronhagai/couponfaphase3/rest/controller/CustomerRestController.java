@@ -44,9 +44,9 @@ public class CustomerRestController implements Serializable{
 	
 	@POST
 	public long createCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
-		return customerService.createCustomer(customer, userId, userType);			
+//		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+//		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return customerService.createCustomer(customer/*, userId, userType*/);			
 	}
 	
 	/**

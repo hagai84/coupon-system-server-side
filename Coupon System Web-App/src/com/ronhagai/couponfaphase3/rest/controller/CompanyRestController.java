@@ -42,9 +42,9 @@ public class CompanyRestController implements Serializable{
 	 */
 	@POST
 	public long createCompany(CompanyBean company, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
-		return companyService.createCompany(company, userId, userType);
+//		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+//		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return companyService.createCompany(company/*, userId, userType*/);
 	}
 	
 

@@ -51,6 +51,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 //		TODO proper logging
 //		exception.printStackTrace();
 		externalMessage = getTranslatedMessage(exceptionEnum);
+		externalMessage = exception.getMessage();//TODO only for developing purposes 
 		exceptionBean = new ExceptionBean(statusCode, externalMessage, internalMessage);
 		return Response.status(statusCode).entity(exceptionBean).build();	
 	}
