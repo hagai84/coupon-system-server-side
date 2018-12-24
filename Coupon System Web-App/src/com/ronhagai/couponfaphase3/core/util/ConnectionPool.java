@@ -82,7 +82,18 @@ public class ConnectionPool implements Serializable{
 			}
 			// Check if there is a connection available. There are times when all the
 			// connections in the pool may be used up
-			while (availableConnections.size() < 1) {
+			if (availableConnections.size() < 1) {
+				
+				try {
+					connection = newConnection();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get connection failed", e);
+				}
+			}else {
+				connection = availableConnections.remove(0);
+			}
+/*			while (availableConnections.size() < 1) {
 				try {
 					if (closing) {
 						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_CLOSING,"Connection pool is shutting down");
@@ -96,7 +107,7 @@ public class ConnectionPool implements Serializable{
 				}
 			}
 			connection = availableConnections.remove(0);
-			
+*/			
 			try {
 				//checks if connection isValid if not attempts to open a new one
 				if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
@@ -134,9 +145,13 @@ public class ConnectionPool implements Serializable{
 					synchronized (this) {
 						//attempts to remove from Out collection
 						if (usedConnections.remove(Thread.currentThread(), connection)) {
-							// Adding the connection from the client back to the connection pool
-							availableConnections.add(connection);
-							notifyAll();
+							if(usedConnections.size()+availableConnections.size()+1==POOL_SIZE) {
+								// Adding the connection from the client back to the connection pool
+								availableConnections.add(connection);
+								notifyAll();
+							}else {
+								connection.close();
+							}
 						}	
 					}
 				}else {

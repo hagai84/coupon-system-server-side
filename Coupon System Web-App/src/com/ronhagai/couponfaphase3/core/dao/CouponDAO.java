@@ -239,6 +239,7 @@ public class CouponDAO implements ICouponDAO {
 	public void removeExpiredCoupons() throws CouponSystemException {
 		Connection connection = connectionPool.getConnection();		
 		
+		//can construct a complex sql function to  run a loop on DB server
 		String deleteSql = "DELETE customer_coupon FROM customer_coupon"
 				+ " RIGHT JOIN coupon ON customer_coupon.coupon_id = coupon.id"
 				+ " WHERE coupon.end_date < ? ";

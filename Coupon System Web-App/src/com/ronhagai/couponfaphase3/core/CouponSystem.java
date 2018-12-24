@@ -43,7 +43,6 @@ public class CouponSystem implements Serializable{
 			dailyTask.join();
 		} catch (InterruptedException e) {
 			// TODO Manager handling - add logging functionality
-			// e.printStackTrace();
 			System.err.println("LOG : CS shutdown join interrupted : ");
 			e.printStackTrace();
 		}
