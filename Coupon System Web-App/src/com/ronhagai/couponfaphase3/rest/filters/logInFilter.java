@@ -19,23 +19,26 @@ import javax.ws.rs.core.MediaType;
  */
 @WebFilter("/logInFilter")
 public class logInFilter implements Filter {
-	
+
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		System.out.println("login filter is on");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		Long userId = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
 		// if try to login let him
 		if (pathRequstedByUser.equals("/login") || (pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))) {
+			System.out.println("LOGIN FILTER: user try to login or get all coupons");
 			chain.doFilter(request, response);
 			return;
 		}
 		Cookie[] userCookies = httpRequest.getCookies();
 		// if user have a userId cookie then he loged in an can countunue.
-		if (userCookies != null) {
+				if (userCookies != null) {
 			for (Cookie cookie : userCookies) {
 				if (cookie.getName().equals("userId")) {
+					System.out.println("LOGIN FILTER: the user have cookieID");
 					userId = Long.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userId", userId);
 					chain.doFilter(request, response);
@@ -44,6 +47,7 @@ public class logInFilter implements Filter {
 			}
 		}
 		
+		System.out.println("LOGIN FILTER: the user dont have id cookie and is not try to log in");
 		httpRespone.setStatus(HttpServletResponse.SC_FORBIDDEN);
 		httpRespone.setContentType(MediaType.APPLICATION_JSON);
 		httpRespone.getWriter().print("please sign in first (hagai: no cookies of user id)");

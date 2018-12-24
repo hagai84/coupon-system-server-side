@@ -100,11 +100,12 @@ public class CouponRestController implements Serializable {
 	 * @throws CustomerFacadeException If coupon purchase fails
 	 */
 	@PUT
-	@Path("/{couponID}")
+	@Path("/{couponId}")
 	public void purchaseCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 //		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
 		long customerId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		couponService.purchaseCoupon(couponId, customerId);
+		System.out.println("purchase coupon is made!");
 	}
 
 

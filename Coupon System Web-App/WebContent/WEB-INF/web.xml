@@ -1,86 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
-  <display-name>Coupon System Web-App</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
-  </welcome-file-list>
-  <servlet>
-    <servlet-name>jersey servlet</servlet-name>
-    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-    <init-param>
-      <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>com.ronhagai.couponfaphase3.rest, com.fasterxml.jackson.jaxrs.json</param-value>
-    </init-param>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>jersey servlet</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description></description>
-    <display-name>InitServlet</display-name>
-    <servlet-name>InitServlet</servlet-name>
-    <servlet-class>com.ronhagai.couponfaphase3.rest.InitServlet</servlet-class>
-    <init-param>
-      <param-name>driverName</param-name>
-      <param-value>com.mysql.jdbc.Driver</param-value>
-    </init-param>
-    <init-param>
-      <param-name>databaseUrl</param-name>
-      <param-value>jdbc:mysql://localhost:3306/coupon_system</param-value>
-    </init-param>
-    <init-param>
-      <param-name>userName</param-name>
-      <param-value>root</param-value>
-    </init-param>
-    <init-param>
-      <param-name>password</param-name>
-      <param-value>1234</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>InitServlet</servlet-name>
-    <url-pattern>/InitServlet</url-pattern>
-  </servlet-mapping>
-  
-  <filter>
-  	<filter-name>logInFilter</filter-name>
-  	<filter-class>com.ronhagai.couponfaphase3.rest.filters.logInFilter</filter-class>
-  </filter>
-  <filter-mapping>
-  	<filter-name>logInFilter</filter-name>
-  	<url-pattern>/rest/*</url-pattern>
-  </filter-mapping>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	<display-name>Coupon System Web-App</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>jersey servlet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>com.ronhagai.couponfaphase3.rest, com.fasterxml.jackson.jaxrs.json</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey servlet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description></description>
+		<display-name>InitServlet</display-name>
+		<servlet-name>InitServlet</servlet-name>
+		<servlet-class>com.ronhagai.couponfaphase3.rest.InitServlet</servlet-class>
+		<init-param>
+			<param-name>driverName</param-name>
+			<param-value>com.mysql.jdbc.Driver</param-value>
+		</init-param>
+		<init-param>
+			<param-name>databaseUrl</param-name>
+			<param-value>jdbc:mysql://localhost:3306/coupon_system</param-value>
+		</init-param>
+		<init-param>
+			<param-name>userName</param-name>
+			<param-value>root</param-value>
+		</init-param>
+		<init-param>
+			<param-name>password</param-name>
+			<param-value>1234</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>InitServlet</servlet-name>
+		<url-pattern>/InitServlet</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>com.ronhagai.couponfaphase3.rest.filters.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>logInFilter</filter-name>
+		<filter-class>com.ronhagai.couponfaphase3.rest.filters.logInFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>logInFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
 </web-app>
-<!--  
-<filter>
-<filter-name>CorsFilter</filter-name>
-<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-<init-param>
-<param-name>cors.allowed.origins</param-name>
-<param-value>*</param-value>
-</init-param>
-<init-param>
-<param-name>cors.allowed.methods</param-name>
-<param-value>GET, POST, HEAD, PUT, OPTIONS , DELETE</param-value>
-</init-param>
-<init-param>
-<param-name>cors.allowed.headers</param-name>
-<param-value>Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
-</init-param>
-<init-param>
-<param-name>cors.exposed.headers</param-name>
-<param-value></param-value>
-</init-param>
-</filter>
-<filter-mapping>
-<filter-name>CorsFilter</filter-name>
-<url-pattern>/*</url-pattern>
-</filter-mapping>
-   -->
+<!-- <filter> <filter-name>CorsFilter</filter-name> <filter-class>org.apache.catalina.filters.CorsFilter</filter-class> 
+	<init-param> <param-name>cors.allowed.origins</param-name> <param-value>*</param-value> 
+	</init-param> <init-param> <param-name>cors.allowed.methods</param-name> 
+	<param-value>GET, POST, HEAD, PUT, OPTIONS , DELETE</param-value> </init-param> 
+	<init-param> <param-name>cors.allowed.headers</param-name> <param-value>Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers</param-value> 
+	</init-param> <init-param> <param-name>cors.exposed.headers</param-name> 
+	<param-value></param-value> </init-param> </filter> <filter-mapping> <filter-name>CorsFilter</filter-name> 
+	<url-pattern>/*</url-pattern> </filter-mapping> -->
