@@ -17,7 +17,7 @@ public class PurchaseThread extends GenericThread {
 
 	@Override
 	public void run() {
-		System.out.println("Start Synchonyzed Thread");
+		System.out.println("Start Synchronyzed Thread");
 		super.run();
 		multiplePurchases();
 	}

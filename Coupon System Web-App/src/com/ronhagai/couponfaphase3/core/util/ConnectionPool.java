@@ -29,7 +29,7 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 3;
+	private final int POOL_SIZE = 1;
 	private final int CLOSING_WAITING_PERIOD = 5000;
 	private final int VALIDITY_WAITING_PERIOD = 10;
 
@@ -145,7 +145,7 @@ public class ConnectionPool implements Serializable{
 					synchronized (this) {
 						//attempts to remove from Out collection
 						if (usedConnections.remove(Thread.currentThread(), connection)) {
-							if(usedConnections.size()+availableConnections.size()+1==POOL_SIZE) {
+							if(availableConnections.size()<POOL_SIZE) {
 								// Adding the connection from the client back to the connection pool
 								availableConnections.add(connection);
 								notifyAll();
@@ -174,7 +174,7 @@ public class ConnectionPool implements Serializable{
 	public void closeAllConnections() {
 		closing = true;
 		//if there are connections out wait for a set amount of millisecond
-		if (availableConnections.size() < POOL_SIZE) {
+		if (usedConnections.size()>0) {
 			try {
 				Thread.sleep(CLOSING_WAITING_PERIOD);
 			} catch (InterruptedException e) {
