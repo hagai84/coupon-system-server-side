@@ -30,8 +30,8 @@ public class ConnectionPool implements Serializable{
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
 	private final int POOL_SIZE = 1;
-	private final int CLOSING_WAITING_PERIOD = 5000;
-	private final int VALIDITY_WAITING_PERIOD = 10;
+	private final int CLOSING_WAITING_PERIOD = 5000; //milliseconds
+	private final int VALIDITY_WAITING_PERIOD = 10; //seconds
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -83,48 +83,23 @@ public class ConnectionPool implements Serializable{
 			// Check if there is a connection available. There are times when all the
 			// connections in the pool may be used up
 			if (availableConnections.size() < 1) {
-				
-				try {
-					connection = newConnection();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get connection failed", e);
-				}
+				connection = newConnection();
 			}else {
 				connection = availableConnections.remove(0);
-			}
-/*			while (availableConnections.size() < 1) {
 				try {
-					if (closing) {
-						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_CLOSING,"Connection pool is shutting down");
+					//checks if connection isValid if not attempts to open a new one
+					if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
+						connection.close();
 					}
-					wait();
-				} catch (InterruptedException e) {
-					//TODO consolidate the 2, create specific error code
-					System.err.println("LOG : get connection wait interrupted : ");
-					e.printStackTrace();
-					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"get connection wait interrupted", e);
+				} catch (SQLException e) {
+					//close() exception shldnt happen - even if cldnt care less
+//					availableConnections.add(connection);				
+//					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
+				}finally {
+					connection = newConnection();					
 				}
 			}
-			connection = availableConnections.remove(0);
-*/			
-			try {
-				//checks if connection isValid if not attempts to open a new one
-				if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
-					connection.close();
-					connection = newConnection();
-				}
-			} catch (SQLTimeoutException e) {
-				//new connection timed out
-				availableConnections.add(connection);
-				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_TIMOUT,"Server busy. Try again later", e);
-			} catch (SQLException e) {
-				availableConnections.add(connection);
-				//DB error, can initiate pool shutdown
-//				closeAllConnections();//is there a need ?
-//				initialized = false;
-				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
-			}
+
 			// Giving away the connection from the connection pool
 			usedConnections.put(Thread.currentThread(), connection);
 			return connection;
@@ -235,9 +210,7 @@ public class ConnectionPool implements Serializable{
 		while (availableConnections.size() < POOL_SIZE) {
 			try {
 				availableConnections.add(newConnection());
-			} catch (SQLTimeoutException e) {
-				System.err.println("new Connection can't be established time out exception " + e);
-			} catch (SQLException e) {
+			} catch (CouponSystemException e) {
 				closeAllConnections();
 				throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"database access error occurred ", e);
 			}
@@ -250,12 +223,22 @@ public class ConnectionPool implements Serializable{
 	/**
 	 * Creates a connection, then returns it
 	 * @return A created connection
+	 * @throws CouponSystemException 
 	 * @throws SQLException If the connection timed out
 	 * @throws SQLTimeoutException If a database access error occurs or the url is null
  	 */
-	private Connection newConnection() throws SQLException, SQLTimeoutException {
-		Connection connection = DriverManager.getConnection(databaseUrl, userName, password);
-		connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+	private Connection newConnection() throws CouponSystemException  {
+		
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(databaseUrl, userName, password);
+			connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+		} catch (SQLTimeoutException e) {
+			//get connection timed out
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_TIMOUT,"Server busy. Try again later", e);
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
+		}	
 		return connection;
 	}
 

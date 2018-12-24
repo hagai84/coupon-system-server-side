@@ -1,5 +1,6 @@
 package com.ronhagai.couponfaphase3.rest;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,23 +72,26 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 	
 	private String getTranslatedMessage(ExceptionsEnum exceptionEnum) {
 		ResourceBundle errorMessages;
+		Locale locale = request.getLocale();
 		try {
-			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", request.getLocale());			
+			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", locale);			
 		} catch (Exception e1) {
 			// TODO LOG IN TRANSLATION LOG
-			System.err.println(String.format("%s does not have error support", request.getLocale().getDisplayLanguage()));
-			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages_en");
+			System.err.println(String.format("%s does not have error language support", request.getLocale().getDisplayLanguage()));
+			locale = new Locale("en");
+			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", locale);			
 		}
 		try {
 			return errorMessages.getString(exceptionEnum.name());
 		} catch (Exception e1) {
 			// TODO LOG IN TRANSLATION LOG
-			System.err.println(String.format("Error code %s is not supported for %s", String.valueOf(exceptionEnum.getStatusCode()), request.getLocale().getDisplayLanguage()));
+			System.err.println(String.format("Error code %s does not have support for %s", String.valueOf(exceptionEnum.getStatusCode()), locale.getDisplayLanguage()));
 			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages_en");
 			try {
 				return errorMessages.getString(exceptionEnum.name());
 			} catch (Exception e2) {
-				System.err.println(String.format("Error code %s does not have default error message", String.valueOf(exceptionEnum.getStatusCode())));
+				// TODO LOG IN TRANSLATION LOG
+				System.err.println(String.format("Error code %s does not have a default error message", String.valueOf(exceptionEnum.getStatusCode())));
 				return "error message unavailable";
 			}
 		}
