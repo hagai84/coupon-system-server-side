@@ -1,5 +1,8 @@
 package com.ronhagai.couponfaphase3.core.exception;
-
+/**
+ * Enum for deferment type of exceptions
+ * @author hagai
+ */
 public enum ExceptionsEnum {
 	
 	//THE OPERATION DID NOT RESULT IN ANY CHANGE - POSSIBLE SECURITY BREACH 

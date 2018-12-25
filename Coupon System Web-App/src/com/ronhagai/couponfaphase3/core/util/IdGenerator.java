@@ -25,7 +25,7 @@ import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 
 /**
  * 
- * 
+ * this class is deprecated
  * ID generator used to store and track the latest company, customer and coupon ID's. <br >
  * On startup of system, IdGenerator loads the files if they exist. Otherwise, it checks
  * what the latest ID's are and creates a file with said data.
@@ -35,8 +35,9 @@ import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
  * If said files are not found it attempts to read highest ids from DB. <br>
  * If still unsuccessful (DB empty) it sets the ids to predetermined values.
  * 
- * @author Ron
+ * @author hagai
  */
+@Deprecated
 public class IdGenerator implements Serializable{
 	/**
 	 * 

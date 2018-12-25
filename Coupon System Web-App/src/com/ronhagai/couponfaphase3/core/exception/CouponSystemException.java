@@ -1,7 +1,8 @@
 package com.ronhagai.couponfaphase3.core.exception;
 
 /**
- * The CouponSystemException and its subclasses are exceptions used throughout the coupon system.
+ * The CouponSystemException exception used throughout the coupon system.
+ * @author hagai
  */
 public class CouponSystemException extends Exception {
 	private static final long serialVersionUID = 1L;
