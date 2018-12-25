@@ -64,15 +64,15 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user password seem to be missing");
 		}
 		
-		System.out.println(loginBean.getUserType());
 		if(loginBean.getUserType() == null) {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
-		if (loginBean.getUserType().toString().equals("ADMIN") && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
+
+		if (loginBean.getUserType().equals("ADMIN") && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
 			userId = 123456789;
-		}else if (loginBean.getUserType().toString().equals("CUSTOMER")) {
+		}else if (loginBean.getUserType().equals("CUSTOMER")) {
 			userId = CustomerService.getInstance().customerLogin(loginBean.getUserName(), loginBean.getUserPassword());
-		} else if (loginBean.getUserType().toString().equals("COMPANY")) {
+		} else if (loginBean.getUserType().equals("COMPANY")) {
 			userId = CompanyService.getInstance().companyLogin(loginBean.getUserName(), loginBean.getUserPassword());
 
 		} else {
