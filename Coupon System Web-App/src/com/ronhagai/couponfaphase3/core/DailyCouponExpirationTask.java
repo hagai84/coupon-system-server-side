@@ -26,7 +26,6 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 
 	/**
 	 * Private constructor
-	 * @throws DAOException 
 	 * 
 	 */
 	private DailyCouponExpirationTask(){
@@ -37,7 +36,9 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 	@Override
 	public void run() {
 		System.out.println("LOG : Daily Task started");
+		//while coupon system still running
 		while(!quit) {
+			//Sleeps till midnight local time, on startup after set amount of millisecond 
 			try {
 				Thread.sleep(timeTillMidnight);
 			} catch (InterruptedException e) {

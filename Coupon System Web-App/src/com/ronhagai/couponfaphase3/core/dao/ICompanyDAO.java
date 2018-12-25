@@ -63,6 +63,16 @@ public interface ICompanyDAO extends Serializable{
 	 */
 	Collection<CompanyBean> getAllCompanies() throws CouponSystemException;
 
+	/**
+	 * Returns true if the given company user name is in the DB and if the given
+	 * password is equal to the password in the DB (same row as the company name)
+	 * 
+	 * @param companyName The company's user name
+	 * @param password The company's password
+	 * @return <code>true</code> if user name and password match; otherwise <code>false</code>
+	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * 
+	 */
 	long companyLogin(String companyName, String password) throws CouponSystemException;
 
 	boolean companyNameAlreadyExists(String companyName) throws CouponSystemException;

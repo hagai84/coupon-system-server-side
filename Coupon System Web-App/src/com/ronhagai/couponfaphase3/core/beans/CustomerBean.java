@@ -117,11 +117,11 @@ public class CustomerBean implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		CustomerBean other = (CustomerBean) obj;
-		if (coupons == null) {
+		/*if (coupons == null) {
 			if (other.coupons != null)
 				return false;
 		} else if (!coupons.equals(other.coupons))
-			return false;
+			return false;*/
 		if (custName == null) {
 			if (other.custName != null)
 				return false;
@@ -129,11 +129,11 @@ public class CustomerBean implements Serializable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (password == null) {
+		/*if (password == null) {
 			if (other.password != null)
 				return false;
 		} else if (!password.equals(other.password))
-			return false;
+			return false;*/
 		return true;
 	}
 	

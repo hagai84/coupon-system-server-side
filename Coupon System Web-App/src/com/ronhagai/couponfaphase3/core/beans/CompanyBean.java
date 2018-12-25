@@ -137,11 +137,11 @@ public class CompanyBean implements Serializable {
 				return false;
 		} else if (!compName.equals(other.compName))
 			return false;
-		if (coupons == null) {
+		/*if (coupons == null) {
 			if (other.coupons != null)
 				return false;
 		} else if (!coupons.equals(other.coupons))
-			return false;
+			return false;*/
 		if (email == null) {
 			if (other.email != null)
 				return false;
@@ -149,11 +149,11 @@ public class CompanyBean implements Serializable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (password == null) {
+		/*if (password == null) {
 			if (other.password != null)
 				return false;
 		} else if (!password.equals(other.password))
-			return false;
+			return false;*/
 		return true;
 	}
 }
