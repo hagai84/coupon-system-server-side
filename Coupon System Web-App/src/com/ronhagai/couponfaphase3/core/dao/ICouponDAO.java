@@ -42,7 +42,7 @@ public interface ICouponDAO extends Serializable{
 	/**
 	 * Updates a coupon entity in the repository.
 	 * 
-	 * @param coupon the CouponBean object to be updated.
+	 * @param coupon the coupon entity to be updated.
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	void updateCoupon(CouponBean coupon) throws CouponSystemException;
@@ -203,7 +203,7 @@ public interface ICouponDAO extends Serializable{
 	/**
 	 * Checks if a coupon's Title already exists in the repository .
 	 * 
-	 * @param title the Title to compare.
+	 * @param title the Title to match.
 	 * @return a boolean value, (1) true if a matching Title was found, (2) false if no match was found 
 	 * @throws CouponSystemException if the operation failed due to (1) DB error
 	 */

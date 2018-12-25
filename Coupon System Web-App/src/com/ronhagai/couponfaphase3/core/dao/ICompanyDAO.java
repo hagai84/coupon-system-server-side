@@ -15,66 +15,76 @@ import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 public interface ICompanyDAO extends Serializable{
 	
 	/**
-	 * Attempts to create a given company in the DB
+	 * Attempts to create a given company in the repository
 	 * 
 	 * @param company The company to create
-	 * @throws DAOException If there is a connection problem or SQLException.
-	 * @throws CompanyException If insertion of the given company to the DB fails (e.g. Company ID already exists).
+	 * @return the created company's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
 	 * 
 	 */
 	long createCompany(CompanyBean company) throws CouponSystemException;
 	
 	/**
-	 * Updates all of a company's fields (except ID) in the DB according to the given company bean.
+	 * Updates a company entity in the repository.
 	 * 
-	 * @param company The company to be updated
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CompanyException If the given company's ID can't be found in the DB (0 rows were updated).
+	 * @param company the company entity to be updated.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	void updateCompany(CompanyBean company) throws CouponSystemException;
 
-	void updateCompanyPassword(long companyId, String newPassword) throws CouponSystemException;
 	/**
-	 * Removes a specified company from the DB.
+	 * updates the company's password
 	 * 
-	 * @param companyId The company to be removed.
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CompanyException If the given company's ID can't be found in the DB.
+	 * @param companyId The company to update
+	 * @param newPassword The new password
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
+	 */
+	void updateCompanyPassword(long companyId, String newPassword) throws CouponSystemException;
+	
+	/**
+	 * Removes a company entity from the companies repository.
 	 * 
+	 * @param companyId the company's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	void removeCompany(long companyId) throws CouponSystemException;
 
 	/**
-	 * Searches the DB for a company with the given ID and
-	 * returns a Company bean with it's data from the DB.
+	 * Retrieves a company entity from the repository.
 	 * 
-	 * @param companyId The id of the company to find in the DB.
-	 * @return {@link CompanyBean} bean; <code>null</code> - if no company with the given ID exists in DB
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
-	 * @throws CompanyException If the given company's ID can't be found in the DB (0 rows were returned).
+	 * @param companyId the company's ID.
+	 * @return a CouponBean object
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	CompanyBean getCompany(long companyId) throws CouponSystemException;
 
 	/**
-	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
+	 * Retrieves all the companies entities from the repository .
 	 * 
-	 * @return An <code>ArrayList</code> of all the companies in DB.
-	 * @throws DAOException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	Collection<CompanyBean> getAllCompanies() throws CouponSystemException;
 
 	/**
-	 * Returns true if the given company user name is in the DB and if the given
-	 * password is equal to the password in the DB (same row as the company name)
+	 * Check the password and user name,
+	 * returns the user ID if correct.
 	 * 
 	 * @param companyName The company's user name
 	 * @param password The company's password
-	 * @return <code>true</code> if user name and password match; otherwise <code>false</code>
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * @return a long userId - the user's ID
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 * 
 	 */
 	long companyLogin(String companyName, String password) throws CouponSystemException;
 
+	/**
+	 * Checks if a company's Name already exists in the repository .
+	 * 
+	 * @param companyName the name to match.
+	 * @return a boolean value, (1) true if a matching Name was found, (2) false if no match was found 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error
+	 */
 	boolean companyNameAlreadyExists(String companyName) throws CouponSystemException;
 
 }
