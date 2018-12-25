@@ -17,7 +17,6 @@ public class PurchaseThread extends GenericThread {
 
 	@Override
 	public void run() {
-		System.out.println("Start Synchronyzed Thread");
 		super.run();
 		multiplePurchases();
 	}
@@ -27,7 +26,6 @@ public class PurchaseThread extends GenericThread {
 		CouponBean[] coupons = new CouponBean[0];
 		long couponId, customerId;
 		try {
-//			System.out.println(couponService.getAllCoupons());
 			coupons = couponService.getAllCoupons().toArray(coupons);
 		} catch (CouponSystemException e1) {
 			// TODO Auto-generated catch block

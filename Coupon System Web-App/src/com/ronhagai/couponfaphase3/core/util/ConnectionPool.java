@@ -90,13 +90,10 @@ public class ConnectionPool implements Serializable{
 					//checks if connection isValid if not attempts to open a new one
 					if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
 						connection.close();
+						connection = newConnection();					
 					}
-				} catch (SQLException e) {
-					//close() exception shldnt happen - even if cldnt care less
-//					availableConnections.add(connection);				
-//					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
-				}finally {
-					connection = newConnection();					
+				} catch (SQLException e) {				
+					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
 				}
 			}
 
@@ -132,7 +129,7 @@ public class ConnectionPool implements Serializable{
 				}else {
 					connection.close();
 				}
-			}	
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
