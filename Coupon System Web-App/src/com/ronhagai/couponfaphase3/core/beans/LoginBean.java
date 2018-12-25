@@ -1,9 +1,11 @@
 package com.ronhagai.couponfaphase3.core.beans;
 
+import com.ronhagai.couponfaphase3.core.enums.UserType;
+
 public class LoginBean {
 	private String userName;
 	private String userPassword;
-	private String userType;
+	private UserType userType;
 	private String remeberMe;
 	public LoginBean() {
 		super();
@@ -20,10 +22,11 @@ public class LoginBean {
 	public void setUserPassword(String userPassword) {
 		this.userPassword = userPassword;
 	}
-	public String getUserType() {
+
+	public UserType getUserType() {
 		return userType;
 	}
-	public void setUserType(String userType) {
+	public void setUserType(UserType userType) {
 		this.userType = userType;
 	}
 	public String getRemeberMe() {

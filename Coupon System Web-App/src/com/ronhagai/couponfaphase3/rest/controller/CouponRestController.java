@@ -18,7 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CouponService;
@@ -52,7 +52,7 @@ public class CouponRestController implements Serializable {
 	@POST
 	public long createCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		return couponService.createCoupon(coupon, userId, userType);
 	}
 	
@@ -68,7 +68,7 @@ public class CouponRestController implements Serializable {
 	@Path("/{couponId}/{customerId}")
 	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.purchaseCoupon(couponId, customerId, userId, userType);
 	}
 
@@ -82,7 +82,7 @@ public class CouponRestController implements Serializable {
 	@PUT
 	public void updateCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.updateCoupon(coupon, userId, userType);
 	}
 
@@ -99,7 +99,7 @@ public class CouponRestController implements Serializable {
 	@Path("/amount/{couponId}")
 	public void updateCouponAmout(@PathParam("couponId") long couponId,@QueryParam("amountDelta") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);
 	}
 	
@@ -114,7 +114,7 @@ public class CouponRestController implements Serializable {
 	@Path("/{couponId}")
 	public void removeCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.removeCoupon(couponId, userId, userType);
 	}
 	 
@@ -221,7 +221,7 @@ public class CouponRestController implements Serializable {
 	@Path("/customer/{customerId}")
 	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCoupons(customerId, userId, userType);
 	}
 
@@ -237,7 +237,7 @@ public class CouponRestController implements Serializable {
 	@Path("/customer/{customerId}/couponType")
 	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCouponsByType(customerId, couponType, userId, userType);
 	}
 
@@ -253,7 +253,7 @@ public class CouponRestController implements Serializable {
 	@Path("/customer/{customerId}/couponPrice")
 	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId, @QueryParam("couponPrice") double couponPrice, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCouponsByPrice(customerId, couponPrice, userId, userType);
 	}
 }

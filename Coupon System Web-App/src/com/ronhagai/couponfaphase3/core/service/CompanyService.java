@@ -9,7 +9,7 @@ import com.ronhagai.couponfaphase3.core.dao.CompanyDAO;
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICompanyDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.util.ConnectionPool;
@@ -68,8 +68,8 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 * 	(3) Invalid data, (4) security breach.
 	 */
-	public void updateCompany(CompanyBean company, long userId, ClientType userType) throws CouponSystemException {
-		if ((company.getId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+	public void updateCompany(CompanyBean company, long userId, UserType userType) throws CouponSystemException {
+		if ((company.getId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to update company " + company);
 		}
 		checkCompany(company);
@@ -91,11 +91,11 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 * @param userType the user type updating the coupon
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
 	 */
-	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword, long userId, ClientType userType) throws CouponSystemException {
-		if ((companyId != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword, long userId, UserType userType) throws CouponSystemException {
+		if ((companyId != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change company's password " + companyId);
 		}
-		if(userType.equals(ClientType.CUSTOMER)) {			
+		if(userType.equals(UserType.CUSTOMER)) {			
 			String customerName = companyDAO.getCompany(companyId).getCompName();
 			companyDAO.companyLogin(customerName, oldPassword);
 		}	
@@ -113,9 +113,9 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 *  (3) Invalid data, (4) security breach.
 	 */
-	public void removeCompany(long companyId, long userId, ClientType userType) throws CouponSystemException {
+	public void removeCompany(long companyId, long userId, UserType userType) throws CouponSystemException {
 		//can be modified if company removing should be restricted
-		if ((companyId != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+		if ((companyId != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 //		if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove company " + companyId);
 		}

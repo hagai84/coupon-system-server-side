@@ -5,7 +5,7 @@ import java.sql.Date;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 
@@ -52,14 +52,14 @@ public class CreateThread extends GenericThread {
 			coupon.setPrice(200);
 			coupon.setImage("aaaaaaaaaaaaaa");
 			coupon.setCompanyId(company.getId());
-			coupon.setCouponId(couponService.createCoupon(coupon, company.getId(), ClientType.COMPANY));
+			coupon.setCouponId(couponService.createCoupon(coupon, company.getId(), UserType.COMPANY));
 			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
 			customer.setId(customerService.createCustomer(customer/*, 123456789, ClientType.ADMIN*/));		
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
-			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId(), customer.getId(), ClientType.CUSTOMER);
+			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId(), customer.getId(), UserType.CUSTOMER);
 			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
 
 		}

@@ -8,7 +8,7 @@ import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.CustomerDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICustomerDAO;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.util.ConnectionPool;
@@ -68,8 +68,8 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 * 	(3) Invalid data, (4) security breach.
 	 */
-	public void updateCustomer(CustomerBean customer, long userId, ClientType userType) throws CouponSystemException {		
-		if ((customer.getId() != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+	public void updateCustomer(CustomerBean customer, long userId, UserType userType) throws CouponSystemException {		
+		if ((customer.getId() != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to update customer " + customer);
 		}
 		checkCustomer(customer);
@@ -89,11 +89,11 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 * @param userType the user type updating the coupon
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
 	 */
-	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword, long userId, ClientType userType) throws CouponSystemException {
-		if ((customerId != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword, long userId, UserType userType) throws CouponSystemException {
+		if ((customerId != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change customer's password " + customerId);
 		}
-		if(userType.equals(ClientType.CUSTOMER)) {			
+		if(userType.equals(UserType.CUSTOMER)) {			
 			String customerName = customerDAO.getCustomer(customerId).getCustName();
 			customerDAO.customerLogin(customerName, oldPassword);
 		}		
@@ -111,9 +111,9 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 *  (3) Invalid data, (4) security breach.
 	 */
-	public void removeCustomer(long customerId, long userId, ClientType userType) throws CouponSystemException {
+	public void removeCustomer(long customerId, long userId, UserType userType) throws CouponSystemException {
 		//can be modified if customer removing should be restricted
-		if ((customerId != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
+		if ((customerId != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
 //		if (!userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove customer " + customerId);
 		}

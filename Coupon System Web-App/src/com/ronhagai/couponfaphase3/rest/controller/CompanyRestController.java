@@ -17,7 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
 
@@ -57,7 +57,7 @@ public class CompanyRestController implements Serializable{
 	@PUT
 	public void updateCompany(CompanyBean company, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		companyService.updateCompany(company, userId, userType);
 	}
 
@@ -74,7 +74,7 @@ public class CompanyRestController implements Serializable{
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void updateCompanyPassword(@PathParam ("companyId") long companyId, @FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		companyService.updateCompanyPassword(companyId, oldPassword, newPassword, userId, userType);
 	}
 	
@@ -90,7 +90,7 @@ public class CompanyRestController implements Serializable{
 	@Path("{companyId}")
 	public void removeCompany(@PathParam ("companyId") long companyId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		companyService.removeCompany(companyId, userId, userType);
 	}
 

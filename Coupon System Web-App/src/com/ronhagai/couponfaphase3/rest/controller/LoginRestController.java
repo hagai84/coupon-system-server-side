@@ -79,7 +79,7 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
 		
-		cookieUserType = new Cookie("userType", loginBean.getUserType());
+		cookieUserType = new Cookie("userType", String.valueOf(loginBean.getUserType().toString()));
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
 		if (loginBean.getRemeberMe() != null && loginBean.getRemeberMe().equals("true")) {
 			cookieUserType.setMaxAge(60 * 60 * 24 * 365);

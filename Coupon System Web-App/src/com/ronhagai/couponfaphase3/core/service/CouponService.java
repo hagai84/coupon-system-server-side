@@ -10,7 +10,7 @@ import java.util.Collection;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
@@ -55,10 +55,10 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
 	 * 	existing title, (3) Invalid data, (4) security breach.
 	 */
-	public long createCoupon(CouponBean coupon, long userId, ClientType userType) throws CouponSystemException {
+	public long createCoupon(CouponBean coupon, long userId, UserType userType) throws CouponSystemException {
 		checkCoupon(coupon);
 		//check if userId matches coupon's companyId
-		if ((coupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+		if ((coupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to create the coupon %s", userType, userId, coupon));
 		}
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
@@ -80,9 +80,9 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
 	 *  existing ownership or no matching data.
 	 */
-	public void purchaseCoupon(long couponId, long customerId, long userId, ClientType userType) throws CouponSystemException {
+	public void purchaseCoupon(long couponId, long customerId, long userId, UserType userType) throws CouponSystemException {
 		//checks userType
-		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to purchase coupon %n on user %n", userType, userId, couponId, customerId));
 		}
 		if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId)) {
@@ -100,7 +100,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 * 	(3) Invalid data, (4) security breach.
 	 */
-	public void updateCoupon(CouponBean coupon, long userId, ClientType userType) throws CouponSystemException {
+	public void updateCoupon(CouponBean coupon, long userId, UserType userType) throws CouponSystemException {
 		checkCoupon(coupon);
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
@@ -108,7 +108,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		if (coupon.getCompanyId() != originalCoupon.getCompanyId()) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to change ownership of coupon ", userType, userId, coupon));
 		}
-		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to a coupon %n it doesn't own", userType, userId, coupon));
 		}
 		// alter the coupon data to the new ALLOWED ones
@@ -130,11 +130,11 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data, (3) Invalid data, (4) security breach.
 	 */
-	public void updateCouponAmout(long couponId, int amoutDelta, long userId, ClientType userType) throws CouponSystemException {
+	public void updateCouponAmout(long couponId, int amoutDelta, long userId, UserType userType) throws CouponSystemException {
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		
-		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to update a coupon's amount it doesn't own %n", userType, userId, couponId));
 		}
 		if (amoutDelta+originalCoupon.getAmount()<0) {
@@ -153,11 +153,11 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 *  (3) Invalid data, (4) security breach.
 	 */
-	public void removeCoupon(long couponId, long userId, ClientType userType) throws CouponSystemException {
+	public void removeCoupon(long couponId, long userId, UserType userType) throws CouponSystemException {
 		// TODO Start transaction
 		connectionPool.startTransaction();
 		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
-		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to remove a coupon it doesn't own %n", userType, userId, couponId));
 		}
 		try {
@@ -258,8 +258,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
-	public Collection<CouponBean> getCustomerCoupons(long customerId, long userId, ClientType userType) throws CouponSystemException {
-		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+	public Collection<CouponBean> getCustomerCoupons(long customerId, long userId, UserType userType) throws CouponSystemException {
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCoupons(customerId);
@@ -273,8 +273,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */	
-	public Collection<CouponBean> getCustomerCouponsByType(long customerId, CouponType type, long userId, ClientType userType) throws CouponSystemException {
-		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+	public Collection<CouponBean> getCustomerCouponsByType(long customerId, CouponType type, long userId, UserType userType) throws CouponSystemException {
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCouponsByType(customerId, type);
@@ -288,8 +288,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @return a Collection of CouponBean objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
-	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price, long userId, ClientType userType) throws CouponSystemException {
-		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price, long userId, UserType userType) throws CouponSystemException {
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);

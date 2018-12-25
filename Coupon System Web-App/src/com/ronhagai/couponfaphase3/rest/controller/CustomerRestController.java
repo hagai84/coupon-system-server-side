@@ -17,7 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CustomerService;
 
@@ -57,7 +57,7 @@ public class CustomerRestController implements Serializable{
 	@PUT
 	public void updateCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {		
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		customerService.updateCustomer(customer, userId, userType);
 	}
 	
@@ -76,7 +76,7 @@ public class CustomerRestController implements Serializable{
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public void updateCustomerPassword(@PathParam("customerId") long customerId, @FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		customerService.updateCustomerPassword(customerId, oldPassword, newPassword, userId, userType);
 	}
 	
@@ -94,7 +94,7 @@ public class CustomerRestController implements Serializable{
 	@Path("/{customerId}")
 	public void removeCustomer(@PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {			
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		customerService.removeCustomer(customerId, userId, userType);				
 	}
 	

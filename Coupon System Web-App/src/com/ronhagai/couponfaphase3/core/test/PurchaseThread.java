@@ -2,7 +2,7 @@ package com.ronhagai.couponfaphase3.core.test;
 
 
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 
 public class PurchaseThread extends GenericThread {
@@ -37,7 +37,7 @@ public class PurchaseThread extends GenericThread {
 				try {
 					couponId = coupons[i].getCouponId();
 					customerId = loginCustomer(""+j+j+j+" "+j+j+j+j, ""+j+j+j+j+j+j);
-					couponService.purchaseCoupon(couponId, customerId, customerId, ClientType.CUSTOMER);
+					couponService.purchaseCoupon(couponId, customerId, customerId, UserType.CUSTOMER);
 					System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + i);
 				} catch (CouponSystemException e) {
 					System.err.println(Thread.currentThread().getName() + " : " + e);

@@ -8,7 +8,7 @@ import com.ronhagai.couponfaphase3.core.CouponSystem;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
@@ -100,7 +100,7 @@ private static CouponSystem couponSystem = CouponSystem.getInstance();
 			}
 
 			try {
-				CouponService.getInstance().createCoupon(coupon, companyids.remove(0), ClientType.COMPANY);
+				CouponService.getInstance().createCoupon(coupon, companyids.remove(0), UserType.COMPANY);
 				System.out.println("critical point 6");
 			} catch (CouponSystemException e) {
 				// TODO Auto-generated catch block

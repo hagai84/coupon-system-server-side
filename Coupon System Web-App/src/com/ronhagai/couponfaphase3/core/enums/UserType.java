@@ -5,7 +5,7 @@ package com.ronhagai.couponfaphase3.core.enums;
  * @author Ron
  *
  */
-public enum ClientType {
+public enum UserType {
 	ADMIN,
 	COMPANY,
 	CUSTOMER;

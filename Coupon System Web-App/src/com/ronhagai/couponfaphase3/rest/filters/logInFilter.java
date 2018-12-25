@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
-import com.ronhagai.couponfaphase3.core.enums.ClientType;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 
 /**
  * filter to check if user is login before he can continue to the jersy
@@ -31,7 +31,7 @@ public class logInFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		Long userId = null;
-		ClientType userType = null;
+		UserType userType = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
 
 		// if the user try to login/register or to get all coupons let him.
@@ -53,7 +53,7 @@ public class logInFilter implements Filter {
 					continue;
 				}
 				if (cookie.getName().equals("userType")) {
-					userType = ClientType.valueOf(cookie.getValue());
+					userType = UserType.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userType", userType);
 				}
 			}
