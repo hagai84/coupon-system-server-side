@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.catalina.mbeans.UserMBean;
 
 import com.ronhagai.couponfaphase3.core.beans.LoginBean;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
@@ -68,11 +69,11 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
-		if (loginBean.getUserType().equals("ADMIN") && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
+		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
 			userId = 123456789;
-		}else if (loginBean.getUserType().equals("CUSTOMER")) {
+		}else if (loginBean.getUserType().equals(UserType.CUSTOMER)) {
 			userId = CustomerService.getInstance().customerLogin(loginBean.getUserName(), loginBean.getUserPassword());
-		} else if (loginBean.getUserType().equals("COMPANY")) {
+		} else if (loginBean.getUserType().equals(UserType.COMPANY)) {
 			userId = CompanyService.getInstance().companyLogin(loginBean.getUserName(), loginBean.getUserPassword());
 
 		} else {
