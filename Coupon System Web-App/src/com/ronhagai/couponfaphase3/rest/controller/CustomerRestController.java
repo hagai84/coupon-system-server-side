@@ -33,29 +33,26 @@ public class CustomerRestController implements Serializable{
 	private CustomerService customerService = CustomerService.getInstance();
 	
 	/**
-	 * Attempts to create a given customer in the DB
-	 *
-	 * @param customer The customer to create
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or <code>SQLException</code> is thrown to the DAO.
-	 *  If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists or is invalid).
-	 *
+	 * Adds a new customer entity to the repository.
+	 * 
+	 * @param customer the new customer entity to be added.
+	 * @return the created customer's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
+	 * 	existing name, (3) Invalid data.
 	 */
-	
 	@POST
 	public long createCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-//		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-//		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
-		return customerService.createCustomer(customer/*, userId, userType*/);			
+		return customerService.createCustomer(customer);			
 	}
 	
 	/**
-	 * Updates all of a customer's fields (except ID) in the DB according to the given customer bean.
-	 *
-	 * @param customer The customer to be updated
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
+	 * Updates a customer entity in the repository.
+	 * 
+	 * @param customer the customer object to be updated.
+	 * @param userId the user updating the customer
+	 * @param userType the user type updating the customer
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 * 	(3) Invalid data, (4) security breach.
 	 */
 	@PUT
 	public void updateCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {		
@@ -64,7 +61,16 @@ public class CustomerRestController implements Serializable{
 		customerService.updateCustomer(customer, userId, userType);
 	}
 	
-	
+	/**
+	 * updates the customer's password
+	 * 
+	 * @param customerId The customer to update
+	 * @param newPassword The new password
+	 * @param oldPassword The old password
+	 * @param userId the user updating the coupon
+	 * @param userType the user type updating the coupon
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
+	 */
 	@PUT
 	@Path("/{customerId}/password")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -73,15 +79,16 @@ public class CustomerRestController implements Serializable{
 		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
 		customerService.updateCustomerPassword(customerId, oldPassword, newPassword, userId, userType);
 	}
+	
 	/**
-	 * Deletes a specified customer from the DB.
-	 * -removes its coupons from the DB (customer_coupon table)
-	 *
-	 * @param customerId The customer to be removed.
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB.
-	 *
+	 * Removes a customer entity from the customers repositories.
+	 * removes the customer's coupons as well.
+	 * 
+	 * @param customerId the customer's ID.
+	 * @param userId the user removing the customer.
+	 * @param userType the user type
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 *  (3) Invalid data, (4) security breach.
 	 */
 	@DELETE
 	@Path("/{customerId}")
@@ -92,14 +99,11 @@ public class CustomerRestController implements Serializable{
 	}
 	
 	/**
-	 * Searches the DB for a customer with the given ID and
-	 * returns a Customer bean with it's data from the DB.
-	 *
-	 * @param customerId The id of the customer to find in the DB.
-	 * @return {@link CustomerBean} bean; <code>null</code> - if no customer with the given ID exists in DB
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB (0 rows were returned).
+	 * Retrieves a customer entity from the repository.
+	 * 
+	 * @param customerId the customer's ID.
+	 * @return a CompanyBean object
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/{customerId}")
@@ -109,31 +113,13 @@ public class CustomerRestController implements Serializable{
 	}
 	
 	/**
-	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
-	 *
-	 * @return An <code>ArrayList</code> of all the companies in DB.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * Retrieves all the customers entities from the repository .
+	 * 
+	 * @return a Collection of customers objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
 		return customerService.getAllCustomers();
 	}
-	
-	/**
-	 * Logs in to the coupon system as a specific customer.
-	 * @param custName Customer username
-	 * @param password Customer password
-	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws {@link CustomerService}
-	 * @throws CustomerFacadeException if username or password are incorrect
-	 */
-	/*@POST
-	@Path("/login")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public long customerLogin(@FormParam("name") String customerName,@FormParam("password") String password) throws  CouponSystemException {
-		if(customerName == null || password == null) {
-			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"name/password cant be null");
-		}
-		return customerService.customerLogin(customerName, password);
-	}*/
-	
 }

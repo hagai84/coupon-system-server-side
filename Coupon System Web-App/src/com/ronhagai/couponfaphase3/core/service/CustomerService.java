@@ -27,14 +27,8 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 	private ICustomerDAO customerDAO = CustomerDAO.getInstance();
 	private ICouponDAO couponDAO = CouponDAO.getInstance();
-//	private final Customer customer;
 
-	/**
-	 * Private constructor that initializes given customer's access
-	 * @param custId ID of the customer that is accessing the system
-	 * 
-	 * @return CustomerFacadeException
-	 */
+
 	private CustomerService() {
 		
 	}
@@ -44,19 +38,15 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	}
 
 	/**
-	 * Attempts to create a given customer in the DB
-	 *
-	 * @param customer The customer to create
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or <code>SQLException</code> is thrown to the DAO.
-	 *  If insertion of the given customer to the DB fails (e.g. <code>Customer</code> ID already exists or is invalid).
-	 *
+	 * Adds a new customer entity to the repository.
+	 * 
+	 * @param customer the new customer entity to be added.
+	 * @return the created customer's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
+	 * 	existing name, (3) Invalid data.
 	 */
-	public long createCustomer(CustomerBean customer/*, long userId, ClientType userType*/) throws CouponSystemException {
+	public long createCustomer(CustomerBean customer) throws CouponSystemException {
 		//can be used if customer registration should be restricted 
-		/*if (!userType.equals(ClientType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to create customer " + customer);
-		}*/
 		
 		checkCustomer(customer);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
@@ -65,17 +55,18 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		}
 
 		long customerId = customerDAO.createCustomer(customer);
-//		System.out.println("LOG : User " + userType + " - " + userId + " created customer " + customer);
+		System.out.println("LOG : Customer created : " + customer);
 		return customerId;
 	}
 
 	/**
-	 * Updates all of a customer's fields (except ID) in the DB according to the given customer bean.
-	 *
-	 * @param customer The customer to be updated
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
+	 * Updates a customer entity in the repository.
+	 * 
+	 * @param customer the customer object to be updated.
+	 * @param userId the user updating the customer
+	 * @param userType the user type updating the customer
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 * 	(3) Invalid data, (4) security breach.
 	 */
 	public void updateCustomer(CustomerBean customer, long userId, ClientType userType) throws CouponSystemException {		
 		if ((customer.getId() != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
@@ -88,6 +79,16 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		System.out.println("LOG : User " + userType + " - " + userId + " updated customer " + customer);		
 	}
 
+	/**
+	 * updates the customer's password
+	 * 
+	 * @param customerId The customer to update
+	 * @param newPassword The new password
+	 * @param oldPassword The old password
+	 * @param userId the user updating the coupon
+	 * @param userType the user type updating the coupon
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
+	 */
 	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword, long userId, ClientType userType) throws CouponSystemException {
 		if ((customerId != userId || !userType.equals(ClientType.CUSTOMER)) && !userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change customer's password " + customerId);
@@ -99,15 +100,16 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		customerDAO.updateCustomerPassword(customerId, newPassword);
 		System.out.println("LOG : User " + userType + " - " + userId + " changed customer's password " + customerId);
 	}
+	
 	/**
-	 * Deletes a specified customer from the DB.
-	 * -removes its coupons from the DB (customer_coupon table)
-	 *
-	 * @param customerId The customer to be removed.
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB.
-	 *
+	 * Removes a customer entity from the customers repositories.
+	 * removes the customer's coupons as well.
+	 * 
+	 * @param customerId the customer's ID.
+	 * @param userId the user removing the customer.
+	 * @param userType the user type
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 *  (3) Invalid data, (4) security breach.
 	 */
 	public void removeCustomer(long customerId, long userId, ClientType userType) throws CouponSystemException {
 		//can be modified if customer removing should be restricted
@@ -129,37 +131,36 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	}
 
 	/**
-	 * Searches the DB for a customer with the given ID and
-	 * returns a Customer bean with it's data from the DB.
-	 *
-	 * @param customerId The id of the customer to find in the DB.
-	 * @return {@link CustomerBean} bean; <code>null</code> - if no customer with the given ID exists in DB
-	 * @throws CouponSystemException
-	 *  If there is a connection problem or an <code>SQLException</code> is thrown.
-	 *  If the given customer's ID can't be found in the DB (0 rows were returned).
+	 * Retrieves a customer entity from the repository.
+	 * 
+	 * @param customerId the customer's ID.
+	 * @return a CompanyBean object
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public CustomerBean getCustomer(long customerId) throws CouponSystemException {
 		return customerDAO.getCustomer(customerId);
 	}
 
 	/**
-	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
-	 *
-	 * @return An <code>ArrayList</code> of all the companies in DB.
-	 * @throws CouponSystemException If there is a connection problem or an <code>SQLException</code> is thrown.
+	 * Retrieves all the customers entities from the repository .
+	 * 
+	 * @return a Collection of customers objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
 		return customerDAO.getAllCustomers();
 	}
 
 	/**
-	 * Logs in to the coupon system as a specific company.
-	 * @param custName Customer username
-	 * @param password Customer password
-	 * @return a new CustomerFacade instance if customer's username and password are correct; otherwise, throws exception
-	 * @throws CouponSystemException if username or password are incorrect
+	 * Check the password and user name,
+	 * returns the user ID if correct.
+	 * 
+	 * @param customerName The customer's user name
+	 * @param password The customer's password
+	 * @return a long userId - the user's ID
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * 
 	 */
-	//@Override
 	public long customerLogin(String customerName, String password) throws  CouponSystemException {
 		return customerDAO.customerLogin(customerName, password);
 	}

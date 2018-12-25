@@ -50,7 +50,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * Adds a new coupon entity to the repository.
 	 * 
 	 * @param coupon the new CouponBean object to be added.
-	 * @param userId the company creating the new coupon
+	 * @param userId the user creating the new coupon
 	 * @return the created coupon's ID. 
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
 	 * 	existing title, (3) Invalid data, (4) security breach.
@@ -76,7 +76,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @param customerId the customer's ID.
+	 * @param userId the user ID.
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
 	 *  existing ownership or no matching data.
 	 */
@@ -96,7 +96,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * Updates a coupon entity in the repository.
 	 * 
 	 * @param coupon the CouponBean object to be updated.
-	 * @param userId the company updating the coupon
+	 * @param userId the user updating the coupon
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 * 	(3) Invalid data, (4) security breach.
 	 */
@@ -124,7 +124,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * cannot be resolve if it results in a negative amount. 
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @param userId the company updating the coupon's amount.
+	 * @param userId the user updating the coupon's amount.
+	 * @param userType the user type
 	 * @param amountDelta the amount of coupons to be added or removed (negative amount).
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data, (3) Invalid data, (4) security breach.
@@ -147,7 +148,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * Removes a coupon entity from the coupons and customers' coupons repositories.
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @param companyId the company removing the coupon.
+	 * @param userId the user removing the coupon.
+	 * @param userType the user type
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 *  (3) Invalid data, (4) security breach.
 	 */
@@ -195,7 +197,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	/**
 	 * Retrieves all the coupons entities from the repository .
 	 * 
-	 * @return a Collection of CouponBean objects
+	 * @return a Collection of coupons objects
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CouponBean> getAllCoupons() throws CouponSystemException {

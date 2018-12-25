@@ -28,14 +28,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	private ConnectionPool connectionPool = ConnectionPool.getInstance();
 	private ICouponDAO couponDAO = CouponDAO.getInstance();
 	private ICompanyDAO companyDAO = CompanyDAO.getInstance();
-//	private final Company company;
 
-
-	
-	/**
-	 * Public constructor initializes given company's access
-	 * @param company Company to access in the system
-	 */
 	private CompanyService() {
 		
 	}
@@ -46,34 +39,34 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 
 
 	/**
-	 * Creates a new company in the database
-	 * @param company Company to add to the DB
-	 * @throws AdminFacadeException
-	 *  If company name or ID already exist in the DB
-	 *  If company creation fails
+	 * Adds a new company entity to the repository.
+	 * 
+	 * @param company the new company entity to be added.
+	 * @return the created company's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
+	 * 	existing name, (3) Invalid data.
 	 */
-	public long createCompany(CompanyBean company/*, long userId, ClientType userType*/) throws CouponSystemException {
+	public long createCompany(CompanyBean company) throws CouponSystemException {
 		//can be used if company registration should be restricted 
-		/*if (!userType.equals(ClientType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to create company " + company);
-		}*/
 		checkCompany(company);
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if(companyDAO.companyNameAlreadyExists(company.getCompName())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Company Name already exists");
 		}	
 		long companyId = companyDAO.createCompany(company);
-//		System.out.println("LOG : User " + userType + " - " + userId + " created company " + company);
+		System.out.println("LOG : Company created : " + company);
 		return companyId;
 	}
 
 
 	/**
-	 * Updates a company's details in the database
-	 * @param company Company to remove from the DB
-	 * @throws AdminFacadeException
-	 *  If given company's details don't match the details of the company with the same ID in the DB
-	 *  If updating of the company's details fails
+	 * Updates a company entity in the repository.
+	 * 
+	 * @param company the company object to be updated.
+	 * @param userId the user updating the company
+	 * @param userType the user type updating the company
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 * 	(3) Invalid data, (4) security breach.
 	 */
 	public void updateCompany(CompanyBean company, long userId, ClientType userType) throws CouponSystemException {
 		if ((company.getId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
@@ -87,7 +80,17 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		companyDAO.updateCompany(tmpCompany);
 		System.out.println("LOG : User " + userType + " - " + userId + " updated company " + company);		
 	}
-
+	
+	/**
+	 * updates the company's password
+	 * 
+	 * @param companyId The company to update
+	 * @param newPassword The new password
+	 * @param oldPassword The old password
+	 * @param userId the user updating the coupon
+	 * @param userType the user type updating the coupon
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts.
+	 */
 	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword, long userId, ClientType userType) throws CouponSystemException {
 		if ((companyId != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change company's password " + companyId);
@@ -99,13 +102,16 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		companyDAO.updateCompanyPassword(companyId, newPassword);
 		System.out.println("LOG : User " + userType + " - " + userId + " changed company's password " + companyId);		
 	}
+	
 	/**
-	 * Deletes a company in the database
-	 * -removes its coupons from DB (all tables)
-	 * @param companyId Company to remove from the DB
-	 * @throws AdminFacadeException
-	 *  If given company's details don't match the details of the company with the same ID in the DB
-	 *  If company deletion fails
+	 * Removes a company entity from the companies repositories.
+	 * removes the company's coupons as well.
+	 * 
+	 * @param companyId the company's ID.
+	 * @param userId the user removing the company.
+	 * @param userType the user type
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 *  (3) Invalid data, (4) security breach.
 	 */
 	public void removeCompany(long companyId, long userId, ClientType userType) throws CouponSystemException {
 		//can be modified if company removing should be restricted
@@ -126,41 +132,37 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		connectionPool.endTransaction();
 		System.out.println("LOG : User " + userType + " - " + userId + " removed company " + companyId);			
 	}
-
-
 	
 	/**
-	 * Gets a company's details from the database
+	 * Retrieves a company entity from the repository.
 	 * 
-	 * @param companyID ID of company to retrieve from the DB
-	 * @return Company the company with the matching id
-	 * @throws AdminFacadeException
-	 *  If there is a connection problem or an SQLException is thrown to the DAO.
-	 *  If the given company's ID can't be found in the DB (0 rows were returned).
+	 * @param companyId the company's ID.
+	 * @return a CompanyBean object
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public CompanyBean getCompany(long companyID) throws CouponSystemException {	
 		return companyDAO.getCompany(companyID);
 	}
-
-
 	
 	/**
-	 * Assemble and return an <code>ArrayList</code> of all the companies in the DB.
-	 *
-	 * @return An <code>ArrayList</code> of all the companies in DB.
-	 * @throws AdminFacadeException If there is a connection problem or an <code>SQLException</code> is thrown to the DAO.
+	 * Retrieves all the companies entities from the repository .
+	 * 
+	 * @return a Collection of companies objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CompanyBean> getAllCompanies() throws CouponSystemException{
 		return companyDAO.getAllCompanies();
 	}
 
-
 	/**
-	 * Logs in to the coupon system as a specific company.
-	 * @param name Company username
-	 * @param password Company password
-	 * @return a new CompanyFacade instance if company's username and password are correct; otherwise, throws {@link CompanyService}
-	 * @throws CompanyFacadeException if username or password are incorrect
+	 * Check the password and user name,
+	 * returns the user ID if correct.
+	 * 
+	 * @param companyName The company's user name
+	 * @param password The company's password
+	 * @return a long userId - the user's ID
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * 
 	 */
 	public long companyLogin(String name, String password) throws CouponSystemException {
 		return companyDAO.companyLogin(name, password);
