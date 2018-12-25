@@ -12,15 +12,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 /**
- * Servlet Filter implementation class CorsFilter
+ * A filter that set the header properties for cors platform accsess.
+ * @author hagai
+ *
  */
 @WebFilter("/CorsFilter")
 public class CorsFilter implements Filter {
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
