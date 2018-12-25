@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,6 +26,12 @@ public class LoginRestController {
 	@Context
 	HttpServletResponse response;
 
+	
+//	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//	@FormParam("userName") String userName,
+//	@FormParam("userPassword") String userPassword,
+//	@FormParam("userType") String userType,
+//	@FormParam("remeberMe") String remeberMe)
 	@POST
 	public long login(LoginBean loginBean) throws CouponSystemException {
 		System.out.println("login is on");
