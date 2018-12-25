@@ -34,18 +34,19 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			internalMessage = exceptionEnum.getInternalMessage();
 			
 			if (statusCode >= 1600 && statusCode < 1700) {
+				
 				// TODO appropriate handling, log
 				// OPERATIONS THAT SHLDNT NORMALLY FAIL
+				//dml equals 0
 			}
 			if (statusCode >= 1700 && statusCode < 1800) {
-				// TODO appropriate handling, log
+				// TODO appropriate handling, log 
 				// EXTERNAL FACTORS SHLDNT BE MORE THAN OCCASIONALY DEPENDING ON OTHERS' STABILLITY
 			}
 			if (statusCode >= 1800 && statusCode < 1900) {
 				// CLIENT SIDE ERRORS WITH HIGHER OCCURENCES 
 			}
 			if (statusCode >= 1900 && statusCode < 2000) {
-				// TODO send email to manager +log
 				// SECURITY ERRORS HIGH CHANCES OF BREACH ATTEMPTS
 				// HIDES THE TRUE CAUSE
 				exceptionEnum = ExceptionsEnum.DATA_BASE_ERROR;
@@ -53,6 +54,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 				internalMessage = exceptionEnum.getInternalMessage();
 			}
 			if (statusCode >= 2000) {
+				// TODO send email to manager +log
 				// CRITICAL ERRORS NOTIFY IMMIDIATLY
 				exception.printStackTrace();
 			}
@@ -65,7 +67,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			internalMessage = exceptionEnum.getInternalMessage();
 		}
 		externalMessage = getTranslatedMessage(exceptionEnum);
-//		externalMessage = exception.getMessage();//TODO only for developing purposes 
+		externalMessage = exception.getMessage();//TODO only for developing purposes 
 		exceptionBean = new ExceptionBean(statusCode, externalMessage, internalMessage);
 		return Response.status(statusCode).entity(exceptionBean).build();	
 	}
