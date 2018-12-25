@@ -19,6 +19,11 @@ import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.service.CompanyService;
 import com.ronhagai.couponfaphase3.core.service.CustomerService;
 
+/**
+ *  A login rest controller that handle login and logout
+ * @author hagai
+ *
+ */
 @Path("/login")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -32,6 +37,20 @@ public class LoginRestController {
 //	@FormParam("userPassword") String userPassword,
 //	@FormParam("userType") String userType,
 //	@FormParam("remeberMe") String remeberMe)
+	
+	/**
+	 * login controller that check the user type and call to the right login service.
+	 * if login was successful than token and type cookies will be planted at the user
+	 * @param loginBean that contain:
+	 * user name
+	 * user password
+	 * user type
+	 * Remember me (if user want a long login connection.
+	 * @return the userId from the DB
+	 * @throws CouponSystemException if:
+	 * user name/paswword are not match
+	 * if one of the loginBean is null (except the remember me parameter)
+	 */
 	@POST
 	public long login(LoginBean loginBean) throws CouponSystemException {
 		System.out.println("login is on");
@@ -75,7 +94,9 @@ public class LoginRestController {
 		return userId;
 	}
 	
-	
+	/**
+	 * delete all user cookies (id and type)
+	 */
 	@DELETE
 	public void logout() {
 		System.out.println("user try to loguot");
