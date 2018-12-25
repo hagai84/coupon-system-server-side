@@ -28,7 +28,10 @@ public class logInFilter implements Filter {
 		Long userId = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
 		// if try to login let him
-		if (pathRequstedByUser.equals("/login") || (pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))) {
+		if (pathRequstedByUser.equals(
+				"/login") ||
+				(pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))||
+				pathRequstedByUser.equals("/customers") && httpRequest.getMethod().equals("POST")) {
 			System.out.println("LOGIN FILTER: user try to login or get all coupons");
 			chain.doFilter(request, response);
 			return;
