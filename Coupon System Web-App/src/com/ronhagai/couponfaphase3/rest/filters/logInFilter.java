@@ -15,51 +15,56 @@ import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.enums.ClientType;
 
-
 /**
- * Servlet Filter implementation class logInFilter
+ * filter to check if user is login before he can continue to the jersy
+ * contaniner the filter exclude few restcontroller methods like login, get all
+ * coupons on site and more.
+ * 
+ * @author hagai
+ *
  */
 @WebFilter("/logInFilter")
 public class logInFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		System.out.println("login filter is on");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		Long userId = null;
 		ClientType userType = null;
 		String pathRequstedByUser = httpRequest.getPathInfo();
-		// if try to login let him
-		if (pathRequstedByUser.equals(
-				"/login") ||
-				(pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))||
-				pathRequstedByUser.equals("/customers") && httpRequest.getMethod().equals("POST")) {
-			System.out.println("LOGIN FILTER: user try to login or get all coupons");
+
+		// if the user try to login/register or to get all coupons let him.
+		if (pathRequstedByUser.equals("/login")
+				|| (pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))
+				|| pathRequstedByUser.equals("/customers") && httpRequest.getMethod().equals("POST")) {
 			chain.doFilter(request, response);
 			return;
 		}
 		Cookie[] userCookies = httpRequest.getCookies();
-		// if user have a userId cookie then he loged in an can countunue.
-				if (userCookies != null) {
+		// only if user have cookies
+		if (userCookies != null) {
+			// add to the user id and type (from the cookies)
+			// to the request attributes for leter use.
 			for (Cookie cookie : userCookies) {
 				if (cookie.getName().equals("userId")) {
-					System.out.println("LOGIN FILTER: the user have cookieID");
 					userId = Long.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userId", userId);
+					continue;
 				}
 				if (cookie.getName().equals("userType")) {
 					userType = ClientType.valueOf(cookie.getValue());
 					httpRequest.setAttribute("userType", userType);
 				}
 			}
+			// check if user have a userId cookie if so then he lodged in an can continue.
 			if (userId != null && userType != null) {
 				chain.doFilter(request, response);
 				return;
 			}
 		}
-		
-		System.out.println("LOGIN FILTER: the user dont have id cookie and is not try to log in");
+		// if the user try to turn to the rest controller without to be logged in throw
+		// exception
 		httpRespone.setStatus(HttpServletResponse.SC_FORBIDDEN);
 		httpRespone.setContentType(MediaType.APPLICATION_JSON);
 		httpRespone.getWriter().print("please sign in first (hagai: no cookies of user id)");
