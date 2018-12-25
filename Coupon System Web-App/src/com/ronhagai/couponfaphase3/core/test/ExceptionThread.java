@@ -5,6 +5,7 @@ import java.sql.Date;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 
@@ -147,19 +148,19 @@ public class ExceptionThread extends GenericThread {
 			
 			
 			try {
-				company.setId(companyService.createCompany(company));
+				company.setId(companyService.createCompany(company/*, 123456789, ClientType.ADMIN*/));
 				System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
-
+				coupon.setCompanyId(company.getId());
 			} catch (CouponSystemException e) {System.err.println(e);}
 			try {
 				loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				coupon.setCouponId(couponService.createCoupon(coupon, company.getId()));
+				coupon.setCouponId(couponService.createCoupon(coupon, company.getId(), ClientType.COMPANY));
 				System.out.println("LOG : Coupon created \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				customer.setId(customerService.createCustomer(customer));
+				customer.setId(customerService.createCustomer(customer/*, 123456789, ClientType.ADMIN*/));
 				System.out.println(Thread.currentThread().getName() + " : LOG : Customer created \n" + customer);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			
@@ -167,19 +168,19 @@ public class ExceptionThread extends GenericThread {
 				loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);} 
 			try {
-				couponService.purchaseCoupon(coupon.getCouponId(), customer.getId());
+				couponService.purchaseCoupon(coupon.getCouponId(), customer.getId(), customer.getId(), ClientType.CUSTOMER);
 				System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				couponService.removeCoupon(coupon.getCouponId(), company.getId());
+				couponService.removeCoupon(coupon.getCouponId(), company.getId(), ClientType.COMPANY);
 				System.out.println(Thread.currentThread().getName() + " : LOG : Coupon deleted \n" + coupon);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				customerService.removeCustomer(customer.getId());
+				customerService.removeCustomer(customer.getId(), 123456789, ClientType.ADMIN);
 				System.out.println(Thread.currentThread().getName() + " : LOG : Customer deleted \n" + customer);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}
 			try {
-				companyService.removeCompany(company.getId());
+				companyService.removeCompany(company.getId(), 123456789, ClientType.ADMIN);
 				System.out.println(Thread.currentThread().getName() + " : LOG : Company deleted \n" + company);
 			} catch (CouponSystemException e) {System.err.println(Thread.currentThread().getName() + e);}	
 			//TODO add all service methods

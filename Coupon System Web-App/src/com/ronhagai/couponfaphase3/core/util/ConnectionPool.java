@@ -29,7 +29,9 @@ public class ConnectionPool implements Serializable{
 
 	private static ConnectionPool connectionPoolInstance = new ConnectionPool();
 
-	private final int POOL_SIZE = 3;
+	private final int POOL_SIZE = 1;
+	private final int CLOSING_WAITING_PERIOD = 5000; //milliseconds
+	private final int VALIDITY_WAITING_PERIOD = 10; //seconds
 
 	private String driverName = null;
 	private String databaseUrl;
@@ -37,7 +39,6 @@ public class ConnectionPool implements Serializable{
 	private String password;	
 
 	private ArrayList<Connection> availableConnections;
-//	private ArrayList<Connection> connectionsOut;
 	private HashMap<Thread, Connection> usedConnections;
 	private boolean closing = false;
 	private boolean initialized = false;
@@ -70,9 +71,9 @@ public class ConnectionPool implements Serializable{
 			return usedConnections.get(Thread.currentThread());
 		}
 
-		Connection con = null;
+		Connection connection = null;
 		if (closing) {
-			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool shutting down");
+			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_CLOSING,"Connection pool shutting down");
 		}
 		
 		synchronized (this) {
@@ -81,42 +82,27 @@ public class ConnectionPool implements Serializable{
 			}
 			// Check if there is a connection available. There are times when all the
 			// connections in the pool may be used up
-			while (availableConnections.size() < 1) {
+			if (availableConnections.size() < 1) {
+				connection = newConnection();
+			}else {
+				connection = availableConnections.remove(0);
 				try {
-					if (closing) {
-						throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection pool is shutting down");
+					//checks if connection isValid if not attempts to open a new one
+					if (!connection.isValid(VALIDITY_WAITING_PERIOD)) {
+						connection.close();
 					}
-					wait();
-				} catch (InterruptedException e) {
-					// TODO Manager handling
-					// e.printStackTrace();
-					System.err.println("get connection wait interrupted : " + e);
-					throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"database access error occurred", e);
+				} catch (SQLException e) {
+					//close() exception shldnt happen - even if cldnt care less
+//					availableConnections.add(connection);				
+//					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
+				}finally {
+					connection = newConnection();					
+				}
+			}
 
-				}
-			}
-			con = availableConnections.remove(0);
-			
-			try {
-				//checks if connection isValid if not attempts to open a new one
-				if (!con.isValid(5)) {
-					con.close();
-					con = newConnection();
-				}
-			} catch (SQLTimeoutException e) {
-				//new connection timed out
-				availableConnections.add(con);
-				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_TIMOUT,"Server busy. Try again later", e);
-			} catch (SQLException e) {
-				//DB error initiates pool shutdown
-				availableConnections.add(con);
-//				closeAllConnections();//is there a need ?
-//				initialized = false;
-				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
-			}
 			// Giving away the connection from the connection pool
-			usedConnections.put(Thread.currentThread(), con);
-			return con;
+			usedConnections.put(Thread.currentThread(), connection);
+			return connection;
 		}
 	}
 
@@ -124,28 +110,33 @@ public class ConnectionPool implements Serializable{
 	 * Gives connection back to ConnectionPool
 	 * checks if connection exists in Out collection
 	 * 
-	 * @param con Connection to return
+	 * @param connection Connection to return
 	 */
-	public void returnConnection(Connection con) {
+	public void returnConnection(Connection connection) {
 
 		try {
-			if(con.getAutoCommit()) {
+			if(connection.getAutoCommit()) {
 				if (initialized) {
 					synchronized (this) {
 						//attempts to remove from Out collection
-						if (usedConnections.remove(Thread.currentThread(), con)) {
-							// Adding the connection from the client back to the connection pool
-							availableConnections.add(con);
-							notifyAll();
+						if (usedConnections.remove(Thread.currentThread(), connection)) {
+							if(availableConnections.size()<POOL_SIZE) {
+								// Adding the connection from the client back to the connection pool
+								availableConnections.add(connection);
+								notifyAll();
+							}else {
+								connection.close();
+							}
 						}	
 					}
 				}else {
-					con.close();
+					connection.close();
 				}
 			}	
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.err.println("LOG : return connection failed");
 		}		
 	}
 
@@ -158,11 +149,12 @@ public class ConnectionPool implements Serializable{
 	public void closeAllConnections() {
 		closing = true;
 		//if there are connections out wait for a set amount of millisecond
-		if (availableConnections.size() < POOL_SIZE) {
+		if (usedConnections.size()>0) {
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(CLOSING_WAITING_PERIOD);
 			} catch (InterruptedException e) {
-				System.err.println(e);
+				System.err.println("LOG : close all connections wait interrupted");
+				e.printStackTrace();
 			}
 		}
 		synchronized (this) {
@@ -171,18 +163,21 @@ public class ConnectionPool implements Serializable{
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println(e);
+					System.err.println("LOG : close all - close connection failed");
+					e.printStackTrace();
 				}
 			}
 			for (Connection connection : usedConnections.values()) {
 				try {
 					connection.close();				
 				} catch (SQLException e) {
-					System.err.println(e);
+					System.err.println("LOG : close all - close connection failed");
+					e.printStackTrace();
 				}
 			}			
 		}
 		closing = false;
+		System.out.println("LOG : Connection pool Closed");
 	}
 			
 
@@ -207,7 +202,7 @@ public class ConnectionPool implements Serializable{
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e) {
-			System.err.println(e);
+//			System.err.println(e);
 			throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"Connection Driver Class not found : ", e);
 		}
 		availableConnections = new ArrayList<Connection>();
@@ -215,9 +210,7 @@ public class ConnectionPool implements Serializable{
 		while (availableConnections.size() < POOL_SIZE) {
 			try {
 				availableConnections.add(newConnection());
-			} catch (SQLTimeoutException e) {
-				System.err.println("new Connection can't be established time out exception " + e);
-			} catch (SQLException e) {
+			} catch (CouponSystemException e) {
 				closeAllConnections();
 				throw new CouponSystemException(ExceptionsEnum.CONNECTION_POOL_INIT_ERROR,"database access error occurred ", e);
 			}
@@ -230,15 +223,23 @@ public class ConnectionPool implements Serializable{
 	/**
 	 * Creates a connection, then returns it
 	 * @return A created connection
+	 * @throws CouponSystemException 
 	 * @throws SQLException If the connection timed out
 	 * @throws SQLTimeoutException If a database access error occurs or the url is null
  	 */
-	private Connection newConnection() throws SQLException, SQLTimeoutException {
-		Connection con = DriverManager.getConnection(databaseUrl, userName, password);
+	private Connection newConnection() throws CouponSystemException  {
 		
-		con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-
-		return con;
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(databaseUrl, userName, password);
+			connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+		} catch (SQLTimeoutException e) {
+			//get connection timed out
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_TIMOUT,"Server busy. Try again later", e);
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"database access error occurred", e);
+		}	
+		return connection;
 	}
 
 	/**
@@ -265,8 +266,7 @@ public class ConnectionPool implements Serializable{
 	 * If connection times out
 	 * If an error occurred while attempting to access the database
 	 */
-	public void setServer(String driverName, String databaseUrl, String userName, String password) throws CouponSystemException {
-		
+	public void setServer(String driverName, String databaseUrl, String userName, String password) throws CouponSystemException {	
 		synchronized(this) {
 			if (initialized) {
 				closeAllConnections();
@@ -281,66 +281,64 @@ public class ConnectionPool implements Serializable{
 	}
 	
 	public Connection startTransaction() throws CouponSystemException {
-//		connectionsOut.get(Thread)
-		Connection con = getConnection();
-		try {
-			con.setAutoCommit(false);
-		
-		} catch (SQLException e) {
-			// TODO set autocommit failed
-			e.printStackTrace();
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation");
-		}finally {
-			returnConnection(con);
-		}
-		return con;
+		Connection connection = getConnection();
+		setAutoCommit(false);	
+		return connection;
 	}
 	
 	public void endTransaction() throws CouponSystemException {
-		Connection con = getConnection();
+		Connection connection = getConnection();
 		try {
-			con.commit();
+			connection.commit();
 		} catch (SQLException e) {
 			try {
-				con.rollback();
+				connection.rollback();
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - end transaction/commit", e);
 			} catch (SQLException e1) {
-				// TODO Commit failed rollback?
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				try {
+					connection.close();
+					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - end transaction/rollback", e1);
+				} catch (SQLException e2) {
+					throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - end transaction/close", e2);					
+				}
 			}
-			e.printStackTrace();
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation");
-			/* ************************************************************************************* */
 		}finally {
-			try {
-				con.setAutoCommit(true);
-			} catch (SQLException e) {
-				// TODO set Autocommit failed
-				e.printStackTrace();
-			}
-			returnConnection(con);
+			setAutoCommit(true);
+			returnConnection(connection);
 		}
 		
 	}
 	
 	public void rollback() throws CouponSystemException {
-		Connection con = getConnection();
+		Connection connection = getConnection();
 		try {
-			con.rollback();
+			connection.rollback();
 		} catch (SQLException e1) {
-			// TODO Commit failed rollback?
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			/* ************************************************************************************* */
-		}finally {
 			try {
-				con.setAutoCommit(true);
+				connection.close();
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - rollback/rollback", e1);
 			} catch (SQLException e) {
-				// TODO set Autocommit failed
-				e.printStackTrace();
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - rollback/close", e);
 			}
-			returnConnection(con);
+		}finally {
+			setAutoCommit(true);
+			returnConnection(connection);
+		}			
+	}
+	
+	private void setAutoCommit(boolean autoCommit) throws CouponSystemException {
+		Connection connection = getConnection();
+		try {
+			connection.setAutoCommit(autoCommit);
+		}catch (SQLException e) {
+			try {
+				connection.close();
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - set autocommit", e);
+			} catch (SQLException e1) {
+				throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"failed operation - set autocommit", e1);
+			}
+		}finally {			
+			returnConnection(connection);
 		}
-				
 	}
 }

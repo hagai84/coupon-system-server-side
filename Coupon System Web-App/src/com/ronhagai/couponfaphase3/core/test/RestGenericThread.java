@@ -29,7 +29,7 @@ public abstract class RestGenericThread extends GenericThread{
 		List<NameValuePair> form = new ArrayList<>();
 		form.add(new BasicNameValuePair("userName", "admin"));
 		form.add(new BasicNameValuePair("userPassword", "1234"));
-		form.add(new BasicNameValuePair("userType", "admin"));
+		form.add(new BasicNameValuePair("userType", "ADMIN"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
 		HttpPost postMethod = new HttpPost(url + "/login");
 		postMethod.setEntity(entity);
@@ -57,7 +57,7 @@ public abstract class RestGenericThread extends GenericThread{
 		List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("userName", user));
         form.add(new BasicNameValuePair("userPassword", password));
-        form.add(new BasicNameValuePair("userType", "company"));
+        form.add(new BasicNameValuePair("userType", "COMPANY"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/login");
         postMethod.addHeader("Accept-Language", "en");
@@ -85,7 +85,7 @@ public abstract class RestGenericThread extends GenericThread{
 		List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("userName", user));
         form.add(new BasicNameValuePair("userPassword", password));
-        form.add(new BasicNameValuePair("userType", "customer"));
+        form.add(new BasicNameValuePair("userType", "CUSTOMER"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
         HttpPost postMethod = new HttpPost(url + "/login");
         postMethod.addHeader("Accept-Language", "de");
@@ -114,7 +114,7 @@ public abstract class RestGenericThread extends GenericThread{
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/coupons");
 			postMethod.setEntity(entity);
-			postMethod.setHeader("Cookie", "userId="+userId+"; userType=company");
+			postMethod.setHeader("Cookie", "userId="+userId+"; userType=COMPANY");
 	        postMethod.addHeader("Accept-Language", "it");
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
@@ -137,7 +137,7 @@ public abstract class RestGenericThread extends GenericThread{
 			String json = new ObjectMapper().writeValueAsString(company);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/companies");
-			postMethod.setHeader("Cookie", "userId=123456789; userType=admin");
+			postMethod.setHeader("Cookie", "userId=123456789; userType=ADMIN");
 	        postMethod.addHeader("Accept-Language", "en");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
@@ -161,7 +161,7 @@ public abstract class RestGenericThread extends GenericThread{
 			String json = new ObjectMapper().writeValueAsString(customer);
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 			HttpPost postMethod = new HttpPost(url + "/customers");
-			postMethod.setHeader("Cookie", "userId=123456789; userType=admin");
+			postMethod.setHeader("Cookie", "userId=123456789; userType=ADMIN");
 	        postMethod.addHeader("Accept-Language", "de");
 			postMethod.setEntity(entity);
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	

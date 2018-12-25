@@ -1,6 +1,7 @@
 package com.ronhagai.couponfaphase3.core;
 
 import java.io.Serializable;
+import java.util.TimeZone;
 
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
@@ -12,22 +13,15 @@ import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
  * @author Ron
  *
  */
-public class DailyCouponExpirationTask implements Runnable , Serializable{
+public class DailyCouponExpirationTask extends Thread implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static DailyCouponExpirationTask dailyExpirationTaskInstance = new DailyCouponExpirationTask();
-	private Thread dailyTaskThread; 	
-	
-	
-	
-	public Thread getT() {
-		return dailyTaskThread;
-	}
 
 	private ICouponDAO couponDAO  = CouponDAO.getInstance();
-//	private CouponController couponController = new CouponController();
+	private long timeTillMidnight = 60000;
 	private boolean quit = false; 
 
 	/**
@@ -36,24 +30,21 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	 * 
 	 */
 	private DailyCouponExpirationTask(){
-		this.dailyTaskThread = new Thread(this);
-		this.dailyTaskThread.start();
+		
+		this.start();
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
 		System.out.println("LOG : Daily Task started");
 		while(!quit) {
 			try {
-				//Sets the next iteration for 00:00 hour  
-				Thread.sleep((long)(System.currentTimeMillis()%(24*60*60*1000) + (2*60*60*1000)));
+				Thread.sleep(timeTillMidnight);
 			} catch (InterruptedException e) {
 				// TODO Manager handling
-				// e.printStackTrace();
-				System.err.println("Daily task sleep interrupted : " + e);	
+				// shld be picked by tomcat logger
+				System.err.println("LOG : Daily task sleep interrupted : ");
+				e.printStackTrace();
 				continue;
 			}
 						
@@ -61,9 +52,12 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 				couponDAO.removeExpiredCoupons();
 			} catch (CouponSystemException e) {
 				// TODO Manager handling
-				//e.printStackTrace();
-				System.err.println("Daily task incomplited : " + e);
+				// shld be picked by tomcat logger
+				System.err.println("LOG : Daily task incomplited : ");
+				e.printStackTrace();
 			}
+			//Sets the next iteration for 00:00 server local time
+			timeTillMidnight = (long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset());
 		}
 		System.out.println("LOG : Daily Task ended");
 	}
@@ -74,7 +68,7 @@ public class DailyCouponExpirationTask implements Runnable , Serializable{
 	public void stopTask() {
 		System.out.println("LOG : Daily Task stopped");
 		quit = true;
-		dailyTaskThread.interrupt();
+		interrupt();
 	}
 
 	/**

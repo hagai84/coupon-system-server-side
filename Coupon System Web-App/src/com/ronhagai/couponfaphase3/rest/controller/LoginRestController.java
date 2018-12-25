@@ -29,45 +29,42 @@ public class LoginRestController {
 	public long login(LoginBean loginBean) throws CouponSystemException {
 		System.out.println("login is on");
 		long userId;
-		Cookie cookieUserId;
 
-		if (loginBean.getUserName() == null || loginBean.getUserPassword() == null) {
-			throw new CouponSystemException(ExceptionsEnum.NULL_DATA, "name/password cant be null");
+		Cookie cookieUserId, cookieUserType;
+		if(loginBean.getUserName() == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user name seem to be missing");
 		}
-
-		if (loginBean.getUserType() == null && !loginBean.getUserName().equals("admin")) {
+		if(loginBean.getUserPassword() == null) {
+			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user password seem to be missing");
+		}
+		
+		if(loginBean.getUserType() == null) {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
-		if (loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
-			cookieUserId = new Cookie("userId", "123456789");
-			loginBean.setUserType("admin");
-			userId = -1;
-		} else if (loginBean.getUserType().equals("customer")) {
+		if (loginBean.getUserType().equals("ADMIN") && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
+			userId = 123456789;
+		}else if (loginBean.getUserType().equals("CUSTOMER")) {
 			userId = CustomerService.getInstance().customerLogin(loginBean.getUserName(), loginBean.getUserPassword());
-			cookieUserId = new Cookie("userId", String.valueOf(userId));
-		} else if (loginBean.getUserType().equals("company")) {
+		} else if (loginBean.getUserType().equals("COMPANY")) {
 			userId = CompanyService.getInstance().companyLogin(loginBean.getUserName(), loginBean.getUserPassword());
-			cookieUserId = new Cookie("userId", String.valueOf(userId));
+
 		} else {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
-
+		
+		cookieUserType = new Cookie("userType", loginBean.getUserType());
+		cookieUserId = new Cookie("userId", String.valueOf(userId));
 		if (loginBean.getRemeberMe() != null && loginBean.getRemeberMe().equals("true")) {
+			cookieUserType.setMaxAge(60 * 60 * 24 * 365);
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {
-			cookieUserId.setMaxAge(60 * 30);
+			cookieUserType.setMaxAge(60*30);
+			cookieUserId.setMaxAge(60*30);
 		}
 
-		Cookie cookieUserTypeCookie = new Cookie("userType", loginBean.getUserType());
-
-		if (loginBean.getRemeberMe() != null && loginBean.getRemeberMe().equals("true")) {
-			cookieUserTypeCookie.setMaxAge(60 * 60 * 24 * 365);
-		} else {
-			cookieUserTypeCookie.setMaxAge(60 * 30);
-		}
 		response.addCookie(cookieUserId);
-		response.addCookie(cookieUserTypeCookie);
+		response.addCookie(cookieUserType);
 		return userId;
 	}
 	

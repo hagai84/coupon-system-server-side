@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CustomerService;
 
@@ -42,8 +43,10 @@ public class CustomerRestController implements Serializable{
 	 */
 	
 	@POST
-	public long createCustomer(CustomerBean customer) throws CouponSystemException {
-		return customerService.createCustomer(customer);			
+	public long createCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+//		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+//		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		return customerService.createCustomer(customer/*, userId, userType*/);			
 	}
 	
 	/**
@@ -55,17 +58,20 @@ public class CustomerRestController implements Serializable{
 	 *  If the given customer's ID can't be found in the DB (0 rows were updated).
 	 */
 	@PUT
-	public void updateCustomer(CustomerBean customer) throws CouponSystemException {		
-		customerService.updateCustomer(customer);
+	public void updateCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {		
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		customerService.updateCustomer(customer, userId, userType);
 	}
 	
 	
 	@PUT
-	@Path("password")
+	@Path("/{customerId}/password")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void updateCustomerPassword(@FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long customerId = Long.parseLong(httpServletRequest.getHeader("userId"));
-		customerService.updateCustomerPassword(customerId, oldPassword, newPassword);
+	public void updateCustomerPassword(@PathParam("customerId") long customerId, @FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		customerService.updateCustomerPassword(customerId, oldPassword, newPassword, userId, userType);
 	}
 	/**
 	 * Deletes a specified customer from the DB.
@@ -79,8 +85,10 @@ public class CustomerRestController implements Serializable{
 	 */
 	@DELETE
 	@Path("/{customerId}")
-	public void removeCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {			
-		customerService.removeCustomer(customerId);				
+	public void removeCustomer(@PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {			
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		ClientType userType = ((ClientType)httpServletRequest.getAttribute("userType"));
+		customerService.removeCustomer(customerId, userId, userType);				
 	}
 	
 	/**

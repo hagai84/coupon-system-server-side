@@ -43,7 +43,7 @@ public interface ICustomerDAO extends Serializable {
 	 */
 	void updateCustomer(CustomerBean customer) throws CouponSystemException;
 
-	void updateCustomerPassword(long customerId, String oldPassword, String newPassword) throws CouponSystemException;
+	void updateCustomerPassword(long customerId, String newPassword) throws CouponSystemException;
 	/**
 	 * Searches the DB for a customer with the given ID and
 	 * returns a Customer bean with it's data from the DB.

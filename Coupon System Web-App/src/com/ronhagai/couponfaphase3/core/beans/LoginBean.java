@@ -1,7 +1,5 @@
 package com.ronhagai.couponfaphase3.core.beans;
 
-import javax.ws.rs.QueryParam;
-
 public class LoginBean {
 	private String userName;
 	private String userPassword;

@@ -20,7 +20,7 @@ public class CouponSystem implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static CouponSystem couponSystemInstance = new CouponSystem();
 	private static ConnectionPool connectionPool = ConnectionPool.getInstance();
-	private static DailyCouponExpirationTask dailyTask = DailyCouponExpirationTask.getInstance();;
+	private static DailyCouponExpirationTask dailyTask;
 	
 	private CouponSystem() { 
 	}
@@ -40,11 +40,11 @@ public class CouponSystem implements Serializable{
 	public void shutdown(){
 		dailyTask.stopTask();
 		try {
-			dailyTask.getT().join();
+			dailyTask.join();
 		} catch (InterruptedException e) {
-			// TODO Manager handling
-			// e.printStackTrace();
-			System.err.println("CS shutdown join interrupted : " + e);
+			// TODO Manager handling - add logging functionality
+			System.err.println("LOG : CS shutdown join interrupted : ");
+			e.printStackTrace();
 		}
 		connectionPool.closeAllConnections();
 		System.out.println("LOG : shut down completed");
@@ -60,16 +60,12 @@ public class CouponSystem implements Serializable{
 	public void setServer(String driverName, String databaseUrl, String userName, String password) {
 		try {
 			connectionPool.setServer(driverName, databaseUrl, userName, password);
-//			Class.forName("core.util.IdGenerator");
-//			dailyTask = DailyCouponExpirationTask.getInstance();
 		} catch (CouponSystemException e) {
-			// TODO Manager handling
+			// TODO Manager handling - add logging functionality
 			// e.printStackTrace();
-			System.err.println("Set Server Initialize failed : " + e);
-//		} catch (ClassNotFoundException e) {
-			// TODO Manager handling
-			// e.printStackTrace();
-//			System.err.println("Id generator class not found : " + e);
-		}	
+			System.err.println("LOG : Set Server Initialize failed : ");
+			e.printStackTrace();
+		}
+		dailyTask = DailyCouponExpirationTask.getInstance();
 	}
 }

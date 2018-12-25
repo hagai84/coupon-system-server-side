@@ -10,15 +10,14 @@ import java.util.Collection;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
+import com.ronhagai.couponfaphase3.core.enums.ClientType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.util.ConnectionPool;
 
 /**
- * Facade used to access the coupon system by Administrators
- * 
- * private constructor, instance is received thru static method login()
+ * Service used to access coupon related operations
  * 
  * @author Ron
  *
@@ -38,103 +37,126 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	private CouponService() {
 	}
 
+	/**
+	 * returns the single CouponService instance
+	 * 
+	 * @return the class singleton instance
+	 */
 	public static CouponService getInstance() {
 		return couponServiceInstance;
 	}
 
 	/**
-	 * Adds a new {@link CouponBean} to the DB in the following order:
-	 * <ul>
-	 * <li>To Table <code>coupon</code></li>
-	 * <li>To Table <code>comp_coupon</code></li>
-	 * </ul>
+	 * Adds a new coupon entity to the repository.
 	 * 
-	 * @param coupon The new {@link CouponBean} to be added.
-	 * @throws CompanyFacadeException if operation was unsuccessful
+	 * @param coupon the new CouponBean object to be added.
+	 * @param userId the company creating the new coupon
+	 * @return the created coupon's ID. 
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
+	 * 	existing title, (3) Invalid data, (4) security breach.
 	 */
-	public long createCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
+	public long createCoupon(CouponBean coupon, long userId, ClientType userType) throws CouponSystemException {
 		checkCoupon(coupon);
+		//check if userId matches coupon's companyId
+		if ((coupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to create the coupon %s", userType, userId, coupon));
+		}
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
 		}
-
-		if (coupon.getCompanyId() != companyId) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to ceate coupon on different company " + coupon.getCompanyId());
-		}
-		return couponDAO.createCoupon(coupon);
+		long couponId = couponDAO.createCoupon(coupon);
+		System.out.println(String.format("LOG : %s %n %n created coupon ", userType, userId, couponId));
+		return couponId;
 	}
 
 
 	/**
-	 * Purchases the given coupon, adds it to the customer and updates the coupons's
-	 * amount. -checks if customer owns this coupon
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
 	 * 
-	 * @param couponId Coupon to purchase
-	 * @throws CustomerFacadeException If coupon is out of stock or expired
-	 * @throws CustomerFacadeException If coupon purchase fails
+	 * @param couponId the coupon's ID.
+	 * @param customerId the customer's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
 	 */
-	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException {
-		couponDAO.purchaseCoupon(couponId, customerId);		
+	public void purchaseCoupon(long couponId, long customerId, long userId, ClientType userType) throws CouponSystemException {
+		//checks userType
+		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to purchase coupon %n on user %n", userType, userId, couponId, customerId));
+		}
+		if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId)) {
+			throw new CouponSystemException(ExceptionsEnum.CUSTOMER_OWNS_COUPON,"Customer already owns coupon");
+		}
+		couponDAO.purchaseCoupon(couponId, customerId);	
+		System.out.println(String.format("User %s %n purchased coupon %n", userType, userId, couponId));
 	}
 
 	/**
-	 * Updates a specific {@link CouponBean} in the DB.
-	 *
-	 * @param clientCoupon The coupon to be updated.
-	 * @throws CompanyFacadeException if operation was unsuccessful
+	 * Updates a coupon entity in the repository.
+	 * 
+	 * @param coupon the CouponBean object to be updated.
+	 * @param userId the company updating the coupon
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 * 	(3) Invalid data, (4) security breach.
 	 */
-	public void updateCoupon(CouponBean coupon, long companyId) throws CouponSystemException {
+	public void updateCoupon(CouponBean coupon, long userId, ClientType userType) throws CouponSystemException {
 		checkCoupon(coupon);
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
-		
+
 		if (coupon.getCompanyId() != originalCoupon.getCompanyId()) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to change ownership of coupon " + coupon.getCouponId());
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to change ownership of coupon ", userType, userId, coupon));
 		}
-		if (originalCoupon.getCompanyId() != companyId) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to update a coupon it doesn't own  " + coupon.getCouponId());
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to a coupon %n it doesn't own", userType, userId, coupon));
 		}
 		// alter the coupon data to the new ALLOWED ones
-		originalCoupon.setEndDate(coupon.getEndDate());
-		//TODO MOVE TO DELTA METHOD
-//		originalCoupon.setAmount(coupon.getAmount());
-		
+		originalCoupon.setEndDate(coupon.getEndDate());	
 		originalCoupon.setPrice(coupon.getPrice());
 		// updates the coupon
 		couponDAO.updateCoupon(originalCoupon);
+		System.out.println(String.format("LOG : User %s %n updated coupon %n", userType, userId, coupon.getCouponId()));
 	}
-
-	public void updateCouponAmout(long couponId, long companyId, int amoutDelta) throws CouponSystemException {
+	
+	/**
+	 * Updates a coupon entity's amount in the repository.
+	 * cannot be resolve if it results in a negative amount. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param userId the company updating the coupon's amount.
+	 * @param amountDelta the amount of coupons to be added or removed (negative amount).
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
+	 *  no matching data, (3) Invalid data, (4) security breach.
+	 */
+	public void updateCouponAmout(long couponId, int amoutDelta, long userId, ClientType userType) throws CouponSystemException {
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		
-		if (originalCoupon.getCompanyId() != companyId) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to update a coupon's amount it doesn't own  " + couponId);
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to update a coupon's amount it doesn't own %n", userType, userId, couponId));
 		}
 		if (amoutDelta+originalCoupon.getAmount()<0) {
-			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount not allowed");
+			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount is not allowed");
 		}
 		couponDAO.updateCouponAmout(couponId, amoutDelta);
+		System.out.println(String.format("User %s %n updated coupon's amount %n", userType, userId, couponId));
 	}
 
 	/**
-	 * Removes a {@link CouponBean} to the DB in the following order:
-	 * <ul>
-	 * <li>From Table <code>cust_coupon</code></li>
-	 * <li>From Table <code>comp_coupon</code></li>
-	 * <li>From Table <code>coupon</code></li>
-	 * </ul>
-	 *
-	 * @param couponId The coupon to be removed.
-	 * @throws CompanyFacadeException if operation was unsuccessful
+	 * Removes a coupon entity from the coupons and customers' coupons repositories.
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param companyId the company removing the coupon.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
+	 *  (3) Invalid data, (4) security breach.
 	 */
-	public void removeCoupon(long couponId, long companyId) throws CouponSystemException {
+	public void removeCoupon(long couponId, long userId, ClientType userType) throws CouponSystemException {
 		// TODO Start transaction
 		connectionPool.startTransaction();
-		CouponBean coupon = couponDAO.getCoupon(couponId);
-		if (coupon.getCompanyId() != companyId) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"Company " + companyId + " attempts to remove coupon " + couponId +" of a different company " + coupon.getCompanyId());
+		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
+		if ((originalCoupon.getCompanyId() != userId || !userType.equals(ClientType.COMPANY)) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to remove a coupon it doesn't own %n", userType, userId, couponId));
 		}
 		try {
 			couponDAO.removeCouponFromCustomers(couponId);
@@ -145,106 +167,129 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		} finally {
 		}
 		connectionPool.endTransaction();
+		System.out.println(String.format("LOG : User %s %n removed coupon %n", userType, userId, couponId));
 	}
 
 	/**
-	 * Fetches a specific {@link CouponBean} from the DB using its ID.
-	 *
-	 * @param couponID The ID of the desired {@link CouponBean}.
-	 * @return The coupon that matches the ID; <br>
-	 *         <code>null</code> if there is no match.
-	 * @throws CompanyFacadeException if operation was unsuccessful
+	 * Retrieves a coupon entity from the repository.
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @return a CouponBean object
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public CouponBean getCoupon(long couponID) throws CouponSystemException {
 		return couponDAO.getCoupon(couponID);
 	}
 
 	/**
-	 * Gets all coupons of the given CouponType
+	 * Retrieves all the coupons entities of said type from the repository .
 	 * 
-	 * @param couponType The Type of coupons desired.
-	 * @return a Collection of all coupons with matching a Type
-	 * @throws CompanyFacadeException if operation was unsuccessful
+	 * @param type the coupons Type.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CouponBean> getCouponsByType(CouponType couponType) throws CouponSystemException {
 		return couponDAO.getCouponsByType(couponType);
 	}
 
 	/**
-	 * Returns all available coupons
+	 * Retrieves all the coupons entities from the repository .
 	 * 
-	 * @return Collection of Coupons
-	 * @throws CustomerFacadeException If retrieval of coupons fails
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CouponBean> getAllCoupons() throws CouponSystemException {
 		return couponDAO.getAllCoupons();
 	}
 
 	/**
-	 * Returns all available coupons of the given company
+	 * Retrieves all the coupons entities for said Company from the repository .
 	 * 
-	 * @param companyId the company id that we want to return her coupons
-	 * @return Collection of Coupons
-	 * @throws CustomerFacadeException If retrieval of coupons fails
+	 * @param companyId the company's Id.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public Collection<CouponBean> getCompanyCoupons(long companyId) throws CouponSystemException {
 		return couponDAO.getCompanyCoupons(companyId);
 	}
 
 	/**
-	 * Returns all available coupons of the given company with a specific type
+	 * Retrieves all the coupons entities of said Type for said Company from the repository .
 	 * 
-	 * @param companyId the company id that we want to return her coupons
-	 * @paran type the Coupon Type that we want to get
-	 * @return Collection of Coupons
-	 * @throws CustomerFacadeException If retrieval of coupons fails
+	 * @param companyId the company's Id.
+	 * @param type the coupons Type.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
-	public Collection<CouponBean> getCompanyCouponsByType(long companyId, CouponType type)
-			throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCouponsByType(long companyId, CouponType type) throws CouponSystemException {
 		return couponDAO.getCompanyCouponsByType(companyId, type);
 	}
 	
+	/**
+	 * Retrieves all the coupons entities bellow said Price for said Company from the repository .
+	 * 
+	 * @param companyId the company's Id.
+	 * @param price the coupons Price.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 */
 	public Collection<CouponBean> getCompanyCouponsByPrice(long companyId, double price) throws CouponSystemException {
 		return couponDAO.getCompanyCouponsByPrice(companyId, price);
 	}
+	
+	/**
+	 * Retrieves all the coupons entities expiring before said Date for said Company from the repository .
+	 * 
+	 * @param companyId the company's Id.
+	 * @param date the latest (max) expiration Date.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 */
 	public Collection<CouponBean> getCompanyCouponsByDate(long companyId, Date date) throws CouponSystemException {
 		return couponDAO.getCompanyCouponsByDate(companyId, date);
 	}
 		
 	/**
-	 * Returns all available coupons of the given Customer
+	 * Retrieves all the coupons entities for said Customer from the repository .
 	 * 
-	 * @param customerId the Customer id that we want to return her coupons
-	 * @return Collection of Coupons
-	 * @throws CustomerFacadeException If retrieval of coupons fails
+	 * @param customerId the customer's Id.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
-	public Collection<CouponBean> getCustomerCoupons(long customerId) throws CouponSystemException {
+	public Collection<CouponBean> getCustomerCoupons(long customerId, long userId, ClientType userType) throws CouponSystemException {
+		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+		}
 		return couponDAO.getCustomerCoupons(customerId);
 	}
 
 	/**
-	 * Returns all available coupons of the given customer with a specific type
+	 * Retrieves all the coupons entities of said Type for said Customer from the repository .
 	 * 
-	 * @param customerId the customer id that we want to return her coupons
-	 * @paran type the Coupon Type that we want to get
-	 * @return Collection of Coupons
-	 * @throws CustomerFacadeException If retrieval of coupons fails
-	 */
-	public Collection<CouponBean> getCustomerCouponsByType(long customerId, CouponType type)
-			throws CouponSystemException {
+	 * @param customerId the customer's Id.
+	 * @param type the coupons Type.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 */	
+	public Collection<CouponBean> getCustomerCouponsByType(long customerId, CouponType type, long userId, ClientType userType) throws CouponSystemException {
+		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+		}
 		return couponDAO.getCustomerCouponsByType(customerId, type);
 	}
 
 	/**
-	 * Gets all coupons up to a certain price that were purchased by the customer
+	 * Retrieves all the coupons entities bellow said Price for said Customer from the repository .
 	 * 
-	 * @param customerId
-	 * @param price      the max price of the coupons to select
-	 * @return Collection of Coupons associated with the Customer
-	 * @throws CustomerFacadeException If retrieval of coupons fails
+	 * @param customerId the customer's Id.
+	 * @param price the coupons Price.
+	 * @return a Collection of CouponBean objects
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
-	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price)
-			throws CouponSystemException {
+	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price, long userId, ClientType userType) throws CouponSystemException {
+		if( (!userType.equals(ClientType.CUSTOMER) || customerId != userId) && !userType.equals(ClientType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+		}
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);
 	}
 
