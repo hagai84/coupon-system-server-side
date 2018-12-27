@@ -88,7 +88,13 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId)) {
 			throw new CouponSystemException(ExceptionsEnum.CUSTOMER_OWNS_COUPON,"Customer already owns coupon");
 		}
+		
 		couponDAO.purchaseCoupon(couponId, customerId);	
+		
+		/*if(paymentGateway.checkout(shoppingCart)) {
+			couponDAO.cancelPurchaseCoupon(couponId, customerId);		
+		}*/
+		
 		System.out.println(String.format("User %s %n purchased coupon %n", userType, userId, couponId));
 	}
 

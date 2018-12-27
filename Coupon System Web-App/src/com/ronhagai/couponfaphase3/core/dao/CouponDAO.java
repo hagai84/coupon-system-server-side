@@ -83,27 +83,32 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{
-		
-		Connection connection = connectionPool.startTransaction();
-		
-		String insertSql = "INSERT INTO customer_coupon VALUES(?,?)";	
-		String updateSql = "UPDATE coupon SET AMOUNT=amount-1 WHERE ID=? AND amount>0";
-		try(PreparedStatement insertStatement = connection.prepareStatement(insertSql);PreparedStatement updateStatement = connection.prepareStatement(updateSql)) {
-			insertStatement.setLong(1, customerId);
-			insertStatement.setLong(2, couponId);
-			updateStatement.setLong(1, couponId);
-			if(updateStatement.executeUpdate()==0) {
-				connectionPool.rollback();
-				throw new CouponSystemException(ExceptionsEnum.COUPON_NOT_PURCHASED,"purchase coupon failed - Coupon out of Stock : " + couponId);
-			}				
-			insertStatement.executeUpdate();				
+	public void purchaseCoupon(long couponId, long customerId) throws CouponSystemException{		
+		String purchaseSql = "CALL purchase_coupon(?,?)";	
+		Connection connection = connectionPool.getConnection();
+		try(PreparedStatement purchaseStatement = connection.prepareStatement(purchaseSql)) {
+			purchaseStatement.setLong(1, couponId);
+			purchaseStatement.setLong(2, customerId);
+			purchaseStatement.executeUpdate();
 		} catch (SQLException e) {
-			connectionPool.rollback();
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ACCSESS,"purchase coupon failed : " + couponId, e);
-		}finally {			
-		}
-		connectionPool.endTransaction();
+		}finally {
+			connectionPool.returnConnection(connection);		
+		}	
+	}
+	
+	public void cancelPurchaseCoupon(long couponId, long customerId) throws CouponSystemException{		
+		String purchaseSql = "CALL cancel_purchase_coupon(?,?)";	
+		Connection connection = connectionPool.getConnection();
+		try(PreparedStatement purchaseStatement = connection.prepareStatement(purchaseSql)) {
+			purchaseStatement.setLong(1, couponId);
+			purchaseStatement.setLong(2, customerId);
+			purchaseStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new CouponSystemException(ExceptionsEnum.CANCEL_PURCHASE_CUSTOMER_FAILED,"cancel purchase coupon failed : " + couponId, e);
+		}finally {
+			connectionPool.returnConnection(connection);		
+		}	
 	}
 
 	@Override
@@ -192,7 +197,7 @@ public class CouponDAO implements ICouponDAO {
 		Connection connection = connectionPool.getConnection();		
 		
 		String deleteSql = "DELETE customer_coupon FROM customer_coupon"
-				+ " INNER JOIN coupon ON customer_coupon.coupon_id = coupon.id"
+				+ " JOIN coupon ON customer_coupon.coupon_id = coupon.id"
 				+ " WHERE coupon.comp_id = ?";
 		try(PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
 			deleteStatement.setLong(1, companyId);
@@ -239,10 +244,7 @@ public class CouponDAO implements ICouponDAO {
 	public void removeExpiredCoupons() throws CouponSystemException {
 		Connection connection = connectionPool.getConnection();		
 		
-		//can construct a complex sql function to  run a loop on DB server
-		String deleteSql = "DELETE customer_coupon FROM customer_coupon"
-				+ " RIGHT JOIN coupon ON customer_coupon.coupon_id = coupon.id"
-				+ " WHERE coupon.end_date < ? ";
+		String deleteSql = "CALL delete_expired_coupons(?) ";
 		try(PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
 			deleteStatement.setDate(1, new Date(System.currentTimeMillis()));
 			deleteStatement.executeUpdate();
@@ -250,18 +252,7 @@ public class CouponDAO implements ICouponDAO {
 			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons from customers failed", e);
 		}finally {			
 //			connectionPool.returnConnection(connection);
-		}	
-		
-		deleteSql = "DELETE FROM coupon WHERE end_date < ? ";
-		try(PreparedStatement deleteStatement = connection.prepareStatement(deleteSql)) {
-			deleteStatement.setDate(1, new Date(System.currentTimeMillis()));
-			deleteStatement.executeUpdate();
-		} catch (SQLException e) {
-			throw new CouponSystemException(ExceptionsEnum.DATA_BASE_ERROR,"remove Expired Coupons from coupon failed", e);
-		}finally {			
-			connectionPool.returnConnection(connection);
-		}	
-		
+		}		
 	}
 
 	@Override

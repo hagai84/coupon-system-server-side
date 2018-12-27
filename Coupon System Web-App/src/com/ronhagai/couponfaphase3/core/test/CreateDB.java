@@ -76,6 +76,33 @@ public class CreateDB {
 					+ "PRIMARY KEY (cust_id, coupon_id))";
 			stmt.executeUpdate(str);
 
+			str = 	"CREATE PROCEDURE purchase_coupon(" + 
+					"IN couponId BIGINT," +
+					"IN customerId BIGINT) " +
+					"BEGIN " + 
+					"UPDATE coupon SET AMOUNT=amount-1 WHERE ID=couponId AND amount>0; " + 
+					"INSERT INTO customer_coupon VALUES(customerId,couponId); "+ 
+					"END ";
+//			stmt.executeUpdate(str);
+
+			str = 	"CREATE PROCEDURE cancel_purchase_coupon(" + 
+					"IN couponId BIGINT," +
+					"IN customerId BIGINT) " +
+					"BEGIN " + 
+					"UPDATE coupon SET AMOUNT=amount+1 WHERE ID=couponId; " + 
+					"DELETE FROM customer_coupon WHERE CUST_ID=customerId AND COUPON_ID=couponId; "+ 
+					"END ";
+//			stmt.executeUpdate(str);
+			
+			str = 	"CREATE PROCEDURE delete_expired_coupons(" + 
+					"IN endDate DATE) " +
+					"BEGIN " + 
+					"DELETE customer_coupon FROM customer_coupon " + 
+					"JOIN coupon ON customer_coupon.coupon_id = coupon.id " + 
+					"WHERE coupon.end_date < endDate ; " + 
+					"DELETE FROM coupon WHERE end_date < endDate ; "+ 
+					"END ";
+//			stmt.executeUpdate(str);
 			System.out.println("LOG : new db created");
 
 		} catch (SQLException e) {

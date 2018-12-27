@@ -54,9 +54,11 @@ public enum ExceptionsEnum {
 	
 	
 	/**************************       CRITICAL ERRORS         **********************************/
-	IDGENERATOR_INIT_ERROR(2001,"Add Client Side Developer Message"),
-	CONNECTION_POOL_INIT_ERROR(2002,"Add Client Side Developer Message"),
-	TEST(2003,"Add Client Side Developer Message");
+	IDGENERATOR_INIT_ERROR(2001,"Shouldn't go to Client Side Developer Message"),
+	CONNECTION_POOL_INIT_ERROR(2002,"Shouldn't go to Client Side Developer Message"),
+	TEST(2003,"Shouldn't go to Client Side Developer Message"), 
+	CANCEL_PURCHASE_CUSTOMER_FAILED(2004,"Shouldn't go to Client Side Developer Message")
+	;
 	
 	
 	
