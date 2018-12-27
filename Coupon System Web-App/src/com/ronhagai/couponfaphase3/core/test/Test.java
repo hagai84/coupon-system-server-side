@@ -28,12 +28,12 @@ public class Test {
 		GenericThread testThread4 = new PurchaseThread(0, 0);	
 		GenericThread testThread5 = new PurchaseThread(0, 5);	
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
-		testThread1.start();	
+//		testThread1.start();	
 		testThread2.start();	
-		testThread3.start();	
-		testThread4.start();	
-		testThread5.start();
-		testThread6.start();	
+//		testThread3.start();	
+//		testThread4.start();	
+//		testThread5.start();
+//		testThread6.start();	
 		try {
 			testThread1.join();
 			testThread2.join();
