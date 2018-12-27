@@ -38,7 +38,7 @@ public abstract class RestGenericThread extends GenericThread{
 			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
-				System.out.println("LOG : Admin logged in");
+				System.out.println("LOG : REST Admin logged in");
 				return;
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
@@ -67,7 +67,7 @@ public abstract class RestGenericThread extends GenericThread{
 			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
-				System.out.println("LOG : Company logged in : " + user);
+				System.out.println("LOG : REST Company logged in : " + user);
 				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
@@ -95,7 +95,7 @@ public abstract class RestGenericThread extends GenericThread{
 			response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
-				System.out.println("LOG : customer logged in : " + user);
+				System.out.println("LOG : REST customer logged in : " + user);
 				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
@@ -119,7 +119,7 @@ public abstract class RestGenericThread extends GenericThread{
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
-				System.out.println("LOG : Coupon created" + coupon);
+				System.out.println("LOG : REST Coupon created" + coupon);
 				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
@@ -143,7 +143,7 @@ public abstract class RestGenericThread extends GenericThread{
 			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);	
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
-				System.out.println("LOG : Company created - " + company);
+				System.out.println("LOG : REST Company created - " + company);
 				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));
@@ -168,7 +168,7 @@ public abstract class RestGenericThread extends GenericThread{
 			int status = response.getStatusLine().getStatusCode();
 //			System.out.println(status);
 			if(status==200) {
-				System.out.println("LOG : Customer created - " + customer);
+				System.out.println("LOG : REST Customer created - " + customer);
 				return Long.parseLong(EntityUtils.toString(response.getEntity()));
 			}else {				
 				System.err.println(EntityUtils.toString(response.getEntity()));

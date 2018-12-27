@@ -38,7 +38,7 @@ public class PurchaseThread extends GenericThread {
 					couponId = coupons[i].getCouponId();
 					customerId = loginCustomer(""+j+j+j+" "+j+j+j+j, ""+j+j+j+j+j+j);
 					couponService.purchaseCoupon(couponId, customerId, customerId, UserType.CUSTOMER);
-					System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + i);
+					System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased " + couponId);
 				} catch (CouponSystemException e) {
 					System.err.println(Thread.currentThread().getName() + " : " + e);
 					continue;

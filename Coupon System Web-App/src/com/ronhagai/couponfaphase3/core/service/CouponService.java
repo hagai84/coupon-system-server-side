@@ -59,14 +59,14 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		checkCoupon(coupon);
 		//check if userId matches coupon's companyId
 		if ((coupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to create the coupon %s", userType, userId, coupon));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to create the coupon %s", userType, userId, coupon));
 		}
 		//CLD BE HANDLED BY DAO LAYER BY MAKING IT UNIQUE
 		if (couponDAO.couponTitleAlreadyExists(coupon.getTitle())) {
 			throw new CouponSystemException(ExceptionsEnum.NAME_EXISTS,"Coupon Title already exists");
 		}
 		long couponId = couponDAO.createCoupon(coupon);
-		System.out.println(String.format("LOG : %s %n %n created coupon ", userType, userId, couponId));
+		System.out.println(String.format("LOG : %s %s created coupon %s", userType, userId, couponId));
 		return couponId;
 	}
 
@@ -83,7 +83,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	public void purchaseCoupon(long couponId, long customerId, long userId, UserType userType) throws CouponSystemException {
 		//checks userType
 		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to purchase coupon %n on user %n", userType, userId, couponId, customerId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to purchase coupon %s on user %s", userType, userId, couponId, customerId));
 		}
 		if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId)) {
 			throw new CouponSystemException(ExceptionsEnum.CUSTOMER_OWNS_COUPON,"Customer already owns coupon");
@@ -95,7 +95,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 			couponDAO.cancelPurchaseCoupon(couponId, customerId);		
 		}*/
 		
-		System.out.println(String.format("User %s %n purchased coupon %n", userType, userId, couponId));
+		System.out.println(String.format("User %s %s purchased coupon %s", userType, userId, couponId));
 	}
 
 	/**
@@ -112,17 +112,17 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
 
 		if (coupon.getCompanyId() != originalCoupon.getCompanyId()) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to change ownership of coupon ", userType, userId, coupon));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to change ownership of coupon ", userType, userId, coupon));
 		}
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to a coupon %n it doesn't own", userType, userId, coupon));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to a coupon %s it doesn't own", userType, userId, coupon));
 		}
 		// alter the coupon data to the new ALLOWED ones
 		originalCoupon.setEndDate(coupon.getEndDate());	
 		originalCoupon.setPrice(coupon.getPrice());
 		// updates the coupon
 		couponDAO.updateCoupon(originalCoupon);
-		System.out.println(String.format("LOG : User %s %n updated coupon %n", userType, userId, coupon.getCouponId()));
+		System.out.println(String.format("LOG : User %s %s updated coupon %s", userType, userId, coupon.getCouponId()));
 	}
 	
 	/**
@@ -141,13 +141,13 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to update a coupon's amount it doesn't own %n", userType, userId, couponId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update a coupon's amount it doesn't own %s", userType, userId, couponId));
 		}
 		if (amoutDelta+originalCoupon.getAmount()<0) {
 			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount is not allowed");
 		}
 		couponDAO.updateCouponAmout(couponId, amoutDelta);
-		System.out.println(String.format("User %s %n updated coupon's amount %n", userType, userId, couponId));
+		System.out.println(String.format("User %s %s updated coupon's amount %s", userType, userId, couponId));
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		connectionPool.startTransaction();
 		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to remove a coupon it doesn't own %n", userType, userId, couponId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to remove a coupon it doesn't own %s", userType, userId, couponId));
 		}
 		try {
 			couponDAO.removeCouponFromCustomers(couponId);
@@ -175,7 +175,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		} finally {
 		}
 		connectionPool.endTransaction();
-		System.out.println(String.format("LOG : User %s %n removed coupon %n", userType, userId, couponId));
+		System.out.println(String.format("LOG : User %s %s removed coupon %s", userType, userId, couponId));
 	}
 
 	/**
@@ -266,7 +266,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 */
 	public Collection<CouponBean> getCustomerCoupons(long customerId, long userId, UserType userType) throws CouponSystemException {
 		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to view user %s coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCoupons(customerId);
 	}
@@ -281,7 +281,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 */	
 	public Collection<CouponBean> getCustomerCouponsByType(long customerId, CouponType type, long userId, UserType userType) throws CouponSystemException {
 		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to view user %s coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCouponsByType(customerId, type);
 	}
@@ -296,7 +296,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 */
 	public Collection<CouponBean> getCustomerCouponsByPrice(long customerId, double price, long userId, UserType userType) throws CouponSystemException {
 		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %n attempts to view user %n coupons", userType, userId, customerId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to view user %s coupons", userType, userId, customerId));
 		}
 		return couponDAO.getCustomerCouponsByPrice(customerId, price);
 	}

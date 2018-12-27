@@ -40,7 +40,7 @@ public class CreateThread extends GenericThread {
 			company.setPassword(""+i+i+i+i+i+i);
 			company.setEmail(""+i+i+i+"@"+i+i+i+i+".com");
 			company.setId(companyService.createCompany(company/*, 123456789, ClientType.ADMIN*/));
-			System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
+//			System.out.println(Thread.currentThread().getName() + " : LOG : Company created \n" + company);
 			loginCompany(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			coupon.setCouponId(200000 + i);
 			coupon.setTitle(""+i+i+i+" "+i+i+i+i);
@@ -53,14 +53,14 @@ public class CreateThread extends GenericThread {
 			coupon.setImage("aaaaaaaaaaaaaa");
 			coupon.setCompanyId(company.getId());
 			coupon.setCouponId(couponService.createCoupon(coupon, company.getId(), UserType.COMPANY));
-			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon created \n" + coupon);
+//			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon created \n" + coupon);
 			customer.setId(100032 + i);
 			customer.setCustName(""+i+i+i+" "+i+i+i+i);
 			customer.setPassword(""+i+i+i+i+i+i);
 			customer.setId(customerService.createCustomer(customer/*, 123456789, ClientType.ADMIN*/));		
 			loginCustomer(""+i+i+i+" "+i+i+i+i, ""+i+i+i+i+i+i);
 			couponService.purchaseCoupon(coupon.getCouponId(), customer.getId(), customer.getId(), UserType.CUSTOMER);
-			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
+//			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon purchased \n" + coupon);
 
 		}
 	}
