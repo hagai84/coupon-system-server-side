@@ -1,17 +1,16 @@
 package com.ronhagai.couponfaphase3.rest.controller;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.catalina.mbeans.UserMBean;
 
 import com.ronhagai.couponfaphase3.core.beans.LoginBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
@@ -25,13 +24,14 @@ import com.ronhagai.couponfaphase3.core.service.CustomerService;
  * @author hagai
  *
  */
-@Path("/login")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Path("")
 public class LoginRestController {
 	@Context
 	HttpServletResponse response;
-
+	@Context
+	HttpServletRequest httpServletRequest;
 	
 //	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 //	@FormParam("userName") String userName,
@@ -53,8 +53,8 @@ public class LoginRestController {
 	 * if one of the loginBean is null (except the remember me parameter)
 	 */
 	@POST
+	@Path("/login")
 	public long login(LoginBean loginBean) throws CouponSystemException {
-		System.out.println("login is on");
 		long userId;
 
 		Cookie cookieUserId, cookieUserType;
@@ -90,6 +90,7 @@ public class LoginRestController {
 			cookieUserId.setMaxAge(60*30);
 		}
 
+		System.out.println(String.format("LOG : user %s %s logged in",loginBean.getUserType(), userId));
 		response.addCookie(cookieUserId);
 		response.addCookie(cookieUserType);
 		return userId;
@@ -99,15 +100,17 @@ public class LoginRestController {
 	 * delete all user cookies (id and type)
 	 */
 	@DELETE
+	@Path("/logout")
 	public void logout() {
-		System.out.println("user try to loguot");
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		Cookie cookieUserId = new Cookie("userId","null");
 		Cookie cookieUserTypeCookie = new Cookie("userType","null");;
 		cookieUserId.setMaxAge(0);
 		cookieUserTypeCookie.setMaxAge(0);
 		response.addCookie(cookieUserId);
 		response.addCookie(cookieUserTypeCookie);
-		System.out.println("user try to loguot the end");
+		System.out.println(String.format("LOG : user %s %s logged out",userType, userId));
 	}
 }
 

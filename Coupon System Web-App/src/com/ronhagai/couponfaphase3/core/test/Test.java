@@ -12,7 +12,7 @@ public class Test {
 	private static CouponSystem couponSystem = CouponSystem.getInstance();
 	
 	private static String driverName = "com.mysql.jdbc.Driver";
-	private static String databaseUrl = "jdbc:mysql://localhost:3306/coupon_system";
+	private static String databaseUrl = "jdbc:mysql://localhost:3306/coupon_system?createDatabaseIfNotExist=true";
 	private static String userName = "root";
 	private static String password = "1234";
 	
@@ -20,7 +20,7 @@ public class Test {
 	
 	public static void main(String[] args) {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
-//		resetDB();
+		resetDB();
 
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	
@@ -28,12 +28,12 @@ public class Test {
 		GenericThread testThread4 = new PurchaseThread(0, 0);	
 		GenericThread testThread5 = new PurchaseThread(0, 5);	
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
-		testThread1.start();	
-		testThread2.start();	
+//		testThread1.start();	
+//		testThread2.start();	
 		testThread3.start();	
-		testThread4.start();	
-		testThread5.start();
-		testThread6.start();	
+//		testThread4.start();	
+//		testThread5.start();
+//		testThread6.start();	
 		try {
 			testThread1.join();
 			testThread2.join();

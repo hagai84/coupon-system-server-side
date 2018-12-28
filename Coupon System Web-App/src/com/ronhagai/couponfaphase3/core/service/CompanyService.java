@@ -70,7 +70,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void updateCompany(CompanyBean company, long userId, UserType userType) throws CouponSystemException {
 		if ((company.getId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to update company " + company);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update company %s",userType , userId, company));
 		}
 		checkCompany(company);
 		CompanyBean tmpCompany = getCompany(company.getId());
@@ -78,7 +78,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		tmpCompany.setPassword(company.getPassword());
 		
 		companyDAO.updateCompany(tmpCompany);
-		System.out.println("LOG : User " + userType + " - " + userId + " updated company " + company);		
+		System.out.println(String.format("LOG : User %s %s updated company %s",userType , userId, company));		
 	}
 	
 	/**
@@ -93,14 +93,14 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void updateCompanyPassword(long companyId, String oldPassword, String newPassword, long userId, UserType userType) throws CouponSystemException {
 		if ((companyId != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change company's password " + companyId);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to change company's %s password ",userType , userId, companyId));
 		}
-		if(userType.equals(UserType.CUSTOMER)) {			
-			String customerName = companyDAO.getCompany(companyId).getCompName();
-			companyDAO.companyLogin(customerName, oldPassword);
+		if(userType.equals(UserType.COMPANY)) {			
+			String companyName = companyDAO.getCompany(companyId).getCompName();
+			companyDAO.companyLogin(companyName, oldPassword);
 		}	
 		companyDAO.updateCompanyPassword(companyId, newPassword);
-		System.out.println("LOG : User " + userType + " - " + userId + " changed company's password " + companyId);		
+		System.out.println(String.format("LOG : User %s %s changed company's %s password ",userType , userId, companyId));
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		//can be modified if company removing should be restricted
 		if ((companyId != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 //		if (!userType.equals(ClientType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove company " + companyId);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to remove company %s",userType , userId, companyId));
 		}
 		connectionPool.startTransaction();
 		try {	
@@ -130,7 +130,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		} finally {
 		}
 		connectionPool.endTransaction();
-		System.out.println("LOG : User " + userType + " - " + userId + " removed company " + companyId);			
+		System.out.println(String.format("LOG : User %s %s attempts to remove company %s",userType , userId, companyId));			
 	}
 	
 	/**

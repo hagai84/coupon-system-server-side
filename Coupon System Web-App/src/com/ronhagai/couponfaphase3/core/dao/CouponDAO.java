@@ -97,6 +97,7 @@ public class CouponDAO implements ICouponDAO {
 		}	
 	}
 	
+	@Override
 	public void cancelPurchaseCoupon(long couponId, long customerId) throws CouponSystemException{		
 		String purchaseSql = "CALL cancel_purchase_coupon(?,?)";	
 		Connection connection = connectionPool.getConnection();

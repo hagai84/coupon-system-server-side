@@ -32,12 +32,13 @@ public class logInFilter implements Filter {
 		HttpServletResponse httpRespone = (HttpServletResponse) response;
 		Long userId = null;
 		UserType userType = null;
-		String pathRequstedByUser = httpRequest.getPathInfo();
+		String pathRequestedByUser = httpRequest.getPathInfo();
 
 		// if the user try to login/register or to get all coupons let him.
-		if (pathRequstedByUser.equals("/login")
-				|| (pathRequstedByUser.equals("/coupons") && httpRequest.getMethod().equals("GET"))
-				|| pathRequstedByUser.equals("/customers") && httpRequest.getMethod().equals("POST")) {
+		if (pathRequestedByUser.equals("/login")
+				|| (pathRequestedByUser.equals("/coupons/*") && httpRequest.getMethod().equals("GET") && !pathRequestedByUser.equals("/coupons/customer/*"))
+				|| (pathRequestedByUser.equals("/customers") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET"))) 
+				|| (pathRequestedByUser.equals("/companies") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET")))) {
 			chain.doFilter(request, response);
 			return;
 		}

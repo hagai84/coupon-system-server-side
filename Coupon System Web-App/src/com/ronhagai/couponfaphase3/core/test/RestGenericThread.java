@@ -1,41 +1,38 @@
 package com.ronhagai.couponfaphase3.core.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
+import com.ronhagai.couponfaphase3.core.beans.LoginBean;
+import com.ronhagai.couponfaphase3.core.enums.UserType;
 
 public abstract class RestGenericThread extends GenericThread{
 
 	private static String url = "http://localhost:8080/Coupon_System_Web-App/rest";
 	
 	@Override
-	protected void loginAdmin()  {
-		List<NameValuePair> form = new ArrayList<>();
-		form.add(new BasicNameValuePair("userName", "admin"));
-		form.add(new BasicNameValuePair("userPassword", "1234"));
-		form.add(new BasicNameValuePair("userType", "ADMIN"));
-		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
-		HttpPost postMethod = new HttpPost(url + "/login");
-		postMethod.setEntity(entity);
-		HttpResponse response;
+	protected void loginAdmin()  {		
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);
+			LoginBean loginBean = new LoginBean();
+			loginBean.setUserName("admin");
+			loginBean.setUserPassword("1234");
+			loginBean.setUserType(UserType.ADMIN);
+			String json = new ObjectMapper().writeValueAsString(loginBean);
+			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+			HttpPost postMethod = new HttpPost(url + "/login");
+			postMethod.setEntity(entity);
+			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : REST Admin logged in");
@@ -52,19 +49,18 @@ public abstract class RestGenericThread extends GenericThread{
 	}
 	
 	@Override
-	protected long loginCompany(String user, String password) {
-		
-		List<NameValuePair> form = new ArrayList<>();
-        form.add(new BasicNameValuePair("userName", user));
-        form.add(new BasicNameValuePair("userPassword", password));
-        form.add(new BasicNameValuePair("userType", "COMPANY"));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
-        HttpPost postMethod = new HttpPost(url + "/login");
-        postMethod.addHeader("Accept-Language", "en");
-        postMethod.setEntity(entity);
-		HttpResponse response;
+	protected long loginCompany(String user, String password) {	
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);
+			LoginBean loginBean = new LoginBean();
+			loginBean.setUserName(user);
+			loginBean.setUserPassword(password);
+			loginBean.setUserType(UserType.COMPANY);
+			HttpPost postMethod = new HttpPost(url + "/login");
+			postMethod.addHeader("Accept-Language", "en");
+			String json = new ObjectMapper().writeValueAsString(loginBean);
+			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+			postMethod.setEntity(entity);
+			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : REST Company logged in : " + user);
@@ -81,18 +77,18 @@ public abstract class RestGenericThread extends GenericThread{
 	}
 
 	@Override
-	protected long loginCustomer(String user, String password) {
-		List<NameValuePair> form = new ArrayList<>();
-        form.add(new BasicNameValuePair("userName", user));
-        form.add(new BasicNameValuePair("userPassword", password));
-        form.add(new BasicNameValuePair("userType", "CUSTOMER"));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);		
-        HttpPost postMethod = new HttpPost(url + "/login");
-        postMethod.addHeader("Accept-Language", "de");
-        postMethod.setEntity(entity);
-		HttpResponse response;
+	protected long loginCustomer(String user, String password) {	
 		try {
-			response = HttpClientBuilder.create().build().execute(postMethod);
+			LoginBean loginBean = new LoginBean();
+			loginBean.setUserName(user);
+			loginBean.setUserPassword(password);
+			loginBean.setUserType(UserType.CUSTOMER);
+			String json = new ObjectMapper().writeValueAsString(loginBean);
+			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+			HttpPost postMethod = new HttpPost(url + "/login");
+			postMethod.addHeader("Accept-Language", "de");
+			postMethod.setEntity(entity);
+			HttpResponse response = HttpClientBuilder.create().build().execute(postMethod);
 			int status = response.getStatusLine().getStatusCode();
 			if(status==200) {
 				System.out.println("LOG : REST customer logged in : " + user);

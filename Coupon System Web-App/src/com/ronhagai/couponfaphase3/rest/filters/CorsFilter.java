@@ -8,8 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
@@ -24,7 +22,6 @@ public class CorsFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		httpResponse.setHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
 		httpResponse.setHeader("Access-Control-Allow-Credentials", "true");

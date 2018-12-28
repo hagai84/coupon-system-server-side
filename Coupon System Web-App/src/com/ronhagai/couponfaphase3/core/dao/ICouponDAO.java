@@ -38,6 +38,17 @@ public interface ICouponDAO extends Serializable{
 	 *  existing ownership or no matching data.
 	 */
 	void purchaseCoupon(long couponId, long customerId) throws CouponSystemException;
+	
+	/**
+	 * Removes a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if customer doesn't own this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param customerId the customer's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : 
+	 * 			no ownership or no matching data.
+	 */
+	void cancelPurchaseCoupon(long couponId, long customerId) throws CouponSystemException;
 
 	/**
 	 * Updates a coupon entity in the repository.

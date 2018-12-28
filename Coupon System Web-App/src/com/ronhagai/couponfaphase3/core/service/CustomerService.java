@@ -70,13 +70,13 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void updateCustomer(CustomerBean customer, long userId, UserType userType) throws CouponSystemException {		
 		if ((customer.getId() != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to update customer " + customer);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update customer %s",userType , userId, customer));
 		}
 		checkCustomer(customer);
 		CustomerBean tmpCustomer = getCustomer(customer.getId());
 		tmpCustomer.setPassword(customer.getPassword());
 		customerDAO.updateCustomer(tmpCustomer);
-		System.out.println("LOG : User " + userType + " - " + userId + " updated customer " + customer);		
+		System.out.println(String.format("LOG : User %s %s updated customer %s",userType , userId, customer));		
 	}
 
 	/**
@@ -91,14 +91,14 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 */
 	public void updateCustomerPassword(long customerId, String oldPassword, String newPassword, long userId, UserType userType) throws CouponSystemException {
 		if ((customerId != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to change customer's password " + customerId);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to change customer's %s password ",userType , userId, customerId));
 		}
 		if(userType.equals(UserType.CUSTOMER)) {			
 			String customerName = customerDAO.getCustomer(customerId).getCustName();
 			customerDAO.customerLogin(customerName, oldPassword);
 		}		
 		customerDAO.updateCustomerPassword(customerId, newPassword);
-		System.out.println("LOG : User " + userType + " - " + userId + " changed customer's password " + customerId);
+		System.out.println(String.format("LOG : User %s %s changed customer's %s password ",userType , userId, customerId));
 	}
 	
 	/**
@@ -114,8 +114,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	public void removeCustomer(long customerId, long userId, UserType userType) throws CouponSystemException {
 		//can be modified if customer removing should be restricted
 		if ((customerId != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
-//		if (!userType.equals(ClientType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,"User " + userType + " - " + userId + " attempts to remove customer " + customerId);
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to remove customer %s",userType , userId, customerId));
 		}
 		connectionPool.startTransaction();
 		try {
@@ -127,7 +126,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		}finally {
 		}
 		connectionPool.endTransaction();			
-		System.out.println("LOG : User " + userType + " - " + userId + " removed customer " + customerId);			
+		System.out.println(String.format("LOG : User %s %s attempts to remove customer %s",userType , userId, customerId));			
 	}
 
 	/**

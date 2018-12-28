@@ -92,8 +92,30 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		couponDAO.purchaseCoupon(couponId, customerId);	
 		
 		/*if(paymentGateway.checkout(shoppingCart)) {
-			couponDAO.cancelPurchaseCoupon(couponId, customerId);		
+			cancelPurchaseCoupon(couponId, customerId, userId, userType);		
 		}*/
+		
+		System.out.println(String.format("User %s %s purchased coupon %s", userType, userId, couponId));
+	}
+	/**
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param userId the user ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
+	 */
+	public void cancelPurchaseCoupon(long couponId, long customerId, long userId, UserType userType) throws CouponSystemException {
+		//checks userType
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to cancel purchase coupon %s on user %s", userType, userId, couponId, customerId));
+		}
+		if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId)) {
+			throw new CouponSystemException(ExceptionsEnum.CUSTOMER_OWNS_COUPON,"Customer does not own coupon");
+		}
+		
+		couponDAO.cancelPurchaseCoupon(couponId, customerId);	
 		
 		System.out.println(String.format("User %s %s purchased coupon %s", userType, userId, couponId));
 	}

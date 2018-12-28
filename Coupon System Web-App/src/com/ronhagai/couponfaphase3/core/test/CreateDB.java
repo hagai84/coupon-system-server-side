@@ -33,8 +33,10 @@ public class CreateDB {
 		Connection con = pool.getConnection();
 
 		try (Statement stmt = con.createStatement()){
+			String str = "CREATE DATABASE coupon_system;";
+			stmt.executeUpdate(str);
 			// create company table
-			String str = "CREATE TABLE company("
+			str = "CREATE TABLE coupon_system.company("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "comp_name VARCHAR(50) NOT NULL, "
 					+ "password INTEGER, "
@@ -42,14 +44,14 @@ public class CreateDB {
 			stmt.executeUpdate(str);
 
 			//create customer table
-			str = "CREATE TABLE customer("
+			str = "CREATE TABLE coupon_system.customer("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "cust_name VARCHAR(50) NOT NULL, "
 					+ "password INTEGER) AUTO_INCREMENT=2000000000000000001";
 			stmt.executeUpdate(str);
 
 			// create coupon table
-			str = "CREATE TABLE coupon ("
+			str = "CREATE TABLE coupon_system.coupon ("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "title VARCHAR (255), "
 					+ "start_date DATE, "
@@ -65,7 +67,7 @@ public class CreateDB {
 			stmt.executeUpdate(str);
 
 			// create customer coupon table
-			str = "CREATE TABLE customer_coupon ("
+			str = "CREATE TABLE coupon_system.customer_coupon ("
 					+ "cust_id BIGINT NOT NULL, "
 					+ "FOREIGN KEY (cust_id) REFERENCES customer(id), "
 					+ "coupon_id BIGINT NOT NULL, "
@@ -76,7 +78,7 @@ public class CreateDB {
 					+ "PRIMARY KEY (cust_id, coupon_id))";
 			stmt.executeUpdate(str);
 
-			str = 	"CREATE PROCEDURE purchase_coupon(" + 
+			str = 	"CREATE PROCEDURE coupon_system.purchase_coupon(" + 
 					" IN couponId BIGINT," +
 					" IN customerId BIGINT) " +
 					" BEGIN " + 
@@ -91,7 +93,7 @@ public class CreateDB {
 					" END ";
 			stmt.executeUpdate(str);
 
-			str = 	" CREATE PROCEDURE cancel_purchase_coupon(" + 
+			str = 	" CREATE PROCEDURE coupon_system.cancel_purchase_coupon(" + 
 					" IN couponId BIGINT," +
 					" IN customerId BIGINT) " +
 					" BEGIN " + 
@@ -106,7 +108,7 @@ public class CreateDB {
 					" END ";
 			stmt.executeUpdate(str);
 			
-			str = 	" CREATE PROCEDURE delete_expired_coupons(" + 
+			str = 	" CREATE PROCEDURE coupon_system.delete_expired_coupons(" + 
 					" IN endDate DATE) " +
 					" BEGIN " + 
 					" DELETE customer_coupon FROM customer_coupon " + 
@@ -135,7 +137,8 @@ public class CreateDB {
 		Connection con = pool.getConnection();
 
 		try (Statement stmt = con.createStatement()){
-			stmt.executeUpdate("drop table if exists customer_coupon, customer, coupon, company");
+//			stmt.executeUpdate("drop table if exists customer_coupon, customer, coupon, company");
+			stmt.executeUpdate("DROP DATABASE coupon_system;");
 			System.out.println("LOG : DB removed");
 
 		} catch (SQLException e) {
