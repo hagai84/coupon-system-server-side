@@ -50,7 +50,7 @@ public class CreateThread extends GenericThread {
 			coupon.setType(CouponType.CAMPING);
 			coupon.setMessage("aaaaaa");
 			coupon.setPrice(200);
-			coupon.setImage("aaaaaaaaaaaaaa");
+			coupon.setImage("https://cdn.stocksnap.io/img-thumbs/960w/5RQ0MN5TCL.jpg");
 			coupon.setCompanyId(company.getId());
 			coupon.setCouponId(couponService.createCoupon(coupon, company.getId(), UserType.COMPANY));
 //			System.out.println(Thread.currentThread().getName() + " : LOG : Coupon created \n" + coupon);
