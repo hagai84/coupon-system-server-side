@@ -31,7 +31,6 @@ public class CorsFilter implements Filter {
 		httpResponse.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS, HEAD");
 
         if (httpRequest.getMethod().equals("OPTIONS")) {
-            System.out.println("the option method happend");
             httpResponse.setStatus(200);
             return;
         }
