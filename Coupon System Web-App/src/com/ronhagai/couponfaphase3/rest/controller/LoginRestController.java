@@ -50,7 +50,6 @@ public class LoginRestController {
 	@Path("/login")
 	public long login(LoginBean loginBean) throws CouponSystemException {
 		long userId;
-
 		Cookie cookieUserId, cookieUserType;
 		if(loginBean.getUserName() == null) {
 			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user name seem to be missing");
@@ -77,11 +76,13 @@ public class LoginRestController {
 		cookieUserType = new Cookie("userType", String.valueOf(loginBean.getUserType().toString()));
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
 		if (loginBean.getRememberMe() != null && loginBean.getRememberMe().equals("true")) {
+
 			cookieUserType.setMaxAge(60 * 60 * 24 * 365);
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {
-			cookieUserType.setMaxAge(60*30);
-			cookieUserId.setMaxAge(60*30);
+			System.out.println("the user remmeber ne is: " + loginBean.getRememberMe());
+			cookieUserType.setMaxAge(-1);
+			cookieUserId.setMaxAge(-1);
 		}
 
 		System.out.println(String.format("LOG : user %s %s logged in",loginBean.getUserType(), userId));
