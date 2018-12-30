@@ -74,7 +74,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		}
 		checkCustomer(customer);
 		CustomerBean tmpCustomer = getCustomer(customer.getId());
-		tmpCustomer.setPassword(customer.getPassword());
+		tmpCustomer.setCustName(customer.getCustName());
 		customerDAO.updateCustomer(tmpCustomer);
 		System.out.println(String.format("LOG : User %s %s updated customer %s",userType , userId, customer));		
 	}
@@ -179,7 +179,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 
 	private void checkCustomerPassword(String password) throws CouponSystemException {
 		if (password.length() > CUST_PASSWORD_MAX_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password need to be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
 		}
 		if (password.length() < CUST_PASSWORD_MIN_LENGTH) {
 			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be shorter than " + CUST_PASSWORD_MIN_LENGTH + " characters");
