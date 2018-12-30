@@ -52,7 +52,7 @@ public class logInFilter implements Filter {
 			}
 			// check if user have a userId cookie if so then he lodged in an can continue.
 			if (userId != null && userType != null) {
-				if(pathRequestedByUser.equals("/login")) {
+				if(pathRequestedByUser.equals("/check")) {
 					httpRespone.setContentType(MediaType.APPLICATION_JSON);
 					httpRespone.getWriter().print(userId);
 					httpRespone.flushBuffer();
