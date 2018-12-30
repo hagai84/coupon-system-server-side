@@ -33,12 +33,6 @@ public class LoginRestController {
 	@Context
 	HttpServletRequest httpServletRequest;
 	
-//	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//	@FormParam("userName") String userName,
-//	@FormParam("userPassword") String userPassword,
-//	@FormParam("userType") String userType,
-//	@FormParam("remeberMe") String remeberMe)
-	
 	/**
 	 * login controller that check the user type and call to the right login service.
 	 * if login was successful than token and type cookies will be planted at the user
