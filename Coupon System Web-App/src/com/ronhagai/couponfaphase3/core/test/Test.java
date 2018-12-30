@@ -22,15 +22,19 @@ public class Test {
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
 		resetDB();
 
+		
+		databaseUrl = "jdbc:mysql://localhost:3306/coupon_system";
+		couponSystem.setServer(driverName, databaseUrl, userName, password);
+
 		GenericThread testThread1 = new CreateThread();	
 		GenericThread testThread2 = new ExceptionThread();	
 		GenericThread testThread3 = new RestCreateThread();	
 		GenericThread testThread4 = new PurchaseThread(0, 0);	
 		GenericThread testThread5 = new PurchaseThread(0, 5);	
 		GenericThread testThread6 = new PurchaseThread(0, 10);	
-//		testThread1.start();	
+		testThread1.start();	
 //		testThread2.start();	
-		testThread3.start();	
+//		testThread3.start();	
 //		testThread4.start();	
 //		testThread5.start();
 //		testThread6.start();	

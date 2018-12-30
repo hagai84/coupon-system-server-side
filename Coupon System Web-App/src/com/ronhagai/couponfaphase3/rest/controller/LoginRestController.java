@@ -82,7 +82,7 @@ public class LoginRestController {
 		
 		cookieUserType = new Cookie("userType", String.valueOf(loginBean.getUserType().toString()));
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
-		if (loginBean.getRemeberMe() != null && loginBean.getRemeberMe().equals("true")) {
+		if (loginBean.getRememberMe() != null && loginBean.getRememberMe().equals("true")) {
 			cookieUserType.setMaxAge(60 * 60 * 24 * 365);
 			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
 		} else {

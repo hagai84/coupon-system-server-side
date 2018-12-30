@@ -36,7 +36,7 @@ public class logInFilter implements Filter {
 
 		// if the user try to login/register or to get all coupons let him.
 		if (pathRequestedByUser.equals("/login")
-				|| (pathRequestedByUser.equals("/coupons/*") && httpRequest.getMethod().equals("GET") && !pathRequestedByUser.equals("/coupons/customer/*"))
+				|| (pathRequestedByUser.startsWith("/coupons") && httpRequest.getMethod().equals("GET") && !pathRequestedByUser.startsWith("/coupons/customer"))
 				|| (pathRequestedByUser.equals("/customers") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET"))) 
 				|| (pathRequestedByUser.equals("/companies") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET")))) {
 			chain.doFilter(request, response);

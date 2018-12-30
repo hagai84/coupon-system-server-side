@@ -6,7 +6,7 @@ public class LoginBean {
 	private String userName;
 	private String userPassword;
 	private UserType userType;
-	private String remeberMe;
+	private String rememberMe;
 	public LoginBean() {
 		super();
 	}
@@ -29,11 +29,11 @@ public class LoginBean {
 	public void setUserType(UserType userType) {
 		this.userType = userType;
 	}
-	public String getRemeberMe() {
-		return remeberMe;
+	public String getRememberMe() {
+		return rememberMe;
 	}
-	public void setRemeberMe(String remeberMe) {
-		this.remeberMe = remeberMe;
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = rememberMe;
 	}
 	
 	

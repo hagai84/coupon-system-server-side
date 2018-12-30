@@ -58,7 +58,7 @@ public class DailyCouponExpirationTask extends Thread implements Serializable{
 				e.printStackTrace();
 			}
 			//Sets the next iteration for 00:00 server local time
-			timeTillMidnight = (long)((24*60*60*1000) - System.currentTimeMillis()%(24*60*60*1000) - TimeZone.getDefault().getRawOffset());
+			timeTillMidnight = (long)((24*60*60*1000) - (System.currentTimeMillis() + TimeZone.getDefault().getRawOffset())%(24*60*60*1000));
 		}
 		System.out.println("LOG : Daily Task ended");
 	}

@@ -40,14 +40,14 @@ public class CreateDB {
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "comp_name VARCHAR(50) NOT NULL, "
 					+ "password INTEGER, "
-					+ "email VARCHAR(50) NOT NULL) AUTO_INCREMENT=1000000000000000001";
+					+ "email VARCHAR(50) NOT NULL) AUTO_INCREMENT=1000000000001";
 			stmt.executeUpdate(str);
 
 			//create customer table
 			str = "CREATE TABLE coupon_system.customer("
 					+ "id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 					+ "cust_name VARCHAR(50) NOT NULL, "
-					+ "password INTEGER) AUTO_INCREMENT=2000000000000000001";
+					+ "password INTEGER) AUTO_INCREMENT=2000000000001";
 			stmt.executeUpdate(str);
 
 			// create coupon table
@@ -62,7 +62,7 @@ public class CreateDB {
 					+ "price DOUBLE NOT NULL, "
 					+ "image VARCHAR(255), "
 					+ "comp_id BIGINT NOT NULL, "
-					+ "FOREIGN KEY (comp_id) REFERENCES company(id)) AUTO_INCREMENT=3000000000000000001";
+					+ "FOREIGN KEY (comp_id) REFERENCES company(id)) AUTO_INCREMENT=3000000000001";
 //					+ "ON DELETE CASCADE ON UPDATE NO ACTION ";
 			stmt.executeUpdate(str);
 

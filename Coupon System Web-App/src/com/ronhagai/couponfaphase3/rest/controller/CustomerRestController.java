@@ -108,7 +108,6 @@ public class CustomerRestController implements Serializable{
 	@GET
 	@Path("/{customerId}")
 	public CustomerBean getCustomer(@PathParam("customerId") long customerId) throws CouponSystemException {
-		System.out.println("api get customer is cold");
 		return customerService.getCustomer(customerId);
 	}
 	

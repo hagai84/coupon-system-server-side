@@ -44,23 +44,25 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			//dml equals 0
 			if (statusCode >= 1600 && statusCode < 1700) {
 			// TODO appropriate handling, log
-			}else
+			}
 			//EXTERNAL/DB ERRORS
 			// EXTERNAL FACTORS SHLDNT BE MORE THAN OCCASIONALY DEPENDING ON OTHERS' STABILLITY
 			if (statusCode >= 1700 && statusCode < 1800) {
 				// TODO appropriate handling, log 
-			}else
+			}
 			// CLIENT SIDE ERRORS WITH HIGHER OCCURENCES 
 			if (statusCode >= 1800 && statusCode < 1900) {
 				
-			}else
+			}
 				// SECURITY ERRORS HIGH CHANCES OF BREACH ATTEMPTS
 				// HIDES THE TRUE CAUSE
 			if (statusCode >= 1900 && statusCode < 2000) {
+				System.err.println("LOG : " + exception.getMessage());
+//				exception.pr
 				exceptionEnum = ExceptionsEnum.DATA_BASE_ERROR;
 				statusCode = exceptionEnum.getStatusCode();
 				internalMessage = exceptionEnum.getInternalMessage();
-			}else
+			}
 			// CRITICAL ERRORS NOTIFY IMMIDIATLY
 			if (statusCode >= 2000) {
 				// TODO send email to manager + log
