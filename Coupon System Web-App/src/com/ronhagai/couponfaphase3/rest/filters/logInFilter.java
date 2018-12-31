@@ -23,7 +23,7 @@ import com.ronhagai.couponfaphase3.core.enums.UserType;
  * @author hagai
  *
  */
-@WebFilter("/logInFilter")
+//@WebFilter("/logInFilter")
 public class logInFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
