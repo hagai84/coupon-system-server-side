@@ -7,12 +7,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 
 /**
@@ -54,11 +55,16 @@ public class logInFilter implements Filter {
 			if (userId != null && userType != null) {
 				if(pathRequestedByUser.equals("/check")) {
 					httpRespone.setContentType(MediaType.APPLICATION_JSON);
-					httpRespone.getWriter().print(userId);
+					UserBean loginBean = new UserBean();
+					loginBean.setUserId(userId);
+					loginBean.setUserType(userType);
+					httpRespone.getWriter().print(new ObjectMapper().writeValueAsString(loginBean));					
 					httpRespone.flushBuffer();
-					return;
+					
+					//TODO renew cookies' expiration date
+				}else {
+					chain.doFilter(request, response);					
 				}
-				chain.doFilter(request, response);
 				return;
 			}
 		}

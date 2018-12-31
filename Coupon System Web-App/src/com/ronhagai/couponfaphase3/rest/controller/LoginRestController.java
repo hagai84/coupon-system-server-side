@@ -12,7 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 
-import com.ronhagai.couponfaphase3.core.beans.LoginBean;
+import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
@@ -48,7 +48,7 @@ public class LoginRestController {
 	 */
 	@POST
 	@Path("/login")
-	public long login(LoginBean loginBean) throws CouponSystemException {
+	public long login(UserBean loginBean) throws CouponSystemException {
 		long userId;
 		Cookie cookieUserId, cookieUserType;
 		if(loginBean.getUserName() == null) {

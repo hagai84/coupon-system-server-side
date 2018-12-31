@@ -2,14 +2,24 @@ package com.ronhagai.couponfaphase3.core.beans;
 
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 
-public class LoginBean {
+public class UserBean {
+	private long userId;
 	private String userName;
 	private String userPassword;
 	private UserType userType;
 	private String rememberMe;
-	public LoginBean() {
+	public UserBean() {
 		super();
 	}
+	
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
 	public String getUserName() {
 		return userName;
 	}

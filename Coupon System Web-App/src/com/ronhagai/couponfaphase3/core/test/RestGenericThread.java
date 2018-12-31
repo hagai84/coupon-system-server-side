@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
-import com.ronhagai.couponfaphase3.core.beans.LoginBean;
+import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 
 public abstract class RestGenericThread extends GenericThread{
@@ -24,7 +24,7 @@ public abstract class RestGenericThread extends GenericThread{
 	@Override
 	protected void loginAdmin()  {		
 		try {
-			LoginBean loginBean = new LoginBean();
+			UserBean loginBean = new UserBean();
 			loginBean.setUserName("admin");
 			loginBean.setUserPassword("1234");
 			loginBean.setUserType(UserType.ADMIN);
@@ -51,7 +51,7 @@ public abstract class RestGenericThread extends GenericThread{
 	@Override
 	protected long loginCompany(String user, String password) {	
 		try {
-			LoginBean loginBean = new LoginBean();
+			UserBean loginBean = new UserBean();
 			loginBean.setUserName(user);
 			loginBean.setUserPassword(password);
 			loginBean.setUserType(UserType.COMPANY);
@@ -79,7 +79,7 @@ public abstract class RestGenericThread extends GenericThread{
 	@Override
 	protected long loginCustomer(String user, String password) {	
 		try {
-			LoginBean loginBean = new LoginBean();
+			UserBean loginBean = new UserBean();
 			loginBean.setUserName(user);
 			loginBean.setUserPassword(password);
 			loginBean.setUserType(UserType.CUSTOMER);
