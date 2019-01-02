@@ -5,13 +5,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
@@ -73,7 +74,7 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
 		
-		cookieUserType = new Cookie("userType", String.valueOf(loginBean.getUserType().toString()));
+		cookieUserType = new Cookie("userType", loginBean.getUserType().toString());
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
 
 		if (loginBean.getRememberMe() != null && loginBean.getRememberMe().equals("true")) {
@@ -106,6 +107,37 @@ public class LoginRestController {
 		response.addCookie(cookieUserId);
 		response.addCookie(cookieUserTypeCookie);
 		System.out.println(String.format("LOG : user %s %s logged out",userType, userId));
+	}
+	@GET
+	@Path("/check")
+	public UserBean check() {
+		/*try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+
+		UserBean loginBean = new UserBean();
+		Object tmpUserId = httpServletRequest.getAttribute("userId");
+		Object tmpUserType = httpServletRequest.getAttribute("userType");
+		if(tmpUserId!=null&&tmpUserType!=null) {
+			long userId = ((Long)tmpUserId).longValue();
+			UserType userType = ((UserType)tmpUserType);			
+			Cookie cookieUserId = new Cookie("userId",String.valueOf(userId));
+			Cookie cookieUserTypeCookie = new Cookie("userType",userType.toString());;
+			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
+			cookieUserTypeCookie.setMaxAge(60 * 60 * 24 * 365);
+			response.addCookie(cookieUserId);
+			response.addCookie(cookieUserTypeCookie);
+			System.out.println(String.format("LOG : user %s %s auto-logged in",userType, userId));
+			loginBean.setUserId(userId);
+			loginBean.setUserType(userType);
+		}else {
+			loginBean.setUserId(0);
+			loginBean.setUserType(null);			
+		}
+		return loginBean;
 	}
 }
 

@@ -53,23 +53,12 @@ public class logInFilter implements Filter {
 			}
 			// check if user have a userId cookie if so then he lodged in an can continue.
 			if (userId != null && userType != null) {
-				if(pathRequestedByUser.equals("/check")) {
-					httpRespone.setContentType(MediaType.APPLICATION_JSON);
-					UserBean loginBean = new UserBean();
-					loginBean.setUserId(userId);
-					loginBean.setUserType(userType);
-					httpRespone.getWriter().print(new ObjectMapper().writeValueAsString(loginBean));					
-					httpRespone.flushBuffer();
-					
-					//TODO renew cookies' expiration date
-				}else {
-					chain.doFilter(request, response);					
-				}
+				chain.doFilter(request, response);					
 				return;
 			}
 		}
 		// if the user try to login/register or to get all coupons let him.
-		if (pathRequestedByUser.equals("/login")
+		if (pathRequestedByUser.equals("/login") || pathRequestedByUser.equals("/check")
 				|| (pathRequestedByUser.startsWith("/coupons") && httpRequest.getMethod().equals("GET") && !pathRequestedByUser.startsWith("/coupons/customer"))
 				|| (pathRequestedByUser.equals("/customers") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET"))) 
 				|| (pathRequestedByUser.equals("/companies") && (httpRequest.getMethod().equals("POST")||httpRequest.getMethod().equals("GET")))) {
