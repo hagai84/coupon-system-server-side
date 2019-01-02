@@ -133,7 +133,7 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	 * Retrieves a customer entity from the repository.
 	 * 
 	 * @param customerId the customer's ID.
-	 * @return a CompanyBean object
+	 * @return a CustomerBean object
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	public CustomerBean getCustomer(long customerId) throws CouponSystemException {

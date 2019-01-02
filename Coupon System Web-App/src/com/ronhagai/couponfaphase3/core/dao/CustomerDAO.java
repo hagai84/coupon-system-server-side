@@ -243,7 +243,7 @@ public class CustomerDAO implements ICustomerDAO{
 		CustomerBean customer = new CustomerBean();
 		customer.setId(resultSet.getLong("ID"));
 		customer.setCustName(resultSet.getString("CUST_NAME"));
-		customer.setPassword("***PASSWORD***");
+		customer.setPassword("*PASSWORD*");
 		return customer;
 	}
 }
