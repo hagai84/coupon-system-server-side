@@ -111,12 +111,12 @@ public class LoginRestController {
 	@GET
 	@Path("/check")
 	public UserBean check() {
-		try {
+		/*try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		UserBean loginBean = new UserBean();
 		Object tmpUserId = httpServletRequest.getAttribute("userId");
