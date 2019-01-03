@@ -133,9 +133,13 @@ public class LoginRestController {
 			System.out.println(String.format("LOG : user %s %s auto-logged in",userType, userId));
 			loginBean.setUserId(userId);
 			loginBean.setUserType(userType);
+//			loginBean.setRememberMe("true");
 		}else {
 			loginBean.setUserId(-1);
-			loginBean.setUserType(null);			
+			loginBean.setUserType(null);
+//			loginBean.setRememberMe("false");
+			System.out.println("Login -1");
+			
 		}
 		return loginBean;
 	}
