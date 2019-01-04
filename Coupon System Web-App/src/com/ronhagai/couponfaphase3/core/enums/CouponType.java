@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author Ron
  *
  */
-public enum CouponType implements Serializable{
+public enum CouponType {
 	RESTAURANTS,
 	ELECTRICITY,
 	FOOD,

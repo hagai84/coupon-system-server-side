@@ -140,8 +140,8 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/couponType")
-	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") String couponType) throws CouponSystemException {
-		return couponService.getCouponsByType(CouponType.valueOf(couponType));
+	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") CouponType couponType) throws CouponSystemException {
+		return couponService.getCouponsByType(couponType);
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/company/{companyId}/couponType")
-	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") String couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponService.getCompanyCouponsByType(companyId, CouponType.valueOf(couponType));
+	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
+		return couponService.getCompanyCouponsByType(companyId, couponType);
 	}
 
 	/**
@@ -235,10 +235,10 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/customer/{customerId}/couponType")
-	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") String couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		return couponService.getCustomerCouponsByType(customerId, CouponType.valueOf(couponType), userId, userType);
+		return couponService.getCustomerCouponsByType(customerId, couponType, userId, userType);
 	}
 
 	/**
