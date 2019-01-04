@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
+import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.service.CustomerService;
@@ -73,11 +74,10 @@ public class CustomerRestController implements Serializable{
 	 */
 	@PUT
 	@Path("/{customerId}/password")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void updateCustomerPassword(@PathParam("customerId") long customerId, @FormParam("oldPassword") String oldPassword,@FormParam("newPassword") String newPassword, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public void updateCustomerPassword(UserBean passwordBean, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		customerService.updateCustomerPassword(customerId, oldPassword, newPassword, userId, userType);
+		customerService.updateCustomerPassword(customerId, passwordBean.getUserName(), passwordBean.getUserPassword(), userId, userType);
 	}
 	
 	/**

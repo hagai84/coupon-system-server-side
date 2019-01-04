@@ -139,9 +139,9 @@ public class CouponRestController implements Serializable {
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
 	 */
 	@GET
-	@Path("/type")
-	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") CouponType couponType) throws CouponSystemException {
-		return couponService.getCouponsByType(couponType);
+	@Path("/couponType")
+	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") String couponType) throws CouponSystemException {
+		return couponService.getCouponsByType(CouponType.valueOf(couponType));
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/company/{companyId}/couponType")
-	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
-		return couponService.getCompanyCouponsByType(companyId, couponType);
+	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") String couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
+		return couponService.getCompanyCouponsByType(companyId, CouponType.valueOf(couponType));
 	}
 
 	/**
@@ -235,10 +235,10 @@ public class CouponRestController implements Serializable {
 	 */
 	@GET
 	@Path("/customer/{customerId}/couponType")
-	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") String couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		return couponService.getCustomerCouponsByType(customerId, couponType, userId, userType);
+		return couponService.getCustomerCouponsByType(customerId, CouponType.valueOf(couponType), userId, userType);
 	}
 
 	/**
