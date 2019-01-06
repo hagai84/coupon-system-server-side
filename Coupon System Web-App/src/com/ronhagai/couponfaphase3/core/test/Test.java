@@ -12,7 +12,7 @@ public class Test {
 	private static CouponSystem couponSystem = CouponSystem.getInstance();
 	
 	private static String driverName = "com.mysql.jdbc.Driver";
-	private static String databaseUrl = "jdbc:mysql://localhost:3306/coupon_system?createDatabaseIfNotExist=true";
+	private static String databaseUrl = "jdbc:mysql://localhost:3306/coupon_system";
 	private static String userName = "root";
 	private static String password = "1234";
 	

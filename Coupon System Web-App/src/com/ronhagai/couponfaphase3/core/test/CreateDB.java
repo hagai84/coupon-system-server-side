@@ -138,7 +138,7 @@ public class CreateDB {
 
 		try (Statement stmt = con.createStatement()){
 //			stmt.executeUpdate("drop table if exists customer_coupon, customer, coupon, company");
-			stmt.executeUpdate("DROP DATABASE coupon_system;");
+			stmt.executeUpdate("DROP DATABASE IF EXISTS coupon_system;");
 			System.out.println("LOG : DB removed");
 
 		} catch (SQLException e) {
