@@ -67,7 +67,7 @@ public class ConnectionPool implements Serializable{
 	 * @throws CouponSystemException If connection is unsuccessful (timeout/server down)
 	 */
 	public Connection getConnection() throws CouponSystemException {
-		if(usedConnections.containsKey(Thread.currentThread())) {
+		if(initialized && usedConnections.containsKey(Thread.currentThread())) {
 			return usedConnections.get(Thread.currentThread());
 		}
 

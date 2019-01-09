@@ -12,9 +12,9 @@ public class Test {
 	private static CouponSystem couponSystem = CouponSystem.getInstance();
 	
 	private static String driverName = "com.mysql.jdbc.Driver";
-	private static String databaseUrl = "jdbc:mysql://localhost:3306/coupon_system";
-	private static String userName = "root";
-	private static String password = "1234";
+	private static String databaseUrl = "jdbc:mysql://couponsystem2.c2r3koxg7oj5.us-east-2.rds.amazonaws.com:3306/coupon_system?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true&useSSL=false";
+	private static String userName = "hagai";
+	private static String password = "hagairon";
 	
 	
 	
@@ -23,7 +23,7 @@ public class Test {
 		resetDB();
 
 		
-		databaseUrl = "jdbc:mysql://localhost:3306/coupon_system";
+		databaseUrl = "jdbc:mysql://couponsystem2.c2r3koxg7oj5.us-east-2.rds.amazonaws.com:3306/coupon_system?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true&useSSL=false";
 		couponSystem.setServer(driverName, databaseUrl, userName, password);
 
 		GenericThread testThread1 = new CreateThread();	

@@ -28,7 +28,8 @@ public class InitServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		super.init();
 		driverName = getInitParameter("driverName");
-		databaseUrl = getInitParameter("databaseUrl");
+//		databaseUrl = getInitParameter("databaseUrl");
+		databaseUrl = "jdbc:mysql://couponsystem2.c2r3koxg7oj5.us-east-2.rds.amazonaws.com:3306/coupon_system?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true&useSSL=false";
 		userName = getInitParameter("userName");
 		password = getInitParameter("password");
 		couonSystem.setServer(driverName, databaseUrl, userName, password);	

@@ -30,7 +30,8 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 		String externalMessage;
 		String internalMessage;
 		int statusCode;
-		
+//		return Response.status(900).entity(exception).build();	
+//	}
 		//all the known exceptions hendeld by type
 		if (exception instanceof CouponSystemException) {
 			CouponSystemException theException = (CouponSystemException)exception;
@@ -95,7 +96,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", locale);			
 		} catch (Exception e1) {
 			// TODO LOG IN TRANSLATION LOG
-			//if ther isent a  file for the ask language set en to be the difolt language 
+			//if the requested language isn't supported, sets default to English 
 			System.err.println(String.format("%s does not have error language support", request.getLocale().getDisplayLanguage()));
 			locale = new Locale("en");
 			errorMessages = ResourceBundle.getBundle("com.ronhagai.couponfaphase3.core.exception.errorMessages", locale);			
