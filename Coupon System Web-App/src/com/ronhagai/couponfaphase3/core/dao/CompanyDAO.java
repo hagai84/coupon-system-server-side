@@ -145,11 +145,7 @@ public class CompanyDAO implements ICompanyDAO{
 			selectStatement.setLong(1,companyId);
 			ResultSet resultSet = selectStatement.executeQuery();
 			if (resultSet.next()) {
-				CompanyBean company = new CompanyBean();
-				company.setId(resultSet.getLong(1));
-				company.setCompName(resultSet.getString(2));
-				company.setPassword("***PASSWORD***");
-				company.setEmail(resultSet.getString(4));
+				CompanyBean company = readCompany(resultSet);
 				return company;
 			} else {
 				CouponSystemException exception = new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"can't find company with id num : " + companyId);
@@ -171,11 +167,7 @@ public class CompanyDAO implements ICompanyDAO{
 			String selectSql = "SELECT * FROM company";
 			ResultSet resultSet = selectStatement.executeQuery(selectSql);
 			while (resultSet.next()) {
-				CompanyBean company = new CompanyBean();
-				company.setId(resultSet.getLong(1));
-				company.setCompName(resultSet.getString(2));
-				company.setPassword("***PASSWORD***");
-				company.setEmail(resultSet.getString(4));
+				CompanyBean company = readCompany(resultSet);
 				allCompanies.add(company);
 			}	
 		} catch (SQLException e) {
@@ -231,6 +223,14 @@ public class CompanyDAO implements ICompanyDAO{
 		} finally {
 			connectionPool.returnConnection(connection);			
 		}
+	}
+	public CompanyBean readCompany(ResultSet resultSet) throws SQLException{
+		CompanyBean company = new CompanyBean();
+		company.setId(resultSet.getLong("ID"));
+		company.setCompName(resultSet.getString("COMP_NAME"));
+		company.setPassword("*PASSWORD*");
+		company.setEmail(resultSet.getString("EMAIL"));
+		return company;
 	}
 
 }
