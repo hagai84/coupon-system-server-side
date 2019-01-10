@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.ronhagai.couponfaphase3.core.beans.CartBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
@@ -70,6 +71,22 @@ public class CouponRestController implements Serializable {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.purchaseCoupon(couponId, customerId, userId, userType);
+	}
+	
+	/**
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
+	 */
+	@PUT
+	@Path("/cart/{customerId}")
+	public CartBean checkoutCart(CartBean cartBean, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+		return couponService.checkoutCart(cartBean, customerId, userId, userType);
 	}
 
 	/**

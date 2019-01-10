@@ -5,12 +5,16 @@ package com.ronhagai.couponfaphase3.core.service;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
+import com.ronhagai.couponfaphase3.core.beans.CartBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;
 import com.ronhagai.couponfaphase3.core.dao.CouponDAO;
 import com.ronhagai.couponfaphase3.core.dao.ICouponDAO;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
+import com.ronhagai.couponfaphase3.core.enums.CartStatus;
 import com.ronhagai.couponfaphase3.core.enums.CouponType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
 import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
@@ -96,6 +100,79 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		}*/
 		
 		System.out.println(String.format("User %s %s purchased coupon %s", userType, userId, couponId));
+	}
+	/**
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
+	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * 
+	 * @param couponId the coupon's ID.
+	 * @param userId the user ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
+	 *  existing ownership or no matching data.
+	 */
+	public CartBean checkoutCart(CartBean cartBean, long customerId, long userId, UserType userType) throws CouponSystemException {
+		//TODO check if list doesn't contain a coupon twice, handled down the line and rare but cld save O
+		Collection<Long> availableCoupons = new ArrayList<>();
+		Collection<Long> refusedCoupons = new ArrayList<>();
+		//checks userType
+		if( (!userType.equals(UserType.CUSTOMER) || customerId != userId) && !userType.equals(UserType.ADMIN)) {
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to purchase coupons %s on user %s", userType, userId, cartBean.getCoupons(), customerId));
+		}
+		
+		//First round preliminary checks
+		for (Long couponId : cartBean.getCoupons()) {		
+			if (couponDAO.customerAlreadyOwnsCoupon(couponId, customerId) ||
+					couponDAO.getCoupon(couponId).getAmount()==0) {
+				//Add coupon to refused list 
+				refusedCoupons.add(Long.valueOf(couponId));
+			}else {
+				//Add coupon to available 
+				availableCoupons.add(Long.valueOf(couponId));
+				//cld lock resource for client
+			}
+		}
+		//Second round if no issues purchase cart
+		if(refusedCoupons.size()==0) {
+			availableCoupons.clear();
+			for (Long couponId : cartBean.getCoupons()) {
+				try {
+					couponDAO.purchaseCoupon(couponId, customerId);
+					availableCoupons.add(couponId);
+				}catch (CouponSystemException e) {
+					refusedCoupons.add(couponId);
+				}	
+			}
+			if(refusedCoupons.size()==0) {
+				//Begin payment transaction or Finish payment transaction depending on business logic
+				System.out.println(String.format("User %s %s purchased coupon %s", userType, userId, cartBean.getCoupons()));
+				cartBean.setStatus(CartStatus.PURCHASED);
+//				cartBean.setCoupons(availableCoupons);
+//				return cartBean;
+			}else {
+				for (Long couponId : availableCoupons) {
+					try {
+						couponDAO.cancelPurchaseCoupon(couponId, customerId);
+					}catch (CouponSystemException e) {
+						// TODO: Log failure to cancel purchase
+						
+					}
+				}
+				cartBean.setStatus(CartStatus.DENIED);
+//				cartBean.setCoupons(availableCoupons);
+//				return cartBean;				
+			}
+		}else {
+			cartBean.setStatus(CartStatus.UPDATED);
+//			cartBean.setCoupons(availableCoupons);
+//			return cartBean;
+		}
+		cartBean.setCoupons(availableCoupons);
+		return cartBean;
+		
+		/*if(paymentGateway.checkout(shoppingCart)) {
+			cancelPurchaseCoupon(couponId, customerId, userId, userType);		
+		}*/
+		
 	}
 	/**
 	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.

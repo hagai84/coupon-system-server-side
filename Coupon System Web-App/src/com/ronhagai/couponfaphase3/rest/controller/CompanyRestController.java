@@ -75,6 +75,7 @@ public class CompanyRestController implements Serializable{
 	public void updateCompanyPassword(UserBean passwordBean,@PathParam ("companyId") long companyId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+		//using userBean as substitute for loginBean, same on client side
 		companyService.updateCompanyPassword(companyId,  passwordBean.getUserName(), passwordBean.getUserPassword(), userId, userType);
 	}
 	
