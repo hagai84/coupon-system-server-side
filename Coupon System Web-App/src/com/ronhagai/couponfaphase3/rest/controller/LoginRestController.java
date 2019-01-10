@@ -116,7 +116,7 @@ public class LoginRestController {
 	
 	@GET
 	@Path("/check")
-	public UserBean checkIfRememberUser() {
+	public UserBean checkAutoLogin() {
 		/*try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
