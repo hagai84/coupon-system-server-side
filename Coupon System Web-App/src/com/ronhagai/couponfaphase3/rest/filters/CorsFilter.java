@@ -29,6 +29,7 @@ public class CorsFilter implements Filter {
 		httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
 		httpResponse.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS, HEAD");
 
+		System.out.println("the path of the request is: "+httpRequest.getRequestURI());
         if (httpRequest.getMethod().equals("OPTIONS")) {
             httpResponse.setStatus(200);
             return;

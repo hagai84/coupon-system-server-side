@@ -33,7 +33,10 @@ public class LoginRestController {
 	HttpServletResponse response;
 	@Context
 	HttpServletRequest httpServletRequest;
+	private String adminName = "admin";
+	private String adminPassword = "1234";
 	
+			
 	/**
 	 * login controller that check the user type and call to the right login service.
 	 * if login was successful than token and type cookies will be planted at the user
@@ -63,7 +66,7 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
-		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals("admin") && loginBean.getUserPassword().equals("1234")) {
+		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals(adminName) && loginBean.getUserPassword().equals(adminPassword)) {
 			userId = 123456789;
 		}else if (loginBean.getUserType().equals(UserType.CUSTOMER)) {
 			userId = CustomerService.getInstance().customerLogin(loginBean.getUserName(), loginBean.getUserPassword());
@@ -108,9 +111,12 @@ public class LoginRestController {
 		response.addCookie(cookieUserTypeCookie);
 		System.out.println(String.format("LOG : user %s %s logged out",userType, userId));
 	}
+	
+	
+	
 	@GET
 	@Path("/check")
-	public UserBean check() {
+	public UserBean checkIfRememberUser() {
 		/*try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {

@@ -29,9 +29,13 @@ public class InitServlet extends HttpServlet {
 		super.init();
 		driverName = getInitParameter("driverName");
 //		databaseUrl = getInitParameter("databaseUrl");
-		databaseUrl = "jdbc:mysql://couponsystem2.c2r3koxg7oj5.us-east-2.rds.amazonaws.com:3306/coupon_system?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true&useSSL=false";
-		userName = getInitParameter("userName");
-		password = getInitParameter("password");
+//		databaseUrl = "jdbc:mysql://couponsystem2.c2r3koxg7oj5.us-east-2.rds.amazonaws.com:3306/coupon_system?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true&useSSL=false";
+		databaseUrl = "jdbc:mysql://localhost:3306/coupon_system?createDatabaseIfNotExist=true";
+
+//		userName = getInitParameter("userName");
+		userName = "root";
+//		password = getInitParameter("password");
+		password = "1234";
 		couonSystem.setServer(driverName, databaseUrl, userName, password);	
 	}
 }
