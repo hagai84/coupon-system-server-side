@@ -141,7 +141,7 @@ public class CouponDAO implements ICouponDAO {
 	}
 
 	@Override
-	public void updateCouponAmout(long couponId, int amoutDelta) throws CouponSystemException {
+	public void updateCouponAmount(long couponId, int amoutDelta) throws CouponSystemException {
 		Connection connection = connectionPool.getConnection();
 		
 		String updateSql = "UPDATE coupon SET AMOUNT=AMOUNT+? WHERE ID=? AND AMOUNT+?>=0 ";

@@ -235,18 +235,19 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data, (3) Invalid data, (4) security breach.
 	 */
-	public void updateCouponAmout(long couponId, int amoutDelta, long userId, UserType userType) throws CouponSystemException {
+	public void updateCouponAmount(CouponBean coupon, long userId, UserType userType) throws CouponSystemException {
 		// gets original coupon data
-		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		
+		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
+		int amountDelta = coupon.getAmount() - originalCoupon.getAmount();
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update a coupon's amount it doesn't own %s", userType, userId, couponId));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update a coupon's amount it doesn't own %s", userType, userId, coupon.getCouponId()));
 		}
-		if (amoutDelta+originalCoupon.getAmount()<0) {
+		if (amountDelta+originalCoupon.getAmount()<0) {
 			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount is not allowed");
 		}
-		couponDAO.updateCouponAmout(couponId, amoutDelta);
-		System.out.println(String.format("User %s %s updated coupon's amount %s", userType, userId, couponId));
+		couponDAO.updateCouponAmount(coupon.getCouponId(), amountDelta);
+		System.out.println(String.format("User %s %s updated coupon's amount %s", userType, userId, coupon.getCouponId()));
 	}
 
 	/**
