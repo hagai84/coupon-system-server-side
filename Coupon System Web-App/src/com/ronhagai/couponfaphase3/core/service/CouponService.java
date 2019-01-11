@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.ronhagai.couponfaphase3.core.beans.CartBean;
 import com.ronhagai.couponfaphase3.core.beans.CouponBean;

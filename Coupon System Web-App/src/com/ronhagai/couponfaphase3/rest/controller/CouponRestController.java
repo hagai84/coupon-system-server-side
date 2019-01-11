@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.Collection;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -52,10 +53,13 @@ public class CouponRestController implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private CouponService couponService = CouponService.getInstance();
 
-	private static final String UPLOAD_FOLDER = "../uploadedFiles/";
 	
 	@Context
 	private UriInfo context;
+	@Context
+	private ServletContext servletConext;
+	
+	private static final String UPLOAD_FOLDER = "/resources/coupons/";
 	/**
 	 * Adds a new coupon entity to the repository.
 	 * 
@@ -317,7 +321,7 @@ public class CouponRestController implements Serializable {
 		try {
 			saveToFile(uploadedInputStream, uploadedFileLocation);
 		} catch (IOException e) {
-			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"IO Exception can't save file");
+			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"IO Exception can't save file", e);
 		}
 		System.out.println("file saved");
 		
