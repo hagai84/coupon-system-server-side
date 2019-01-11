@@ -45,6 +45,7 @@ public enum ExceptionsEnum {
 	ID_EXISTS(1810,"Add Client Side Developer Message"),
 	NO_COOKIES(1811,"Add Client Side Developer Message"),
 	REST_ERROR(1812,"Add Client Side Developer Message"),
+	UPLOAD_FAILED(1813,"Add Client Side Developer Message"),
 	
 	/**************************       SECURITY ERRORS         **********************************/
 
@@ -57,7 +58,7 @@ public enum ExceptionsEnum {
 	IDGENERATOR_INIT_ERROR(2001,"Shouldn't go to Client Side Developer Message"),
 	CONNECTION_POOL_INIT_ERROR(2002,"Shouldn't go to Client Side Developer Message"),
 	TEST(2003,"Shouldn't go to Client Side Developer Message"), 
-	CANCEL_PURCHASE_CUSTOMER_FAILED(2004,"Shouldn't go to Client Side Developer Message")
+	CANCEL_PURCHASE_CUSTOMER_FAILED(2004,"Shouldn't go to Client Side Developer Message"), 
 	;
 	
 	
