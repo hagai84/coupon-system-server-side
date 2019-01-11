@@ -69,6 +69,7 @@ public class ExceptionHandler implements ExceptionMapper<Throwable> {
 				// TODO send email to manager + log
 				exception.printStackTrace();
 			}
+			exception.printStackTrace();
 		}else {
 			//handle the uncaught exceptions by sending general message to the clint and print to log
 			//TODO Log uncaught exceptions

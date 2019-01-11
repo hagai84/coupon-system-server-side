@@ -67,7 +67,7 @@ public interface ICouponDAO extends Serializable{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data.
 	 */
-	void updateCouponAmout(long couponId, int amoutDelta) throws CouponSystemException;
+	void updateCouponAmount(long couponId, int amoutDelta) throws CouponSystemException;
 	
 	/**
 	 * Removes a coupon entity from the coupons repository.
