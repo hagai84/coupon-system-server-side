@@ -56,14 +56,9 @@ public class CouponRestController implements Serializable {
 	
 	@Context
 	private UriInfo context;
-	@Context
-	private ServletContext servletConext;
 	
-	private static final String UPLOAD_FOLDER = "/resources/coupons/";
-	/**
-	 * Adds a new coupon entity to the repository.
-	 * 
-	 * @param coupon the new CouponBean object to be added.
+	private static final String UPLOAD_FOLDER = "/resources/coupons";
+	/** 
 	 * @return the created coupon's ID. 
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
 	 * 	existing title, (3) Invalid data, (4) security breach.
@@ -306,7 +301,9 @@ public class CouponRestController implements Serializable {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public void uploadImage(
 			@FormDataParam("pic") InputStream uploadedInputStream,
-			@FormDataParam("pic") FormDataContentDisposition fileDetail) throws CouponSystemException{
+			@FormDataParam("pic") FormDataContentDisposition fileDetail,
+			@Context ServletContext servletConext) throws CouponSystemException{
+		
 		// check if all form parameters are provided
 		if (uploadedInputStream == null || fileDetail == null)
 //			return Response.status(400).entity("Invalid form data").build();
@@ -317,7 +314,9 @@ public class CouponRestController implements Serializable {
 		} catch (SecurityException se) {
 			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"Security Exception", se);
 		}
-		String uploadedFileLocation = UPLOAD_FOLDER + fileDetail.getFileName();
+//		String uploadedFileLocation = "../webapps" + servletConext.getContextPath() + UPLOAD_FOLDER + fileDetail.getFileName();
+		String uploadedFileLocation = "../webapps/couponby/resources/coupons/" + fileDetail.getFileName();
+		System.out.println(uploadedFileLocation);
 		try {
 			saveToFile(uploadedInputStream, uploadedFileLocation);
 		} catch (IOException e) {
@@ -336,10 +335,13 @@ public class CouponRestController implements Serializable {
 	 */
 	private void saveToFile(InputStream inStream, String target)
 			throws IOException {
+//		File newFile = new File(target);
+//		newFile.createNewFile();
+//		System.out.println("File Created");
 		OutputStream out = null;
 		int read = 0;
 		byte[] bytes = new byte[1024];
-		out = new FileOutputStream(new File(target));
+		out = new FileOutputStream(target);
 		while ((read = inStream.read(bytes)) != -1) {
 			out.write(bytes, 0, read);
 		}
