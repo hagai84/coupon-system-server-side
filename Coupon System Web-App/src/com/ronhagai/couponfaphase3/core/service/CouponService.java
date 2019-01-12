@@ -209,7 +209,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
 
-		if (coupon.getCompanyId() != originalCoupon.getCompanyId()) {
+		if (coupon.getCompanyId() != originalCoupon.getCompanyId() && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to change ownership of coupon ", userType, userId, coupon));
 		}
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
@@ -218,6 +218,11 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 		// alter the coupon data to the new ALLOWED ones
 		originalCoupon.setEndDate(coupon.getEndDate());	
 		originalCoupon.setPrice(coupon.getPrice());
+		originalCoupon.setCompanyId(coupon.getCompanyId());
+		originalCoupon.setImage(coupon.getImage());
+		originalCoupon.setMessage(coupon.getMessage());
+//		originalCoupon.setTitle(coupon.getTitle());
+		originalCoupon.setType(coupon.getType());
 		// updates the coupon
 		couponDAO.updateCoupon(originalCoupon);
 		System.out.println(String.format("LOG : User %s %s updated coupon %s", userType, userId, coupon.getCouponId()));
@@ -234,19 +239,18 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data, (3) Invalid data, (4) security breach.
 	 */
-	public void updateCouponAmount(CouponBean coupon, long userId, UserType userType) throws CouponSystemException {
+	public void updateCouponAmout(long couponId, int amountDelta, long userId, UserType userType) throws CouponSystemException {
 		// gets original coupon data
+		CouponBean originalCoupon = couponDAO.getCoupon(couponId);
 		
-		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
-		int amountDelta = coupon.getAmount() - originalCoupon.getAmount();
 		if ((originalCoupon.getCompanyId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
-			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update a coupon's amount it doesn't own %s", userType, userId, coupon.getCouponId()));
+			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update a coupon's amount it doesn't own %s", userType, userId, couponId));
 		}
-		if (amountDelta+originalCoupon.getAmount()<0) {
+		if (originalCoupon.getAmount()+amountDelta<0) {
 			throw new CouponSystemException(ExceptionsEnum.FAILED_OPERATION,"negative amount is not allowed");
 		}
-		couponDAO.updateCouponAmount(coupon.getCouponId(), amountDelta);
-		System.out.println(String.format("User %s %s updated coupon's amount %s", userType, userId, coupon.getCouponId()));
+		couponDAO.updateCouponAmount(couponId, amountDelta);
+		System.out.println(String.format("User %s %s updated coupon's amount %s by %s units", userType, userId, couponId, amountDelta));
 	}
 
 	/**

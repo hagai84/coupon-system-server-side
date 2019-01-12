@@ -114,7 +114,7 @@ public class CouponRestController implements Serializable {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.updateCoupon(coupon, userId, userType);
-		couponService.updateCouponAmount(coupon, userId, userType);
+//		couponService.updateCouponAmount(coupon, userId, userType);
 	}
 
 	/**
@@ -126,13 +126,13 @@ public class CouponRestController implements Serializable {
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
 	 *  no matching data, (3) Invalid data, (4) security breach.
 	 */
-//	@PUT
-//	@Path("/amount/{couponId}")
-//	public void updateCouponAmount(@PathParam("couponId") long couponId,@QueryParam("amountDelta") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-//		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-//		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-//		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);
-//	}
+	@PUT
+	@Path("/amount/{couponId}")
+	public void updateCouponAmount(@PathParam("couponId") long couponId, int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);
+	}
 	
 	/**
 	 * Removes a coupon entity from the coupons and customers' coupons repositories.

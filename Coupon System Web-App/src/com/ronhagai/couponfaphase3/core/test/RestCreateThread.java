@@ -48,7 +48,7 @@ public class RestCreateThread extends RestGenericThread {
 			coupon.setType(CouponType.CAMPING);
 			coupon.setMessage(""+i+i+i+i+i+i);
 			coupon.setPrice(200);
-			coupon.setImage("https://cdn.stocksnap.io/img-thumbs/960w/5RQ0MN5TCL.jpg");
+			coupon.setImage("asus.jpg");
 			coupon.setCompanyId(company.getId());
 			coupon.setCouponId(createCoupon(coupon, company.getId()));
 //			customer.setId(100032 + i);
