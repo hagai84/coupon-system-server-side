@@ -57,7 +57,7 @@ public class CouponRestController implements Serializable {
 	@Context
 	private UriInfo context;
 	
-	private static final String UPLOAD_FOLDER = "/resources/coupons";
+	private static final String UPLOAD_FOLDER = "../webapps/resources/coupons/";
 	/** 
 	 * @return the created coupon's ID. 
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
@@ -315,7 +315,7 @@ public class CouponRestController implements Serializable {
 			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"Security Exception", se);
 		}
 //		String uploadedFileLocation = "../webapps" + servletConext.getContextPath() + UPLOAD_FOLDER + fileDetail.getFileName();
-		String uploadedFileLocation = "../webapps/couponby/resources/coupons/" + fileDetail.getFileName();
+		String uploadedFileLocation = UPLOAD_FOLDER + fileDetail.getFileName();
 		System.out.println(uploadedFileLocation);
 		try {
 			saveToFile(uploadedInputStream, uploadedFileLocation);
