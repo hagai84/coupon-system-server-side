@@ -33,8 +33,11 @@ public class LoginRestController {
 	HttpServletResponse response;
 	@Context
 	HttpServletRequest httpServletRequest;
-	private String adminName = "admin";
-	private String adminPassword = "1234";
+	private final String ADMIN_NAME = "admin";
+	private final String ADMIN_PASSWORD = "1234";
+	private final int REMEMBER_ME = 60 * 60 * 24 * 365;
+	private final int ADMIN_ID = 123456789;
+	
 	
 			
 	/**
@@ -66,8 +69,8 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
-		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals(adminName) && loginBean.getUserPassword().equals(adminPassword)) {
-			userId = 123456789;
+		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals(ADMIN_NAME) && loginBean.getUserPassword().equals(ADMIN_PASSWORD)) {
+			userId = ADMIN_ID;
 		}else if (loginBean.getUserType().equals(UserType.CUSTOMER)) {
 			userId = CustomerService.getInstance().customerLogin(loginBean.getUserName(), loginBean.getUserPassword());
 		} else if (loginBean.getUserType().equals(UserType.COMPANY)) {
@@ -81,8 +84,8 @@ public class LoginRestController {
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
 
 		if (loginBean.getRememberMe() != null && loginBean.getRememberMe().equals("true")) {
-			cookieUserType.setMaxAge(60 * 60 * 24 * 365);
-			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
+			cookieUserType.setMaxAge(REMEMBER_ME);
+			cookieUserId.setMaxAge(REMEMBER_ME);
 		} else {
 			System.out.println("the user remmeber ne is: " + loginBean.getRememberMe());
 			cookieUserType.setMaxAge(-1);
@@ -132,8 +135,8 @@ public class LoginRestController {
 			UserType userType = ((UserType)tmpUserType);			
 			Cookie cookieUserId = new Cookie("userId",String.valueOf(userId));
 			Cookie cookieUserTypeCookie = new Cookie("userType",userType.toString());;
-			cookieUserId.setMaxAge(60 * 60 * 24 * 365);
-			cookieUserTypeCookie.setMaxAge(60 * 60 * 24 * 365);
+			cookieUserId.setMaxAge(REMEMBER_ME);
+			cookieUserTypeCookie.setMaxAge(REMEMBER_ME);
 			response.addCookie(cookieUserId);
 			response.addCookie(cookieUserTypeCookie);
 			System.out.println(String.format("LOG : user %s %s auto-logged in",userType, userId));
