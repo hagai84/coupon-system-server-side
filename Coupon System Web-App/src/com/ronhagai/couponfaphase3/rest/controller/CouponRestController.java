@@ -36,7 +36,8 @@ import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.service.CouponService;
 
 /**
- * An interface for a DAO class which provides access to {@link CouponBean} DTO data type.
+ * An interface for a DAO class which provides access to {@link CouponBean} DTO
+ * data type.
  * 
  * @author Ron
  *
@@ -46,115 +47,137 @@ import com.ronhagai.couponfaphase3.core.service.CouponService;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CouponRestController implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private CouponService couponService = CouponService.getInstance();
 
-	
 	@Context
 	private UriInfo context;
-	
+
 	private static final String UPLOAD_FOLDER = "../webapps/resources/coupons/";
-	/** 
-	 * @return the created coupon's ID. 
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
-	 * 	existing title, (3) Invalid data, (4) security breach.
+
+	/**
+	 * @return the created coupon's ID.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : existing title,
+	 *                               (3) Invalid data, (4) security breach.
 	 */
 	@POST
-	public long createCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		return couponService.createCoupon(coupon, userId, userType);
+	public long createCoupon(CouponBean couponBean, @Context HttpServletRequest httpServletRequest)
+			throws CouponSystemException {
+		checkIfBeanDontHaveNullData(couponBean);
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
+		return couponService.createCoupon(couponBean, userId, userType);
 	}
-	
+
 	/**
-	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
-	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the
+	 * repository. cannot be resolve if it results in a negative coupon's amount, or
+	 * if customer already owns this coupon.
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
-	 *  existing ownership or no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : out of stock,
+	 *                               existing ownership or no matching data.
 	 */
 	@PUT
 	@Path("/{couponId}/{customerId}")
-	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public void purchaseCoupon(@PathParam("couponId") long couponId, @PathParam("customerId") long customerId,
+			@Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		couponService.purchaseCoupon(couponId, customerId, userId, userType);
 	}
-	
+
 	/**
-	 * Adds a coupon to a customer entity, and updates the entity's amount in the repository.
-	 * cannot be resolve if it results in a negative coupon's amount, or if customer already owns this coupon. 
+	 * Adds a coupon to a customer entity, and updates the entity's amount in the
+	 * repository. cannot be resolve if it results in a negative coupon's amount, or
+	 * if customer already owns this coupon.
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : out of stock,
-	 *  existing ownership or no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : out of stock,
+	 *                               existing ownership or no matching data.
 	 */
 	@PUT
 	@Path("/cart/{customerId}")
-	public CartBean checkoutCart(CartBean cartBean, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public CartBean checkoutCart(CartBean cartBean, @PathParam("customerId") long customerId,
+			@Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		if(cartBean.getCoupons() == null || cartBean.getStatus()==null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL, "status or collection cant be null");
+		}
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		return couponService.checkoutCart(cartBean, customerId, userId, userType);
 	}
 
 	/**
 	 * Updates a coupon entity in the repository.
 	 * 
-	 * @param coupon the CouponBean object to be updated.
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
-	 * 	(3) Invalid data, (4) security breach.
+	 * @param couponBean the CouponBean object to be updated.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data,
+	 *                               (3) Invalid data, (4) security breach.
 	 */
 	@PUT
-	public void updateCoupon(CouponBean coupon, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		couponService.updateCoupon(coupon, userId, userType);
+	public void updateCoupon(CouponBean couponBean, @Context HttpServletRequest httpServletRequest)
+			throws CouponSystemException {
+		checkIfBeanDontHaveNullData(couponBean);
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
+		couponService.updateCoupon(couponBean, userId, userType);
 //		couponService.updateCouponAmount(coupon, userId, userType);
 	}
 
 	/**
-	 * Updates a coupon entity's amount in the repository.
-	 * cannot be resolve if it results in a negative amount. 
+	 * Updates a coupon entity's amount in the repository. cannot be resolve if it
+	 * results in a negative amount.
 	 * 
-	 * @param couponId the coupon's ID.
-	 * @param amountDelta the amount of coupons to be added or removed (negative amount).
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : negative delta to exceeds stock,
-	 *  no matching data, (3) Invalid data, (4) security breach.
+	 * @param couponId    the coupon's ID.
+	 * @param amountDelta the amount of coupons to be added or removed (negative
+	 *                    amount).
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : negative delta to
+	 *                               exceeds stock, no matching data, (3) Invalid
+	 *                               data, (4) security breach.
 	 */
 	@PUT
 	@Path("/amount/{couponId}")
-	public void updateCouponAmount(@PathParam("couponId") long couponId,@QueryParam("amount") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public void updateCouponAmount(@PathParam("couponId") long couponId, @QueryParam("amount") int amoutDelta,
+			@Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);
 	}
-	
+
 	/**
 	 * Removes a coupon entity from the coupons and customers' coupons repositories.
 	 * 
 	 * @param couponId the coupon's ID.
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
-	 *  (3) Invalid data, (4) security breach.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data,
+	 *                               (3) Invalid data, (4) security breach.
 	 */
 	@DELETE
 	@Path("/{couponId}")
-	public void removeCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public void removeCoupon(@PathParam("couponId") long couponId, @Context HttpServletRequest httpServletRequest)
+			throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		couponService.removeCoupon(couponId, userId, userType);
 	}
-	 
+
 	/**
 	 * Retrieves a coupon entity from the repository.
 	 * 
 	 * @param couponId the coupon's ID.
 	 * @return a CouponBean object
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/{couponId}")
@@ -167,11 +190,13 @@ public class CouponRestController implements Serializable {
 	 * 
 	 * @param type the coupons Type.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/couponType")
-	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") CouponType couponType) throws CouponSystemException {
+	public Collection<CouponBean> getCouponsByType(@QueryParam("couponType") CouponType couponType)
+			throws CouponSystemException {
 		return couponService.getCouponsByType(couponType);
 	}
 
@@ -179,7 +204,8 @@ public class CouponRestController implements Serializable {
 	 * Retrieves all the coupons entities from the repository .
 	 * 
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	public Collection<CouponBean> getAllCoupons(@Context HttpServletRequest request) throws CouponSystemException {
@@ -191,128 +217,147 @@ public class CouponRestController implements Serializable {
 	 * 
 	 * @param companyId the company's Id.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/company/{companyId}")
-	public Collection<CouponBean> getCompanyCoupons(@PathParam("companyId") long companyId) throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCoupons(@PathParam("companyId") long companyId)
+			throws CouponSystemException {
 		return couponService.getCompanyCoupons(companyId);
 	}
 
 	/**
-	 * Retrieves all the coupons entities of said Type for said Company from the repository .
+	 * Retrieves all the coupons entities of said Type for said Company from the
+	 * repository .
 	 * 
-	 * @param companyId the company's Id.
+	 * @param companyId  the company's Id.
 	 * @param couponType the coupons Type.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/company/{companyId}/couponType")
-	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType couponType, @PathParam("companyId") long companyId) throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCouponsByType(@QueryParam("couponType") CouponType couponType,
+			@PathParam("companyId") long companyId) throws CouponSystemException {
 		return couponService.getCompanyCouponsByType(companyId, couponType);
 	}
 
 	/**
-	 * Retrieves all the coupons entities bellow said Price for said Company from the repository .
+	 * Retrieves all the coupons entities bellow said Price for said Company from
+	 * the repository .
 	 * 
-	 * @param companyId the company's Id.
+	 * @param companyId   the company's Id.
 	 * @param couponPrice the coupons Price.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/company/{companyId}/couponPrice")
-	public Collection<CouponBean> getCompanyCouponsByPrice(@PathParam("companyId") long companyId, @QueryParam("couponPrice") double couponPrice) throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCouponsByPrice(@PathParam("companyId") long companyId,
+			@QueryParam("couponPrice") double couponPrice) throws CouponSystemException {
 		return couponService.getCompanyCouponsByPrice(companyId, couponPrice);
 	}
-	
+
 	/**
-	 * Retrieves all the coupons entities expiring before said Date for said Company from the repository .
+	 * Retrieves all the coupons entities expiring before said Date for said Company
+	 * from the repository .
 	 * 
-	 * @param companyId the company's Id.
+	 * @param companyId      the company's Id.
 	 * @param expirationDate the latest (max) expiration Date.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/company/{companyId}/expirationDate")
-	public Collection<CouponBean> getCompanyCouponsByDate(@PathParam("companyId") long companyId, @QueryParam("expirationDate") Date expirationDate) throws CouponSystemException {
+	public Collection<CouponBean> getCompanyCouponsByDate(@PathParam("companyId") long companyId,
+			@QueryParam("expirationDate") Date expirationDate) throws CouponSystemException {
 		return couponService.getCompanyCouponsByDate(companyId, expirationDate);
 	}
-	
+
 	/**
 	 * Retrieves all the coupons entities for said Customer from the repository .
 	 * 
 	 * @param customerId the customer's Id.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/customer/{customerId}")
-	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public Collection<CouponBean> getCustomerCoupons(@PathParam("customerId") long customerId,
+			@Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCoupons(customerId, userId, userType);
 	}
 
 	/**
-	 * Retrieves all the coupons entities of said Type for said Customer from the repository .
+	 * Retrieves all the coupons entities of said Type for said Customer from the
+	 * repository .
 	 * 
 	 * @param customerId the customer's Id.
 	 * @param couponType the coupons Type.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/customer/{customerId}/couponType")
-	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId, @QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public Collection<CouponBean> getCustomerCouponsByType(@PathParam("customerId") long customerId,
+			@QueryParam("couponType") CouponType couponType, @Context HttpServletRequest httpServletRequest)
+			throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCouponsByType(customerId, couponType, userId, userType);
 	}
 
 	/**
-	 * Retrieves all the coupons entities bellow said Price for said Customer from the repository .
+	 * Retrieves all the coupons entities bellow said Price for said Customer from
+	 * the repository .
 	 * 
-	 * @param customerId the customer's Id.
+	 * @param customerId  the customer's Id.
 	 * @param couponPrice the coupons Price.
 	 * @return a Collection of CouponBean objects
-	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data.
+	 * @throws CouponSystemException if the operation failed due to (1) DB error,
+	 *                               (2) data conflicts such as : no matching data.
 	 */
 	@GET
 	@Path("/customer/{customerId}/couponPrice")
-	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId, @QueryParam("couponPrice") double couponPrice, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
-		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
+	public Collection<CouponBean> getCustomerCouponsByPrice(@PathParam("customerId") long customerId,
+			@QueryParam("couponPrice") double couponPrice, @Context HttpServletRequest httpServletRequest)
+			throws CouponSystemException {
+		long userId = ((Long) httpServletRequest.getAttribute("userId")).longValue();
+		UserType userType = ((UserType) httpServletRequest.getAttribute("userType"));
 		return couponService.getCustomerCouponsByPrice(customerId, couponPrice, userId, userType);
 	}
-	
+
 	/**
 	 * Returns text response to caller containing uploaded file location
 	 * 
-	 * @return error response in case of missing parameters an internal
-	 *         exception or success response if file has been stored
-	 *         successfully
+	 * @return error response in case of missing parameters an internal exception or
+	 *         success response if file has been stored successfully
 	 */
 //	@DELETE
 	@POST
 	@Path("/uploadimage")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void uploadImage(
-			@FormDataParam("pic") InputStream uploadedInputStream,
-			@FormDataParam("pic") FormDataContentDisposition fileDetail,
-			@Context ServletContext servletConext) throws CouponSystemException{
-		
+	public void uploadImage(@FormDataParam("pic") InputStream uploadedInputStream,
+			@FormDataParam("pic") FormDataContentDisposition fileDetail, @Context ServletContext servletConext)
+			throws CouponSystemException {
+
 		// check if all form parameters are provided
 		if (uploadedInputStream == null || fileDetail == null)
 //			return Response.status(400).entity("Invalid form data").build();
-			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"Invalid Form Data");
+			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED, "Invalid Form Data");
 		// create our destination folder, if it not exists
 		try {
 			createFolderIfNotExists(UPLOAD_FOLDER);
 		} catch (SecurityException se) {
-			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"Security Exception", se);
+			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED, "Security Exception", se);
 		}
 //		String uploadedFileLocation = "../webapps" + servletConext.getContextPath() + UPLOAD_FOLDER + fileDetail.getFileName();
 		String uploadedFileLocation = UPLOAD_FOLDER + fileDetail.getFileName();
@@ -320,21 +365,19 @@ public class CouponRestController implements Serializable {
 		try {
 			saveToFile(uploadedInputStream, uploadedFileLocation);
 		} catch (IOException e) {
-			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED,"IO Exception can't save file", e);
+			throw new CouponSystemException(ExceptionsEnum.UPLOAD_FAILED, "IO Exception can't save file", e);
 		}
 		System.out.println("file saved");
-		
+
 	}
+
 	/**
 	 * Utility method to save InputStream data to target location/file
 	 * 
-	 * @param inStream
-	 *            - InputStream to be saved
-	 * @param target
-	 *            - full path to destination file
+	 * @param inStream - InputStream to be saved
+	 * @param target   - full path to destination file
 	 */
-	private void saveToFile(InputStream inStream, String target)
-			throws IOException {
+	private void saveToFile(InputStream inStream, String target) throws IOException {
 //		File newFile = new File(target);
 //		newFile.createNewFile();
 //		System.out.println("File Created");
@@ -348,19 +391,49 @@ public class CouponRestController implements Serializable {
 		out.flush();
 		out.close();
 	}
+
 	/**
 	 * Creates a folder to desired location if it not already exists
 	 * 
-	 * @param dirName
-	 *            - full path to the folder
-	 * @throws SecurityException
-	 *             - in case you don't have permission to create the folder
+	 * @param dirName - full path to the folder
+	 * @throws SecurityException - in case you don't have permission to create the
+	 *                           folder
 	 */
-	private void createFolderIfNotExists(String dirName)
-			throws SecurityException {
+	private void createFolderIfNotExists(String dirName) throws SecurityException {
 		File theDir = new File(dirName);
 		if (!theDir.exists()) {
 			theDir.mkdir();
 		}
+	}
+
+	private void checkIfBeanDontHaveNullData(CouponBean couponBean) throws CouponSystemException {
+		if (couponBean.getTitle() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"title cant be null");
+		}
+		if (couponBean.getStartDate() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"start date cant be null");
+		}
+		if (couponBean.getEndDate() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"end date cant be null");
+		}
+//		if (couponBean.getAmount() == null) {
+//			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL, "amount cant be null");
+//		}
+		if (couponBean.getType() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"type cant be null");
+		}
+		if (couponBean.getMessage() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL, "messagw cant be null");
+		}
+//		if (couponBean.getPrice() == null) {
+//			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL, "price cant be null");
+//		}
+		if (couponBean.getImage() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL, "image cant be null");
+		}
+//		if (couponBean.getCompanyId() == null) {
+//			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"companyId cant be null");
+//		}
+		
 	}
 }

@@ -16,10 +16,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.ronhagai.couponfaphase3.core.beans.CompanyBean;
 import com.ronhagai.couponfaphase3.core.beans.CustomerBean;
 import com.ronhagai.couponfaphase3.core.beans.UserBean;
 import com.ronhagai.couponfaphase3.core.enums.UserType;
 import com.ronhagai.couponfaphase3.core.exception.CouponSystemException;
+import com.ronhagai.couponfaphase3.core.exception.ExceptionsEnum;
 import com.ronhagai.couponfaphase3.core.service.CustomerService;
 
 @Path("/customers")
@@ -36,30 +38,32 @@ public class CustomerRestController implements Serializable{
 	/**
 	 * Adds a new customer entity to the repository.
 	 * 
-	 * @param customer the new customer entity to be added.
+	 * @param customerBean the new customer entity to be added.
 	 * @return the created customer's ID. 
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as :
 	 * 	existing name, (3) Invalid data.
 	 */
 	@POST
-	public long createCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
-		return customerService.createCustomer(customer);			
+	public long createCustomer(CustomerBean customerBean, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		checkIfBeanDontHaveNullData(customerBean);
+		return customerService.createCustomer(customerBean);			
 	}
 	
 	/**
 	 * Updates a customer entity in the repository.
 	 * 
-	 * @param customer the customer object to be updated.
+	 * @param customerBean the customer object to be updated.
 	 * @param userId the user updating the customer
 	 * @param userType the user type updating the customer
 	 * @throws CouponSystemException if the operation failed due to (1) DB error, (2) data conflicts such as : no matching data,
 	 * 	(3) Invalid data, (4) security breach.
 	 */
 	@PUT
-	public void updateCustomer(CustomerBean customer, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {		
+	public void updateCustomer(CustomerBean customerBean, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {		
+		checkIfBeanDontHaveNullData(customerBean);
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		customerService.updateCustomer(customer, userId, userType);
+		customerService.updateCustomer(customerBean, userId, userType);
 	}
 	
 	/**
@@ -74,10 +78,13 @@ public class CustomerRestController implements Serializable{
 	 */
 	@PUT
 	@Path("/{customerId}/password")
-	public void updateCustomerPassword(UserBean passwordBean, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public void updateCustomerPassword(UserBean userBean, @PathParam("customerId") long customerId, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+		if(userBean.getUserName() ==null || userBean.getUserPassword() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"name or password cant be null");
+		}
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
-		customerService.updateCustomerPassword(customerId, passwordBean.getUserName(), passwordBean.getUserPassword(), userId, userType);
+		customerService.updateCustomerPassword(customerId, userBean.getUserName(), userBean.getUserPassword(), userId, userType);
 	}
 	
 	/**
@@ -120,5 +127,14 @@ public class CustomerRestController implements Serializable{
 	@GET
 	public Collection<CustomerBean> getAllCustomers() throws CouponSystemException{
 		return customerService.getAllCustomers();
+	}
+	
+	private void checkIfBeanDontHaveNullData(CustomerBean customerBean) throws CouponSystemException {
+		if (customerBean.getCustName()== null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"name cant be null");
+		}
+		if (customerBean.getPassword() == null) {
+			throw new CouponSystemException(ExceptionsEnum.DATA_CANT_BE_NULL,"password cant be null");
+		}
 	}
 }
