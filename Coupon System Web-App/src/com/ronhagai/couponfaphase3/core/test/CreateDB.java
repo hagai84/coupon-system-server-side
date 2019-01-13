@@ -82,14 +82,14 @@ public class CreateDB {
 					" IN couponId BIGINT," +
 					" IN customerId BIGINT) " +
 					" BEGIN " + 
-					" DECLARE EXIT HANDLER FOR SQLEXCEPTION" + 
-					" BEGIN" + 
-					" ROLLBACK;" + 
-					" END;" + 
-					" START TRANSACTION;" +
+//					" DECLARE EXIT HANDLER FOR SQLEXCEPTION" + 
+//					" BEGIN" + 
+//					" ROLLBACK;" + 
+//					" END;" + 
+//					" START TRANSACTION;" +
 					" UPDATE coupon SET AMOUNT=amount-1 WHERE ID=couponId AND amount>0; " + 
 					" INSERT INTO customer_coupon VALUES(customerId,couponId); "+ 
-					" COMMIT;"+
+//					" COMMIT;"+
 					" END ";
 			stmt.executeUpdate(str);
 
@@ -97,14 +97,14 @@ public class CreateDB {
 					" IN couponId BIGINT," +
 					" IN customerId BIGINT) " +
 					" BEGIN " + 
-					" DECLARE EXIT HANDLER FOR SQLEXCEPTION" + 
-					" BEGIN" + 
-					" ROLLBACK;" + 
-					" END;" + 
-					" START TRANSACTION;" +
+//					" DECLARE EXIT HANDLER FOR SQLEXCEPTION" + 
+//					" BEGIN" + 
+//					" ROLLBACK;" + 
+//					" END;" + 
+//					" START TRANSACTION;" +
 					" UPDATE coupon SET AMOUNT=amount+1 WHERE ID=couponId; " + 
 					" DELETE FROM customer_coupon WHERE CUST_ID=customerId AND COUPON_ID=couponId; "+ 
-					" COMMIT;"+
+//					" COMMIT;"+
 					" END ";
 			stmt.executeUpdate(str);
 			
