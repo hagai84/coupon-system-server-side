@@ -416,8 +416,8 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	}
 
 	private void checkTitle(String title) throws CouponSystemException {
-		if(title.length()>COUP_TITLE_LENGTH)
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's title can't be longer than " + COUP_TITLE_LENGTH + " characters");
+		if(title.length()>COUPOMER_TITLE_LENGTH)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's title can't be longer than " + COUPOMER_TITLE_LENGTH + " characters");
 	}
 
 	private void checkStartDate(Date startDate) throws CouponSystemException {
@@ -437,7 +437,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 
 	private void checkType(CouponType type) throws CouponSystemException {
 		if(type == null)
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon type cant be more than " + COUP_TITLE_LENGTH + " characters");
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon type cant be more than " + COUPOMER_TITLE_LENGTH + " characters");
 	}
 
 	private void checkPrice(double price) throws CouponSystemException {
@@ -451,7 +451,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	}
 
 	private void checkMessage(String message) throws CouponSystemException {
-		if(message.length()>COUP_MSG_LENGTH)
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's message can't be longer than " + COUP_MSG_LENGTH + " characters");		
+		if(message.length()>COUPON_MSG_LENGTH)
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"Coupon's message can't be longer than " + COUPON_MSG_LENGTH + " characters");		
 	}
 }

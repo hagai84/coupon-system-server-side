@@ -175,22 +175,22 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 	}
 
 	private void checkCompanyName(String compName) throws CouponSystemException {
-		if (compName.length() > COMP_NAME_LENGTH) {
+		if (compName.length() > COMPANY_NAME_LENGTH) {
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATION,
-					"The company name cant be more than " + COMP_NAME_LENGTH + " characters");
+					"The company name cant be more than " + COMPANY_NAME_LENGTH + " characters");
 			throw e;
 		}
 	}
 
 	private void checkCompanyPassword(String compPassword) throws CouponSystemException {
-		if (compPassword.length() > COMP_PASSWORD_MAX_LENGTH) {
+		if (compPassword.length() > COMPANY_PASSWORD_MAX_LENGTH) {
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATION,
-					"The company password cant be more than " + COMP_PASSWORD_MAX_LENGTH + " characters");
+					"The company password cant be more than " + COMPANY_PASSWORD_MAX_LENGTH + " characters");
 			throw e;
 		}
-		if (compPassword.length() < COMP_PASSWORD_MIN_LENGTH) {
+		if (compPassword.length() < COMPANY_PASSWORD_MIN_LENGTH) {
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATION,
-					"The company password need to be more than " + COMP_PASSWORD_MIN_LENGTH + " characters");
+					"The company password need to be more than " + COMPANY_PASSWORD_MIN_LENGTH + " characters");
 			throw e;
 		}
 	}
@@ -202,9 +202,9 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 			throw e;
 		}
 
-		if (companyEmail.length() > COMP_EMAIL_LENGTH){
+		if (companyEmail.length() > COMPANY_EMAIL_LENGTH){
 			CouponSystemException e = new CouponSystemException(ExceptionsEnum.VALIDATION,
-					"The company email cant be more than" + COMP_EMAIL_LENGTH + "leters");
+					"The company email cant be more than" + COMPANY_EMAIL_LENGTH + "leters");
 			throw e;
 		}
 

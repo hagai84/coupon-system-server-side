@@ -172,17 +172,17 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 	
 
 	private void checkCustomerName(String custName) throws CouponSystemException {
-		if (custName.length() > CUST_NAME_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password cant be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
+		if (custName.length() > CUSTOMER_NAME_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password cant be longer than " + CUSTOMER_PASSWORD_MAX_LENGTH + " characters");
 		}
 	}
 
 	private void checkCustomerPassword(String password) throws CouponSystemException {
-		if (password.length() > CUST_PASSWORD_MAX_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be be longer than " + CUST_PASSWORD_MAX_LENGTH + " characters");
+		if (password.length() > CUSTOMER_PASSWORD_MAX_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be be longer than " + CUSTOMER_PASSWORD_MAX_LENGTH + " characters");
 		}
-		if (password.length() < CUST_PASSWORD_MIN_LENGTH) {
-			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be shorter than " + CUST_PASSWORD_MIN_LENGTH + " characters");
+		if (password.length() < CUSTOMER_PASSWORD_MIN_LENGTH) {
+			throw new CouponSystemException(ExceptionsEnum.VALIDATION,"The customer password can't be shorter than " + CUSTOMER_PASSWORD_MIN_LENGTH + " characters");
 		}
 	}
 }
