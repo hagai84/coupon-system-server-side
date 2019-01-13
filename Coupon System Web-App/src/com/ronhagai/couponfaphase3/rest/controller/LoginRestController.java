@@ -58,6 +58,7 @@ public class LoginRestController {
 	public long login(UserBean loginBean) throws CouponSystemException {
 		long userId;
 		Cookie cookieUserId, cookieUserType;
+		//check if there isent null data
 		if(loginBean.getUserName() == null) {
 			throw new CouponSystemException(ExceptionsEnum.NULL_DATA,"user name seem to be missing");
 		}
@@ -69,6 +70,7 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be missing");
 		}
 
+		//check if userType, userName and userPassword are match to the data stored in the DB
 		if (loginBean.getUserType().equals(UserType.ADMIN) && loginBean.getUserName().equals(ADMIN_NAME) && loginBean.getUserPassword().equals(ADMIN_PASSWORD)) {
 			userId = ADMIN_ID;
 		}else if (loginBean.getUserType().equals(UserType.CUSTOMER)) {
@@ -80,6 +82,7 @@ public class LoginRestController {
 			throw new CouponSystemException(ExceptionsEnum.USER_TYPE_REQUIRED, "user type seem to be worng");
 		}
 		
+		//if all user give the correct name and password set cookies (user id and type) in the response.
 		cookieUserType = new Cookie("userType", loginBean.getUserType().toString());
 		cookieUserId = new Cookie("userId", String.valueOf(userId));
 
@@ -116,17 +119,11 @@ public class LoginRestController {
 	}
 	
 	
-	
+	//check if the user has the login cookies if so return to user userBean (userid+userType)
 	@GET
 	@Path("/check")
 	public UserBean checkAutoLogin() {
-		/*try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-
+	
 		UserBean loginBean = new UserBean();
 		Object tmpUserId = httpServletRequest.getAttribute("userId");
 		Object tmpUserType = httpServletRequest.getAttribute("userType");
