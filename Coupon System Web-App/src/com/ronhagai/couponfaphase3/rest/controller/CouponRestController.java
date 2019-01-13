@@ -128,7 +128,7 @@ public class CouponRestController implements Serializable {
 	 */
 	@PUT
 	@Path("/amount/{couponId}")
-	public void updateCouponAmount(@PathParam("couponId") long couponId, int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
+	public void updateCouponAmount(@PathParam("couponId") long couponId,@QueryParam("amount") int amoutDelta, @Context HttpServletRequest httpServletRequest) throws CouponSystemException {
 		long userId = ((Long)httpServletRequest.getAttribute("userId")).longValue();
 		UserType userType = ((UserType)httpServletRequest.getAttribute("userType"));
 		couponService.updateCouponAmout(couponId, amoutDelta, userId, userType);

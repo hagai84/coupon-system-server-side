@@ -72,10 +72,10 @@ public class CustomerService implements Serializable, IBeanValidatorConstants{
 		if ((customer.getId() != userId || !userType.equals(UserType.CUSTOMER)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update customer %s",userType , userId, customer));
 		}
-		checkCustomer(customer);
-		CustomerBean tmpCustomer = getCustomer(customer.getId());
-		tmpCustomer.setCustName(customer.getCustName());
-		customerDAO.updateCustomer(tmpCustomer);
+		CustomerBean originalCustomer = getCustomer(customer.getId());
+		originalCustomer.setCustName(customer.getCustName());
+		customerDAO.updateCustomer(originalCustomer);
+		checkCustomer(originalCustomer);
 		System.out.println(String.format("LOG : User %s %s updated customer %s",userType , userId, customer));		
 	}
 

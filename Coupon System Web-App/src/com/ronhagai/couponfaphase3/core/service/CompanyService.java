@@ -72,12 +72,12 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		if ((company.getId() != userId || !userType.equals(UserType.COMPANY)) && !userType.equals(UserType.ADMIN)) {
 			throw new CouponSystemException(ExceptionsEnum.SECURITY_BREACH,String.format("User %s %s attempts to update company %s",userType , userId, company));
 		}
-		checkCompany(company);
-		CompanyBean tmpCompany = getCompany(company.getId());
-		tmpCompany.setEmail(company.getEmail());
-		tmpCompany.setPassword(company.getPassword());
+		CompanyBean originalCompany = getCompany(company.getId());
+		originalCompany.setEmail(company.getEmail());
+		originalCompany.setPassword(company.getPassword());
 		
-		companyDAO.updateCompany(tmpCompany);
+		checkCompany(originalCompany);
+		companyDAO.updateCompany(originalCompany);
 		System.out.println(String.format("LOG : User %s %s updated company %s",userType , userId, company));		
 	}
 	

@@ -205,7 +205,6 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 	 * 	(3) Invalid data, (4) security breach.
 	 */
 	public void updateCoupon(CouponBean coupon, long userId, UserType userType) throws CouponSystemException {
-		checkCoupon(coupon);
 		// gets original coupon data
 		CouponBean originalCoupon = couponDAO.getCoupon(coupon.getCouponId());
 
@@ -224,6 +223,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 //		originalCoupon.setTitle(coupon.getTitle());
 		originalCoupon.setType(coupon.getType());
 		// updates the coupon
+		checkCoupon(originalCoupon);
 		couponDAO.updateCoupon(originalCoupon);
 		System.out.println(String.format("LOG : User %s %s updated coupon %s", userType, userId, coupon.getCouponId()));
 	}
@@ -406,7 +406,7 @@ public class CouponService implements Serializable, IBeanValidatorConstants{
 
 	private void checkCoupon(CouponBean coupon) throws CouponSystemException {
 		checkTitle(coupon.getTitle());
-		checkStartDate(coupon.getStartDate());
+//		checkStartDate(coupon.getStartDate());
 		checkEndDate(coupon.getEndDate(), coupon.getStartDate());
 		checkAmount(coupon.getAmount());
 		checkType(coupon.getType());
