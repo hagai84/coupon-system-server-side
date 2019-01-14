@@ -74,8 +74,7 @@ public class CompanyService implements Serializable, IBeanValidatorConstants{
 		}
 		CompanyBean originalCompany = getCompany(company.getId());
 		originalCompany.setEmail(company.getEmail());
-		originalCompany.setPassword(company.getPassword());
-		
+		originalCompany.setCompName(company.getCompName());
 		checkCompany(originalCompany);
 		companyDAO.updateCompany(originalCompany);
 		System.out.println(String.format("LOG : User %s %s updated company %s",userType , userId, company));		
